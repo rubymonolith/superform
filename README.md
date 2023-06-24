@@ -4,11 +4,11 @@ Superform aims to be the best way to build forms in Rails applications. Here's w
 
 * **Everything is a component.** Superform is built on top of [Phlex](https://phlex.fun), so every bit of HTML in the form can be customized to your precise needs. Use it with your own CSS Framework or go crazy customizing every last bit of TailwindCSS.
 
-* **Strong Params are built in.** Superform automatically permits the form fields for you. How many times have you changed the form and forgot to permit a param from the controller? No more! Superform has you covered.
+* **Automatic strong parameters.** Superform automatically permits the form fields for you so you don't have to facepalm yourself after adding a form field, wondering why it doesn't persist, only to realize you forgot to add the parameter to your controller. No more! Superform was architected with safety in mind, meaining it can automatically permit your form parameters.
 
-* **Compose forms with Plain 'ol Ruby Objects**. Superform is built on top of POROs, so you can easily compose forms together to create complex forms. You can even extend forms to create new forms with a different look and feel.
+* **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on top of POROs, so you can easily compose forms together to create complex forms. You can even extend forms to create new forms with a different look and feel.
 
-It's a complete rewrite of Rails form's internals that's inspired by Reactive component system. [Chris McCord said it very eloquently in a love letter to react](https://fly.io/blog/love-letter-react/). This aspires to be that, but in Ruby.
+It's a complete rewrite of Rails form's internals that's inspired by Reactive component system.
 
 ## Installation
 
@@ -21,7 +21,7 @@ Install the gem and add to the Rails application's Gemfile by executing:
 
 ## Usage
 
-Super Forms streamlines the development of forms on Rails applications by making everything a component.
+Superform streamlines the development of forms on Rails applications by making everything a component.
 
 Here's what a Superform looks in your Erb files.
 
@@ -34,7 +34,7 @@ Here's what a Superform looks in your Erb files.
     end %>
 ```
 
-That's very spartan form! Let's add labels and HTML between each form row so we have something to work with.
+That's very spartan form! Let's add labels and HTML between each form row so we have something that looks much better.
 
 ```ruby
 <%= render ApplicationForm.new model: @user do
@@ -51,9 +51,9 @@ That's very spartan form! Let's add labels and HTML between each form row so we 
     end %>
 ```
 
-Jumpin' Jimmidy! That's starting to get purty vrubyose. Let's add some helpers to `ApplicationForm` and tighten things up.
+Jumpin' Jimmidy! That's form is starting to look pretty darn busy. Let's add some methods and components to the `ApplicationForm` class and tighten things up.
 
-## Customizing Look & Feel
+## Customizing the look, feel, and behavior of Superforms
 
 Superforms are built entirely out of Phlex components. The method names correspeond with the tag, its arguments are attributes, and the blocks are the contents of the element.
 
@@ -102,7 +102,7 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 
 Much better!
 
-### Extending Forms
+### Extending Superforms
 
 The best part? If you have forms with a completely different look and feel, you can extend the forms just like you would a Ruby class:
 
@@ -134,9 +134,11 @@ Then, just like you did in your Erb, you create the form:
     end %>
 ```
 
-### Self-permitting Parameters
+Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everythign to be in one place, keep the forms in the `app/views/forms/*.rb` folder and the components in `app/views/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
 
-Guess what? It also permits form fields for you in your controller, like this:
+### Automatic strong parameters
+
+Guess what? Superform also permits form fields for you in your controller, like this:
 
 ```ruby
 class UserController < ApplicationController
@@ -150,10 +152,11 @@ class UserController < ApplicationController
 end
 ```
 
-To do that though you need to move the form into your controller, which is pretty easy:
+To do that though you need to move the form as an inline class into your controller or `app/views` folder, which is pretty easy:
 
 ```ruby
-class UserController < ApplicationController
+class UsersController < ApplicationController
+  # You could also put this in `./app/views/users/form.rb`
   class Form < ApplicationForm
     render field(:email).input(type: :email)
     render field(:name).input
@@ -185,15 +188,15 @@ Then render it from your Erb in less lines, like this:
 
 ## Comparisons
 
-Rails ships with a lot of great options to make forms. Many of these inspired Superforms. The tl;dr:
+Rails ships with a lot of great options to make forms. Many of these inspired Superform. The tl;dr:
 
 1. Rails has a lot of great form helpers. Simple Form and Formtastic both have concise ways of defining HTML forms, but do require frequently opening and closing Erb tags.
 
-2. Superforms is uniquely capable of permitting its own controller parameters, leaving you with one less thing to worry about and test. Additionally it can be extended, shared, and modularized since its Plain' 'ol Ruby, which opens up a world of TailwindCSS form libraries and proprietary form libraries developed internally by organizations.
+2. Superform is uniquely capable of permitting its own controller parameters, leaving you with one less thing to worry about and test. Additionally it can be extended, shared, and modularized since its Plain' 'ol Ruby, which opens up a world of TailwindCSS form libraries and proprietary form libraries developed internally by organizations.
 
 ### Rails form helpers
 
-Rails form helpers have lasted for almost 20 years and are super solid, but things get tricky when your application starts to take on different styles of forms. To manage it all you have to cobble together helper methods, partials, and templates. Additionally, the structure of the form then has to be expressed to the controller as strong params.
+Rails form helpers have lasted for almost 20 years and are super solid, but things get tricky when your application starts to take on different styles of forms. To manage it all you have to cobble together helper methods, partials, and templates. Additionally, the structure of the form then has to be expressed to the controller as strong params, forcing you to repeat yourself.
 
 With Simpleform, you build the entire form with Ruby code, so you avoid the Erb gymnastics and helper method soup that it takes in Rails to scale up forms in an organization.
 
@@ -218,7 +221,6 @@ It has generators that give you Ruby objects that represent HTML form inputs tha
 It also does not permit its own parameters.
 
 https://www.ruby-toolbox.com/projects/formtastic
-
 
 ## Development
 
