@@ -1,6 +1,14 @@
 # Superform
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/superform`. To experiment with that code, run `bin/console` for an interactive prompt.
+Superform aims to be the best way to build forms in Rails applications. Here's what it does differently.
+
+* **Everything is a component.** Superform is built on top of [Phlex](https://phlex.fun), so every bit of HTML in the form can be customized to your precise needs. Use it with your own CSS Framework or go crazy customizing every last bit of TailwindCSS.
+
+* **Strong Params are built in.** Superform automatically permits the form fields for you. How many times have you changed the form and forgot to permit a param from the controller? No more! Superform has you covered.
+
+* **Compose forms with Plain 'ol Ruby Objects**. Superform is built on top of POROs, so you can easily compose forms together to create complex forms. You can even extend forms to create new forms with a different look and feel.
+
+It's a complete rewrite of Rails form's internals that's inspired by Reactive component system. [Chris McCord said it very eloquently in a love letter to react](https://fly.io/blog/love-letter-react/). This aspires to be that, but in Ruby.
 
 ## Installation
 
@@ -12,42 +20,42 @@ Install the gem and add to the Rails application's Gemfile by executing:
 
 Super Forms streamlines the development of forms on Rails applications by making everything a component.
 
-Here's what a SuperForm looks in your Erb files.
+Here's what a Superform looks in your Erb files.
 
 ```erb
 <%= render ApplicationForm.new model: @user do
-  render field(:email).input(type: :email)
-  render field(:name).input
+      render field(:email).input(type: :email)
+      render field(:name).input
 
-  button(type: :submit) { "Sign up" }
-end %>
+      button(type: :submit) { "Sign up" }
+    end %>
 ```
 
 That's very spartan form! Let's add labels and HTML between each form row so we have something to work with.
 
 ```erb
 <%= render ApplicationForm.new do
-  div class: "form-row" do
-    render field(:email).label
-    render field(:email).input(type: :email)
-  end
-  div class: "form-row" do
-    render field(:name).label
-    render field(:name).input
-  end
+      div class: "form-row" do
+        render field(:email).label
+        render field(:email).input(type: :email)
+      end
+      div class: "form-row" do
+        render field(:name).label
+        render field(:name).input
+      end
 
-  button(type: :submit) { "Sign up" }
-%>
+      button(type: :submit) { "Sign up" }
+    end %>
 ```
 
-Jumpin' Jimmidy! That's starting to get verbose. Let's add some helpers to `ApplicationForm` and tighten things up.
+Jumpin' Jimmidy! That's starting to get purty verbose. Let's add some helpers to `ApplicationForm` and tighten things up.
 
 ## Customizing Look & Feel
 
-SuperForms are built entirely out of Phlex components. The method names correspeond with the tag, its arguments are attributes, and the blocks are the contents of the element.
+Superforms are built entirely out of Phlex components. The method names correspeond with the tag, its arguments are attributes, and the blocks are the contents of the element.
 
 ```ruby
-class ApplicationForm < SuperForm::Base
+class ApplicationForm < Superform::Base
   class MyInputComponent < ApplicationComponent
     def template(&)
       div class: "form-field" do
@@ -82,11 +90,11 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 
 ```erb
 <%= render ApplicationForm.new model: @user do
-  labeled field(:name).input
-  labeled field(:email).input(type: :email)
+      labeled field(:name).input
+      labeled field(:email).input(type: :email)
 
-  submit "Sign up"
-end %>
+      submit "Sign up"
+    end %>
 ```
 
 Much better!
@@ -116,11 +124,11 @@ Then, just like you did in your Erb, you create the form:
 
 ```erb
 <%= render AdminForm.new model: @user do
-  labeled field(:name).tooltip_input
-  labeled field(:email).tooltip_input(type: :email)
+      labeled field(:name).tooltip_input
+      labeled field(:email).tooltip_input(type: :email)
 
-  submit "Save"
-end %>
+      submit "Save"
+    end %>
 ```
 
 ### Self-permitting Parameters
