@@ -22,7 +22,7 @@ Super Forms streamlines the development of forms on Rails applications by making
 
 Here's what a Superform looks in your Erb files.
 
-```erb
+```ruby
 <%= render ApplicationForm.new model: @user do
       render field(:email).input(type: :email)
       render field(:name).input
@@ -33,8 +33,8 @@ Here's what a Superform looks in your Erb files.
 
 That's very spartan form! Let's add labels and HTML between each form row so we have something to work with.
 
-```erb
-<%= render ApplicationForm.new do
+```ruby
+<%= render ApplicationForm.new model: @user do
       div class: "form-row" do
         render field(:email).label
         render field(:email).input(type: :email)
@@ -48,7 +48,7 @@ That's very spartan form! Let's add labels and HTML between each form row so we 
     end %>
 ```
 
-Jumpin' Jimmidy! That's starting to get purty verbose. Let's add some helpers to `ApplicationForm` and tighten things up.
+Jumpin' Jimmidy! That's starting to get purty vrubyose. Let's add some helpers to `ApplicationForm` and tighten things up.
 
 ## Customizing Look & Feel
 
@@ -88,7 +88,7 @@ end
 
 That looks like a LOT of code, and it is, but look at how easy it is to create forms.
 
-```erb
+```ruby
 <%= render ApplicationForm.new model: @user do
       labeled field(:name).input
       labeled field(:email).input(type: :email)
@@ -122,7 +122,7 @@ end
 
 Then, just like you did in your Erb, you create the form:
 
-```erb
+```ruby
 <%= render AdminForm.new model: @user do
       labeled field(:name).tooltip_input
       labeled field(:email).tooltip_input(type: :email)
