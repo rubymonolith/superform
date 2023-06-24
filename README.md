@@ -12,6 +12,9 @@ It's a complete rewrite of Rails form's internals that's inspired by Reactive co
 
 ## Installation
 
+> **Note**
+> This doesn't actually work yet. There is working source code at https://github.com/rocketshipio/oxidizer-demo/tree/main/app/views/superform that's being extracted into a gem. This repo and README exist to validate some ideas before the gem is finalized and published.
+
 Install the gem and add to the Rails application's Gemfile by executing:
 
     $ bundle add superform
@@ -186,21 +189,21 @@ Rails ships with a lot of great options to make forms. Many of these inspired Su
 
 1. Rails has a lot of great form helpers. Simple Form and Formtastic both have concise ways of defining HTML forms, but do require frequently opening and closing Erb tags.
 
-2. Superforms is uniquely capable of permitting its own controller parameters, leaving you with one less thing to worry about and test. Additionally it can be extended, shared, and modularized since its Plain' 'ol Ruby, which opens up a world of TailwindCSS form libraries and propietary form libraries developed internally by organizations.
+2. Superforms is uniquely capable of permitting its own controller parameters, leaving you with one less thing to worry about and test. Additionally it can be extended, shared, and modularized since its Plain' 'ol Ruby, which opens up a world of TailwindCSS form libraries and proprietary form libraries developed internally by organizations.
 
 ### Rails form helpers
 
 Rails form helpers have lasted for almost 20 years and are super solid, but things get tricky when your application starts to take on different styles of forms. To manage it all you have to cobble together helper methods, partials, and templates. Additionally, the structure of the form then has to be expressed to the controller as strong params.
 
-With Simpleform, you build the entire form with Ruby code, so you avoid the Erb gynmnastics and helper method soup that it takes in Rails to scale up forms in an organization.
+With Simpleform, you build the entire form with Ruby code, so you avoid the Erb gymnastics and helper method soup that it takes in Rails to scale up forms in an organization.
 
 ### Simple Form
 
-I built some pretty amazing applictions with Simple Form and admire its syntax. It requires "Erb soup", which is an opening and closing line of Erb per line. If you follow a specific directory structure or use their component framework, you can get pretty far, but you'll hit a wall when you need to start putting wrappers around forms or inputs.
+I built some pretty amazing applications with Simple Form and admire its syntax. It requires "Erb soup", which is an opening and closing line of Erb per line. If you follow a specific directory structure or use their component framework, you can get pretty far, but you'll hit a wall when you need to start putting wrappers around forms or inputs.
 
 https://github.com/heartcombo/simple_form#the-wrappers-api
 
-The API is there, but when you change the syntax, you have to reboot the server to see the changes. UI development should be reflected immediatly when the page is reloaded, which is what Superforms can do.
+The API is there, but when you change the syntax, you have to reboot the server to see the changes. UI development should be reflected immediately when the page is reloaded, which is what Superforms can do.
 
 Like Rails form helpers, it doesn't self-permit parameters.
 
@@ -208,7 +211,7 @@ https://www.ruby-toolbox.com/projects/simple_form
 
 ### Formtastic
 
-Formtastic gives us a nice DSL inside of Erb that we can use to create forms, but like Simple Form, there's a lot of opening and closing Erb tags that make the syntax cluky.
+Formtastic gives us a nice DSL inside of Erb that we can use to create forms, but like Simple Form, there's a lot of opening and closing Erb tags that make the syntax clunky.
 
 It has generators that give you Ruby objects that represent HTML form inputs that you can customize, but its limited to very specific parts of the HTML components. Superform lets you customize every aspect of the HTML in your form elements.
 
