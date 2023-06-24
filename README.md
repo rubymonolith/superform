@@ -4,11 +4,11 @@ Superform aims to be the best way to build forms in Rails applications. Here's w
 
 * **Everything is a component.** Superform is built on top of [Phlex](https://phlex.fun), so every bit of HTML in the form can be customized to your precise needs. Use it with your own CSS Framework or go crazy customizing every last bit of TailwindCSS.
 
-* **Automatic strong parameters.** Superform automatically permits the form fields for you so you don't have to facepalm yourself after adding a form field, wondering why it doesn't persist, only to realize you forgot to add the parameter to your controller. No more! Superform was architected with safety in mind, meaining it can automatically permit your form parameters.
+* **Automatic strong parameters.** Superform automatically permits form fields so you don't have to facepalm yourself after adding a field, wondering why it doesn't persist, only to realize you forgot to add the parameter to your controller. No more! Superform was architected with safety & security in mind, meaning it can automatically permit your form parameters.
 
-* **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on top of POROs, so you can easily compose forms together to create complex forms. You can even extend forms to create new forms with a different look and feel.
+* **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on top of POROs, so you can easily compose classes, modules, & ruby code together to create complex forms. You can even extend forms to create new forms with a different look and feel.
 
-It's a complete rewrite of Rails form's internals that's inspired by Reactive component system.
+It's a complete rewrite of Rails form's internals that's inspired by Reactive component systems.
 
 ## Installation
 
@@ -51,11 +51,11 @@ That's very spartan form! Let's add labels and HTML between each form row so we 
     end %>
 ```
 
-Jumpin' Jimmidy! That's form is starting to look pretty darn busy. Let's add some methods and components to the `ApplicationForm` class and tighten things up.
+Jumpin' Jimmidy! That form is starting to look pretty darn busy. Let's add some methods and components to the `ApplicationForm` class and tighten things up.
 
 ## Customizing the look, feel, and behavior of Superforms
 
-Superforms are built entirely out of Phlex components. The method names correspeond with the tag, its arguments are attributes, and the blocks are the contents of the element.
+Superforms are built entirely out of Phlex components. The method names correspeond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
 
 ```ruby
 class ApplicationForm < Superform::Base
