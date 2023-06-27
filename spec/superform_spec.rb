@@ -20,15 +20,17 @@ RSpec.describe Superform do
       admin: true,
       nicknames: ["Billy", "Swanson"],
       addresses: [
-        { street: "Main St", city: "Salem", state: "Indiana"},
+        { street: "Main St", city: "Salem"},
         { street: "Wall St", city: "New York", state: "New York", admin: true }
       ],
       one: { two: { three: { four: 100 }}}
     }
   end
 
+  let(:builder) { Superform::ObjectBuilder.new(user) }
+
   let(:form) do
-    Superform::Field.root :user, builder: Superform::ObjectBuilder.new(user) do |form|
+    Superform::Field.root :user, builder: builder do |form|
       form.field(:name)
       form.field(:nicknames).each do |field|
         pp field.dom
@@ -42,8 +44,10 @@ RSpec.describe Superform do
     end
   end
 
+  let(:mapper) { Superform::ParametersMapper.new(params) }
+
   it "permits params only in form" do
-    expect(Superform::ParametersMapper.new(params).permit(form)).to eql({
+    expect(mapper.attributes(form)).to eql({
       name: "Brad",
       nicknames: ["Billy", "Swanson"],
       addresses: [

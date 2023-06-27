@@ -98,11 +98,6 @@ module Superform
         end
       end
     end
-
-    def permit(field)
-      permitted_attributes = field.children.map(&:id)
-      params.select { |k, _| permitted_attributes.include?(k) }
-    end
   end
 
   class ObjectMapper < Mapper
@@ -161,4 +156,5 @@ module Superform
       @object.key? key
     end
   end
+
 end
