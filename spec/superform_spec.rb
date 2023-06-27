@@ -44,10 +44,10 @@ RSpec.describe Superform do
     end
   end
 
-  let(:mapper) { Superform::ParametersMapper.new(params) }
+  let(:mapper) { Superform::HashMapper.new(params) }
 
   it "permits params only in form" do
-    expect(mapper.attributes(form)).to eql({
+    expect(form.serialize).to eql({
       name: "Brad",
       nicknames: ["Billy", "Swanson"],
       addresses: [

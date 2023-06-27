@@ -32,18 +32,47 @@ module Superform
     end
   end
 
+  class Serializer
+    attr_reader :field
+
+    def initialize(field)
+      @field = field
+    end
+
+    def serialize
+      if field.children.any?
+        field.children.each_with_object Hash.new do |field, hash|
+          hash[field.id] = field.serialize
+        end
+      else
+        field.value
+      end
+    end
+  end
+
+  class CollectionSerializer < Serializer
+    def serialize
+      field.children.map(&:serialize)
+    end
+  end
+
   class Field
     attr_reader :id, :name, :value, :parent, :children
     attr_writer :value
 
-    def initialize(id, name: nil, value: nil, parent:, builder:)
+    def initialize(id, name: nil, value: nil, parent:, builder:, serializer: Serializer)
       @id = id
       @name = name || id
       @value = value
       @parent = parent
       @builder = builder
+      @serializer = Serializer.new(self)
       @children = []
       yield self if block_given?
+    end
+
+    def serialize
+      @serializer.serialize
     end
 
     def field(id, value: nil, **kwargs, &)
@@ -54,6 +83,7 @@ module Superform
     end
 
     def each(&)
+      @serializer = CollectionSerializer.new(self)
       Array(@value).each.with_index do |value, index|
         self.class.new(index, name: :"", value: value, parent: self, builder: @builder, &).tap do |child|
           @children.append child
