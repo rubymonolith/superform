@@ -31,7 +31,7 @@ RSpec.describe Superform do
     Superform::Field.root :user, value: user do |form|
       form.field(:name)
       form.field(:nicknames).each do |field|
-        pp field.dom
+        field.dom
       end
       form.field(:addresses).each do |address|
         address.field(:street)
@@ -41,8 +41,6 @@ RSpec.describe Superform do
       form.field(:one).field(:two).field(:three).field(:four, value: 100).dom
     end
   end
-
-  let(:mapper) { Superform::HashMapper.new(params) }
 
   it "serializes form" do
     expect(form.serialize).to eql({
@@ -57,12 +55,11 @@ RSpec.describe Superform do
   end
 
   it "assigns params to form and discards garbage" do
-    mapper.assign(form)
-    expect(form.serialize).to eql({
+    expect(form.assign(params).serialize).to eql({
       name: "Brad",
-      nicknames: ["Billy", "Swanson"],
+      nicknames: ["Brad", "Bradley"],
       addresses: [
-        {street: "Main St", city: "Salem"},
+        {street: "Main St", city: "Salem", state: nil},
         {street: "Wall St", city: "New York", state: "New York"}
       ],
       one: {two: {three: {four: 100}}}
