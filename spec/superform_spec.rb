@@ -18,7 +18,7 @@ RSpec.describe Superform do
     {
       name: "Brad",
       admin: true,
-      nicknames: ["Billy", "Swanson"],
+      nicknames: ["Brad", "Bradley"],
       addresses: [
         { street: "Main St", city: "Salem"},
         { street: "Wall St", city: "New York", state: "New York", admin: true }
@@ -27,10 +27,8 @@ RSpec.describe Superform do
     }
   end
 
-  let(:builder) { Superform::ObjectBuilder.new(user) }
-
   let(:form) do
-    Superform::Field.root :user, builder: builder do |form|
+    Superform::Field.root :user, value: user do |form|
       form.field(:name)
       form.field(:nicknames).each do |field|
         pp field.dom
@@ -46,12 +44,25 @@ RSpec.describe Superform do
 
   let(:mapper) { Superform::HashMapper.new(params) }
 
-  it "permits params only in form" do
+  it "serializes form" do
+    expect(form.serialize).to eql({
+      name: "William",
+      nicknames: ["Bill", "Billy", "Will"],
+      addresses: [
+        {street: "Birch Ave", city: "Williamsburg", state: "New Mexico"},
+        {street: "Main St", city: "Salem", state: "Indiana"},
+      ],
+      one: {two: {three: {four: 100}}}
+    })
+  end
+
+  it "assigns params to form and discards garbage" do
+    mapper.assign(form)
     expect(form.serialize).to eql({
       name: "Brad",
       nicknames: ["Billy", "Swanson"],
       addresses: [
-        {street: "Main St", city: "Salem", state: "Indiana"},
+        {street: "Main St", city: "Salem"},
         {street: "Wall St", city: "New York", state: "New York"}
       ],
       one: {two: {three: {four: 100}}}
