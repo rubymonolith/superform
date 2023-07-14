@@ -5,6 +5,7 @@ module Superform
     def initialize(key, parent:)
       @key = key.to_sym
       @parent = parent
+      yield self if block_given?
     end
   end
 
@@ -13,10 +14,9 @@ module Superform
     include Enumerable
 
     def initialize(key, parent:, object: nil)
-      super(key, parent: parent)
       @object = object
       @children = Hash.new { |h,k| h[k.to_sym] }
-      yield self if block_given?
+      super(key, parent: parent)
     end
 
     def namespace(key)
@@ -43,6 +43,11 @@ module Superform
 
     def each(&)
       @children.values.each(&)
+    end
+
+    def self.root(*args, **kwargs, &block)
+      # A nil parent means we're root.
+      Superform::Namespace.new(*args, parent: nil, **kwargs, &block)
     end
 
     private
@@ -91,7 +96,6 @@ module Superform
   end
 end
 
-def Superform(*args, **kwargs, &block)
-  # A nil parent means we're root.
-  Superform::Namespace.new(*args, parent: nil, **kwargs, &block)
+def Superform(...)
+  Superform::Namespace.root(...)
 end
