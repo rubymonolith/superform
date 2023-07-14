@@ -28,7 +28,7 @@ RSpec.describe Superform do
   end
 
   let(:form) do
-    Superform.namespace :user do |form|
+    Superform :user, object: user do |form|
       form.field(:name)
       form.field_collection(:nicknames) do |field|
         field.dom
@@ -38,7 +38,7 @@ RSpec.describe Superform do
         address.field(:city)
         address.field(:state)
       end
-      form.namespace(:one).namespace(:two).namespace(:three).field(:four)
+      form.namespace(:one).namespace(:two).namespace(:three).field(:four).value = 100
     end
   end
 
