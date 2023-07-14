@@ -2,8 +2,9 @@ module Superform
   class Base
     attr_reader :key
 
-    def initialize(key)
+    def initialize(key, parent:)
       @key = key.to_sym
+      @parent = parent
     end
   end
 
@@ -11,27 +12,27 @@ module Superform
     attr_reader :object
     include Enumerable
 
-    def initialize(key, object: nil)
-      super(key)
+    def initialize(key, parent:, object: nil)
+      super(key, parent: parent)
       @object = object
       @children = Hash.new { |h,k| h[k.to_sym] }
       yield self if block_given?
     end
 
-    def field(key)
-      fetch(key) { Field.new(key, namespace: self) }
+    def namespace(key)
+      fetch(key) { Namespace.new(key, parent: self) }
     end
 
-    def namespace(key)
-      fetch(key) { Namespace.new(key) }
+    def field(key)
+      fetch(key) { Field.new(key, parent: self) }
     end
 
     def field_collection(key)
-      fetch(key) { FieldCollection.new(key) }
+      fetch(key) { FieldCollection.new(key, parent: self) }
     end
 
     def namespace_collection(key)
-      fetch(key) { NamespaceCollection.new(key) }
+      fetch(key) { NamespaceCollection.new(key, parent: self) }
     end
 
     def serialize
@@ -59,28 +60,28 @@ module Superform
     attr_reader :key
     attr_writer :value
 
-    def initialize(key, namespace:, value: nil)
-      super key
-      @namespace = namespace
+    def initialize(key, parent:, value: nil)
+      super key, parent: parent
       @value = value
     end
 
     def value
-      @value ||= parent_value
+      @value ||= object_value
     end
     alias :serialize :value
 
     private
 
-    def parent_value
-      @namespace.object.send @key if @namespace.object.respond_to? @key
+    def object_value
+      @parent.object.send @key if @parent.object.respond_to? @key
     end
   end
 
-  class FieldCollection < Base
-    def serialize
-      :not_implemened
-    end
+  class FieldCollection < Field
+    # TODO: This works, but will probably break on `assignment`.
+    # def serialize
+    #   :not_implemened
+    # end
   end
 
   class NamespaceCollection < Base
@@ -90,6 +91,7 @@ module Superform
   end
 end
 
-def Superform(...)
-  Superform::Namespace.new(...)
+def Superform(*args, **kwargs, &block)
+  # A nil parent means we're root.
+  Superform::Namespace.new(*args, parent: nil, **kwargs, &block)
 end
