@@ -30,7 +30,9 @@ RSpec.describe Superform do
   let(:form) do
     Superform :user, object: user do |form|
       form.field(:name)
-      form.field_collection(:nicknames)
+      form.field_collection(:nicknames) do |field|
+        field.dom
+      end
       form.namespace_collection(:addresses) do |address|
         address.field(:street)
         address.field(:city)
@@ -52,17 +54,18 @@ RSpec.describe Superform do
     })
   end
 
-  # it "assigns params to form and discards garbage" do
-  #   expect(form.assign(params).serialize).to eql({
-  #     name: "Brad",
-  #     nicknames: ["Brad", "Bradley"],
-  #     addresses: [
-  #       {street: "Main St", city: "Salem", state: nil},
-  #       {street: "Wall St", city: "New York", state: "New York"}
-  #     ],
-  #     one: {two: {three: {four: 100}}}
-  #   })
-  # end
+  it "assigns params to form and discards garbage" do
+    form.assign(params)
+    expect(form.serialize).to eql({
+      name: "Brad",
+      nicknames: ["Brad", "Bradley"],
+      addresses: [
+        {street: "Main St", city: "Salem", state: nil},
+        {street: "Wall St", city: "New York", state: "New York"}
+      ],
+      one: {two: {three: {four: 100}}}
+    })
+  end
 
   # it "has correct DOM names" do
   #   Superform.namespace :user, value: user do |form|

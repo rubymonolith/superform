@@ -45,8 +45,15 @@ module Superform
       @children.values.each(&)
     end
 
+    def assign(hash)
+      each do |child|
+        child.assign hash[child.key]
+      end
+      self
+    end
+
     def self.root(*args, **kwargs, &block)
-      # A nil parent means we're root.
+      # A nil parent means we're root!
       Superform::Namespace.new(*args, parent: nil, **kwargs, &block)
     end
 
@@ -64,6 +71,7 @@ module Superform
   class Field < Base
     attr_reader :key
     attr_writer :value
+    alias :assign :value=
 
     def initialize(key, parent:, value: nil)
       super key, parent: parent
@@ -91,6 +99,10 @@ module Superform
 
   class NamespaceCollection < Base
     def serialize
+      :not_implemened
+    end
+
+    def assign(params)
       :not_implemened
     end
   end
