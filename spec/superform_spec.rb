@@ -1,16 +1,14 @@
 # frozen_string_literal: true
-
-User = Data.define(:name, :nicknames, :addresses)
-Address = Data.define(:street, :city, :state)
+require "ostruct"
 
 RSpec.describe Superform do
   let(:user) do
-    User.new \
+    OpenStruct.new \
       name: "William",
       nicknames: ["Bill", "Billy", "Will"],
       addresses: [
-        Address.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
-        { street: "Main St", city: "Salem", state: "Indiana"},
+        OpenStruct.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
+        OpenStruct.new(street: "Main St", city: "Salem", state: "Indiana"),
       ]
   end
 
@@ -31,7 +29,7 @@ RSpec.describe Superform do
     Superform :user, object: user do |form|
       form.field(:name)
       form.field_collection(:nicknames) do |field|
-        field.dom
+        p field.value
       end
       form.namespace_collection(:addresses) do |address|
         address.field(:street)
