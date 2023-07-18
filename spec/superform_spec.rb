@@ -4,7 +4,7 @@ require "ostruct"
 RSpec.describe Superform do
   let(:user) do
     OpenStruct.new \
-      name: "William",
+      name: OpenStruct.new(first: "William", last: "Bills"),
       nicknames: ["Bill", "Billy", "Will"],
       addresses: [
         OpenStruct.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
@@ -14,7 +14,7 @@ RSpec.describe Superform do
 
   let(:params) do
     {
-      name: "Brad",
+      name: { first: "Brad", last: "Gessler", admin: true },
       admin: true,
       nicknames: ["Brad", "Bradley"],
       addresses: [
@@ -27,7 +27,10 @@ RSpec.describe Superform do
 
   let(:form) do
     Superform :user, object: user do |form|
-      form.field(:name)
+      form.namespace(:name) do |name|
+        name.field(:first)
+        name.field(:last)
+      end
       form.field(:nicknames).collection do |field|
         field.value
       end
@@ -42,7 +45,7 @@ RSpec.describe Superform do
 
   it "serializes form" do
     expect(form.serialize).to eql({
-      name: "William",
+      name: { first: "William", last: "Bills" },
       nicknames: ["Bill", "Billy", "Will"],
       addresses: [
         {street: "Birch Ave", city: "Williamsburg", state: "New Mexico"},
@@ -55,7 +58,7 @@ RSpec.describe Superform do
   it "assigns params to form and discards garbage" do
     form.assign(params)
     expect(form.serialize).to eql({
-      name: "Brad",
+      name: { first: "Brad", last: "Gessler" },
       nicknames: ["Brad", "Bradley"],
       addresses: [
         {street: "Main St", city: "Salem", state: nil},

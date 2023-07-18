@@ -19,16 +19,12 @@ module Superform
       yield self if block_given?
     end
 
-    def namespace(key)
-      fetch(key) { Namespace.new(key, parent: self) }
+    def namespace(key, &)
+      fetch(key) { Namespace.new(key, parent: self, object: object_for(key: key), &) }
     end
 
     def field(key)
       fetch(key) { Field.new(key, parent: self, object: @object) }
-    end
-
-    def field_collection(key, &)
-      fetch(key) { FieldCollection.new(key, parent: self, &) }
     end
 
     def collection(key, &)
@@ -64,6 +60,10 @@ module Superform
       else
         @children[key] = default.call
       end
+    end
+
+    def object_for(key:)
+      @object.send(key) if @object.respond_to? key
     end
   end
 
