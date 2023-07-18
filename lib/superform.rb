@@ -1,6 +1,38 @@
 module Superform
+  class Error < StandardError; end
+
+  class DOM
+    def initialize(field:)
+      @field = field
+    end
+
+    def value
+      @field.value
+    end
+
+    def id
+      lineage.map(&:key).join("_")
+    end
+
+    def name
+      root, *names = lineage.map do |node|
+        # If the parent of a field is a field, the name should be nil.
+        node.key unless node.parent.is_a? Field
+      end
+      names.map { |name| "[#{name}]" }.unshift(root).join
+    end
+
+    def inspect
+      "<id=#{id.inspect} name=#{name.inspect} value=#{value.inspect}/>"
+    end
+
+    def lineage
+      Enumerator.produce(@field, &:parent).take_while(&:itself).reverse
+    end
+  end
+
   class Base
-    attr_reader :key
+    attr_reader :key, :parent
 
     def initialize(key, parent:)
       @key = key
@@ -68,10 +100,13 @@ module Superform
   end
 
   class Field < Base
+    attr_reader :dom
+
     def initialize(key, parent:, object: nil, value: nil)
       super key, parent: parent
       @object = object
       @value = value
+      @dom = DOM.new(field: self)
     end
 
     def value
@@ -92,33 +127,12 @@ module Superform
     end
     alias :value= :assign
 
-    def collection(&)
-      FieldCollection.new(field: self, &)
-    end
-  end
-
-  class FieldCollection
-    include Enumerable
-
-    def initialize(field:, &)
-      @field = field
-      each(&) if block_given?
-    end
-
-    def each
-      values.each do |element|
-        yield build_field(value: element)
+    # Wraps a field that's an array of values with a bunch of fields
+    # that are indexed with the array's index.
+    def collection
+      Array(value).each.with_index do |value, index|
+        yield self.class.new(index, parent: self, value: value)
       end
-    end
-
-    private
-
-    def values
-      Array(@field.value)
-    end
-
-    def build_field(**kwargs)
-      @field.class.new(@field.key, parent: @field, object: nil, **kwargs)
     end
   end
 
@@ -156,7 +170,7 @@ module Superform
     end
 
     def build_namespace(index, **kwargs)
-      Namespace.new(index, parent: @parent, **kwargs, &@template)
+      Namespace.new(index, parent: self, **kwargs, &@template)
     end
 
     def parent_collection
