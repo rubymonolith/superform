@@ -52,7 +52,7 @@ module Superform
     end
 
     def namespace(key, &)
-      fetch(key) { Namespace.new(key, parent: self, object: object_for(key: key), &) }
+      fetch(key) { self.class.new(key, parent: self, object: object_for(key: key), &) }
     end
 
     def field(key)
@@ -81,7 +81,7 @@ module Superform
     end
 
     def self.root(*args, **kwargs, &block)
-      Superform::Namespace.new(*args, parent: nil, **kwargs, &block)
+      new(*args, parent: nil, **kwargs, &block)
     end
 
     private
@@ -170,7 +170,7 @@ module Superform
     end
 
     def build_namespace(index, **kwargs)
-      Namespace.new(index, parent: self, **kwargs, &@template)
+      parent.class.new(index, parent: self, **kwargs, &@template)
     end
 
     def parent_collection
