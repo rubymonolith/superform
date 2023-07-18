@@ -24,14 +24,14 @@ module Superform
     end
 
     def field(key)
-      fetch(key) { Field.new(key, parent: self) }
+      fetch(key) { Field.new(key, parent: self, object: @object) }
     end
 
-    def field_collection(key)
-      fetch(key) { FieldCollection.new(key, parent: self) }
+    def field_collection(key, &)
+      fetch(key) { FieldCollection.new(key, parent: self, &) }
     end
 
-    def namespace_collection(key, &)
+    def collection(key, &)
       fetch(key) { NamespaceCollection.new(key, parent: self, &) }
     end
 
@@ -68,14 +68,15 @@ module Superform
   end
 
   class Field < Base
-    def initialize(key, parent:, value: nil)
+    def initialize(key, parent:, object: nil, value: nil)
       super key, parent: parent
+      @object = object
       @value = value
     end
 
     def value
-      if parent_object and parent_object.respond_to? @key
-        parent_object.send @key
+      if @object and @object.respond_to? @key
+        @object.send @key
       else
         @value
       end
@@ -83,29 +84,42 @@ module Superform
     alias :serialize :value
 
     def assign(value)
-      if parent_object and parent_object.respond_to? "#{@key}="
-        parent_object.send "#{@key}=", value
+      if @object and @object.respond_to? "#{@key}="
+        @object.send "#{@key}=", value
       else
         @value = value
       end
     end
     alias :value= :assign
 
-    private
-
-    def parent_object
-      @parent.object
+    def collection(&)
+      FieldCollection.new(field: self, &)
     end
   end
 
+  class FieldCollection
+    include Enumerable
 
-  # It's a bit like a field because it has a value ....
+    def initialize(field:, &)
+      @field = field
+      each(&) if block_given?
+    end
 
-  class FieldCollection < Field
-    # TODO: This works, but will probably break on `assignment`.
-    # def serialize
-    #   :not_implemened
-    # end
+    def each
+      values.each do |element|
+        yield build_field(value: element)
+      end
+    end
+
+    private
+
+    def values
+      Array(@field.value)
+    end
+
+    def build_field(**kwargs)
+      @field.class.new(@field.key, parent: @field, object: nil, **kwargs)
+    end
   end
 
   class NamespaceCollection < Base

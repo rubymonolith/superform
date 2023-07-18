@@ -19,7 +19,7 @@ RSpec.describe Superform do
       nicknames: ["Brad", "Bradley"],
       addresses: [
         { street: "Main St", city: "Salem"},
-        { street: "Wall St", city: "New York", state: "New York", admin: true }
+        { street: "Wall St", city: "New York", state: "New York", admin: true },
       ],
       one: { two: { three: { four: 100 }}}
     }
@@ -28,10 +28,10 @@ RSpec.describe Superform do
   let(:form) do
     Superform :user, object: user do |form|
       form.field(:name)
-      form.field_collection(:nicknames) do |field|
-        p field.value
+      form.field(:nicknames).collection do |field|
+        field.value
       end
-      form.namespace_collection(:addresses) do |address|
+      form.collection(:addresses) do |address|
         address.field(:street)
         address.field(:city)
         address.field(:state)
