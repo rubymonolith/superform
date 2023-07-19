@@ -15,15 +15,21 @@ module Superform
     end
 
     def name
-      root, *names = lineage.map do |node|
-        # If the parent of a field is a field, the name should be nil.
-        node.key unless node.parent.is_a? Field
-      end
+      root, *names = node_keys
       names.map { |name| "[#{name}]" }.unshift(root).join
     end
 
     def inspect
       "<id=#{id.inspect} name=#{name.inspect} value=#{value.inspect}/>"
+    end
+
+    private
+
+    def node_keys
+      lineage.map do |node|
+        # If the parent of a field is a field, the name should be nil.
+        node.key unless node.parent.is_a? Field
+      end
     end
 
     def lineage
@@ -44,23 +50,24 @@ module Superform
     attr_reader :object
     include Enumerable
 
-    def initialize(key, parent:, object: nil)
+    def initialize(key, parent:, object: nil, field_class: Field)
       super(key, parent: parent)
       @object = object
-      @children = Hash.new { |h,k| h[k] }
+      @field_class = field_class
+      @children = Hash.new
       yield self if block_given?
     end
 
-    def namespace(key, &)
-      fetch(key) { self.class.new(key, parent: self, object: object_for(key: key), &) }
+    def namespace(key, &block)
+      create_child(key, self.class, object: object_for(key: key), &block)
     end
 
     def field(key)
-      fetch(key) { Field.new(key, parent: self, object: @object) }
+      create_child(key, @field_class, object: object)
     end
 
-    def collection(key, &)
-      fetch(key) { NamespaceCollection.new(key, parent: self, &) }
+    def collection(key, &block)
+      create_child(key, NamespaceCollection, &block)
     end
 
     def serialize
@@ -85,6 +92,10 @@ module Superform
     end
 
     private
+
+    def create_child(key, child_class, **options, &block)
+      fetch(key) { child_class.new(key, parent: self, **options, &block) }
+    end
 
     def fetch(key, &default)
       if @children.key? key
