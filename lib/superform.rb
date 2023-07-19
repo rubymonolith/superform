@@ -37,7 +37,7 @@ module Superform
     end
   end
 
-  class Base
+  class Node
     attr_reader :key, :parent
 
     def initialize(key, parent:)
@@ -46,7 +46,7 @@ module Superform
     end
   end
 
-  class Namespace < Base
+  class Namespace < Node
     attr_reader :object
     include Enumerable
 
@@ -110,7 +110,7 @@ module Superform
     end
   end
 
-  class Field < Base
+  class Field < Node
     attr_reader :dom
 
     def initialize(key, parent:, object: nil, value: nil)
@@ -147,7 +147,7 @@ module Superform
     end
   end
 
-  class NamespaceCollection < Base
+  class NamespaceCollection < Node
     include Enumerable
 
     def initialize(key, parent:, &template)
@@ -161,6 +161,8 @@ module Superform
     end
 
     def assign(array)
+      # The problem with zip-ing the array is if I need to add new
+      # elements to it and wrap it in the namespace.
       zip(array) do |namespace, hash|
         namespace.assign hash
       end
