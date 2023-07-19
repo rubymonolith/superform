@@ -14,10 +14,6 @@ module Superform
       lineage.map(&:key).join("_")
     end
 
-    def title
-      @field.key.to_s.titleize
-    end
-
     def name
       root, *names = keys
       names.map { |name| "[#{name}]" }.unshift(root).join
