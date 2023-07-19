@@ -7,15 +7,19 @@ module Superform
     end
 
     def value
-      @field.value
+      @field.value.to_s
     end
 
     def id
       lineage.map(&:key).join("_")
     end
 
+    def title
+      @field.key.to_s.titleize
+    end
+
     def name
-      root, *names = node_keys
+      root, *names = keys
       names.map { |name| "[#{name}]" }.unshift(root).join
     end
 
@@ -25,7 +29,7 @@ module Superform
 
     private
 
-    def node_keys
+    def keys
       lineage.map do |node|
         # If the parent of a field is a field, the name should be nil.
         node.key unless node.parent.is_a? Field
@@ -47,8 +51,9 @@ module Superform
   end
 
   class Namespace < Node
-    attr_reader :object
     include Enumerable
+
+    attr_reader :object
 
     def initialize(key, parent:, object: nil, field_class: Field)
       super(key, parent: parent)
@@ -90,7 +95,6 @@ module Superform
     def self.root(*args, **kwargs, &block)
       new(*args, parent: nil, **kwargs, &block)
     end
-
     private
 
     def create_child(key, child_class, **options, &block)
@@ -98,8 +102,9 @@ module Superform
     end
 
     def fetch(key, &default)
-      if @children.key? key
-        raise "#{key} already defined"
+      if existing = @children[key]
+        # raise "#{existing.class} with the key #{key.inspect} has already been defined."
+        existing
       else
         @children[key] = default.call
       end
@@ -140,10 +145,38 @@ module Superform
 
     # Wraps a field that's an array of values with a bunch of fields
     # that are indexed with the array's index.
-    def collection
-      Array(value).each.with_index do |value, index|
-        yield self.class.new(index, parent: self, value: value)
+    def collection(&)
+      @collection ||= FieldCollection.new(field: self, &)
+    end
+  end
+
+  class FieldCollection
+    include Enumerable
+
+    def initialize(field:, &)
+      @field = field
+      @index = 0
+      each(&) if block_given?
+    end
+
+    def each(&)
+      values.each do |value|
+        yield build_field(value: value)
       end
+    end
+
+    def field
+      build_field
+    end
+
+    def values
+      Array(@field.value)
+    end
+
+    private
+
+    def build_field(**kwargs)
+      @field.class.new(@index += 1, parent: @field, **kwargs)
     end
   end
 
