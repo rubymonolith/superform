@@ -101,13 +101,8 @@ module Superform
       fetch(key) { child_class.new(key, parent: self, **options, &block) }
     end
 
-    def fetch(key, &default)
-      if existing = @children[key]
-        # raise "#{existing.class} with the key #{key.inspect} has already been defined."
-        existing
-      else
-        @children[key] = default.call
-      end
+    def fetch(key, &build)
+      @children[key] ||= build.call
     end
 
     def object_for(key:)
