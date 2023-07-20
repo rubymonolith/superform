@@ -130,7 +130,7 @@ module Superform
 
       class LabelComponent < FieldComponent
         def template(&)
-          label(**attributes) { dom.key.to_s.titleize }
+          label(**attributes) { field.key.to_s.titleize }
         end
 
         def field_attributes
