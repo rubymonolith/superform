@@ -1,6 +1,8 @@
 module Superform
   class Error < StandardError; end
 
+  autoload :Rails, "superform/rails"
+
   class DOM
     def initialize(field:)
       @field = field
