@@ -1,0 +1,8 @@
+Description:
+    Installs Phlex Rails and Superform
+
+Example:
+    bin/rails generate superform:install
+
+    This will create:
+        app/views/forms/application_form.rb
