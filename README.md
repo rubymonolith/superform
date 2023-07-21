@@ -10,6 +10,8 @@ Superform aims to be the best way to build forms in Rails applications. Here's w
 
 It's a complete rewrite of Rails form's internals that's inspired by Reactive component design patterns.
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/0e4dfe2a1ece26e3a59e/maintainability)](https://codeclimate.com/github/rubymonolith/superform/maintainability) [![Ruby](https://github.com/rubymonolith/superform/actions/workflows/main.yml/badge.svg)](https://github.com/rubymonolith/superform/actions/workflows/main.yml)
+
 ## Installation
 
 Add to the Rails application's Gemfile by executing:
@@ -42,7 +44,7 @@ Then render it in your templates. Here's what it looks like from an Erb file.
 
 ```erb
 <h1>New post</h1>
-<%= render Posts::Form.new model: @post %>
+<%= render Posts::Form.new @post %>
 ```
 
 ## Customization
@@ -99,7 +101,7 @@ end
 Then render it from Erb.
 
 ```erb
-<%= render Users::Form.new model: @user %>
+<%= render Users::Form.new @user %>
 ```
 
 Much better!
@@ -178,7 +180,7 @@ class UsersController < ApplicationController
   private
 
   def assign_form
-    @form = Form.new(model: @user)
+    @form = Form.new(@user)
   end
 
   def permitted_params
