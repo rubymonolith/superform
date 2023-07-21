@@ -8,16 +8,22 @@ Superform aims to be the best way to build forms in Rails applications. Here's w
 
 * **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on top of POROs, so you can easily compose classes, modules, & ruby code together to create complex forms. You can even extend forms to create new forms with a different look and feel.
 
-It's a complete rewrite of Rails form's internals that's inspired by Reactive component systems.
+It's a complete rewrite of Rails form's internals that's inspired by Reactive component design patterns.
 
 ## Installation
 
 > **Note**
-> This doesn't actually work yet. There is working source code at https://github.com/rocketshipio/oxidizer-demo/tree/main/app/views/superform that's being extracted into a gem. This repo and README exist to validate some ideas before the gem is finalized and published.
+> This doesn't actually work yet. There is working source code at https://github.com/rubymonolith/demo/tree/main/app/views/superform that's being extracted into a gem. This repo and README exist to validate some ideas before the gem is finalized and published.
 
-Install the gem and add to the Rails application's Gemfile by executing:
+Add to the Rails application's Gemfile by executing:
 
     $ bundle add superform
+
+Then install it.
+
+    $ rails g superform:install
+
+This will install both Phlex Rails and Superform.
 
 ## Usage
 
