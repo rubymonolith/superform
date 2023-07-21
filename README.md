@@ -106,7 +106,7 @@ Then render it from Erb.
 
 Much better!
 
-### Extending Superforms
+## Extending Superforms
 
 The best part? If you have forms with a completely different look and feel, you can extend the forms just like you would a Ruby class:
 
@@ -142,58 +142,47 @@ end
 
 Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everythign to be in one place, keep the forms in the `app/views/forms/*.rb` folder and the components in `app/views/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
 
-### Automatic strong parameters
+## Automatic strong parameters
 
-> **Note**
-> THese docs are a work in progress. Strong params do work, but not as documented below. Stay tuned for updates.
-
-Guess what? Superform also permits form fields for you in your controller, like this:
+Guess what? Superform eliminates then need for Strong Parameters in Rails by assigning the values of the `params` hash _through_ your form. Here's what it looks like.
 
 ```ruby
-class UserController < ApplicationController
-  # Your actions
+class PostsController < ApplicationController
+  include Superform::Rails::StrongParameters
+
+  def create
+    @post = assign params.require(:post), to: Post.new
+
+    if @post.save
+      # Success path
+    else
+      # Error path
+    end
+  end
+
+  def update
+    @post = Post.find(params[:id])
+
+    assign params.require(:post), to: @post
+
+    if @post.save
+      # Success path
+    else
+      # Error path
+    end
+  end
 
   private
-
-  def permitted_params
-    @form.permit params
-  end
+    # Defaults to `Posts::Form`, but you can override it here if
+    # you uncomment and add your own class. You could also pass the
+    # `form: FormClass` into the `assign` method.
+    #
+    # def form_class
+    # end
 end
 ```
 
-To do that though you need to move the form as an inline class into your controller or `app/views` folder, which is pretty easy:
-
-```ruby
-class UsersController < ApplicationController
-  # You could also put this in `./app/views/users/form.rb`
-  class Form < ApplicationForm
-    render field(:email).input(type: :email)
-    render field(:name).input
-
-    button(type: :submit) { "Sign up" }
-  end
-
-  before_action :assign_form
-
-  # Your actions
-
-  private
-
-  def assign_form
-    @form = Form.new(@user)
-  end
-
-  def permitted_params
-    @form.permit params
-  end
-end
-```
-
-Then render it from your Erb in less lines, like this:
-
-```
-<%= render @form %>
-```
+How does it work? An instance of the form is created, then the hash is assigned to it. If the params include data outside of what a form accepts, it will be ignored.
 
 ## Comparisons
 
