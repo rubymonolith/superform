@@ -12,9 +12,6 @@ It's a complete rewrite of Rails form's internals that's inspired by Reactive co
 
 ## Installation
 
-> **Note**
-> This doesn't actually work yet. There is working source code at https://github.com/rubymonolith/demo/tree/main/app/views/superform that's being extracted into a gem. This repo and README exist to validate some ideas before the gem is finalized and published.
-
 Add to the Rails application's Gemfile by executing:
 
     $ bundle add superform
