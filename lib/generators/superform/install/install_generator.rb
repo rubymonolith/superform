@@ -4,6 +4,7 @@ class Superform::InstallGenerator < Rails::Generators::Base
   APPLICATION_CONFIGURATION_PATH = Rails.root.join("config/application.rb")
 
   def install_phlex_rails
+    gem "phlex-rails"
     generate "phlex:install"
   end
 

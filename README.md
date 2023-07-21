@@ -29,42 +29,32 @@ This will install both Phlex Rails and Superform.
 
 Superform streamlines the development of forms on Rails applications by making everything a component.
 
-Here's what a Superform looks in your Erb files.
+After installing, create a form in `app/views/*/form.rb`. For example, a form for a `Post` resource might look like this.
 
 ```ruby
-<%= render ApplicationForm.for_model @user do
-      render field(:email).input(type: :email)
-      render field(:name).input
-
-      button(type: :submit) { "Sign up" }
-    end %>
+# ./app/views/posts/form.rb
+class Posts::Form < ApplicationForm
+  def template(&)
+    row field(:title).input
+    row field(:body).textarea
+  end
+end
 ```
 
-That's very spartan form! Let's add labels and HTML between each form row so we have something that looks much better.
+Then render it in your templates. Here's what it looks like from an Erb file.
 
-```ruby
-<%= render ApplicationForm.for_model @user do
-      div class: "form-row" do
-        render field(:email).label
-        render field(:email).input(type: :email)
-      end
-      div class: "form-row" do
-        render field(:name).label
-        render field(:name).input
-      end
-
-      button(type: :submit) { "Sign up" }
-    end %>
+```erb
+<h1>New post</h1>
+<%= render Posts::Form.new model: @post %>
 ```
 
-Jumpin' Jimmidy! That form is starting to look pretty darn busy. Let's add some methods and components to the `ApplicationForm` class and tighten things up.
+## Customization
 
-## Customizing the look, feel, and behavior of Superforms
-
-Superforms are built entirely out of Phlex components. The method names correspeond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
+Superforms are built out of [Phlex components](https://www.phlex.fun/html/components/). The method names correspeond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
 
 ```ruby
-class ApplicationForm < Superform::Base
+# ./app/views/forms/application_form.rb
+class ApplicationForm < ApplicationForm
   class MyInputComponent < ApplicationComponent
     def template(&)
       div class: "form-field" do
@@ -98,12 +88,21 @@ end
 That looks like a LOT of code, and it is, but look at how easy it is to create forms.
 
 ```ruby
-<%= render ApplicationForm.for_model @user do
-      labeled field(:name).input
-      labeled field(:email).input(type: :email)
+# ./app/views/users/form.rb
+class Users::Form < ApplicationForm
+  def template(&)
+    labeled field(:name).input
+    labeled field(:email).input(type: :email)
 
-      submit "Sign up"
-    end %>
+    submit "Sign up"
+  end
+end
+```
+
+Then render it from Erb.
+
+```erb
+<%= render Users::Form.new model: @user %>
 ```
 
 Much better!
@@ -132,17 +131,22 @@ end
 Then, just like you did in your Erb, you create the form:
 
 ```ruby
-<%= render AdminForm.for_model @user do
-      labeled field(:name).tooltip_input
-      labeled field(:email).tooltip_input(type: :email)
+class Admin::Users::Form < AdminForm
+  def template(&)
+    labeled field(:name).tooltip_input
+    labeled field(:email).tooltip_input(type: :email)
 
-      submit "Save"
-    end %>
+    submit "Save"
+  end
+end
 ```
 
 Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everythign to be in one place, keep the forms in the `app/views/forms/*.rb` folder and the components in `app/views/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
 
 ### Automatic strong parameters
+
+> **Note**
+> THese docs are a work in progress. Strong params do work, but not as documented below. Stay tuned for updates.
 
 Guess what? Superform also permits form fields for you in your controller, like this:
 
