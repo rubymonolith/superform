@@ -144,14 +144,14 @@ Since Superforms are just Ruby objects, you can organize them however you want. 
 
 ## Automatic strong parameters
 
-Guess what? Superform eliminates then need for Strong Parameters in Rails by assigning the values of the `params` hash _through_ your form. Here's what it looks like.
+Guess what? Superform eliminates then need for Strong Parameters in Rails by assigning the values of the `params` hash _through_ your form via the `assign` method. Here's what it looks like.
 
 ```ruby
 class PostsController < ApplicationController
   include Superform::Rails::StrongParameters
 
   def create
-    @post = assign params.require(:post), to: Post.new
+    @post = assign params.require(:post), to: Posts::Form.new(Post.new)
 
     if @post.save
       # Success path
@@ -163,7 +163,7 @@ class PostsController < ApplicationController
   def update
     @post = Post.find(params[:id])
 
-    assign params.require(:post), to: @post
+    assign params.require(:post), to: Posts::Form.new(@post)
 
     if @post.save
       # Success path
@@ -171,14 +171,6 @@ class PostsController < ApplicationController
       # Error path
     end
   end
-
-  private
-    # Defaults to `Posts::Form`, but you can override it here if
-    # you uncomment and add your own class. You could also pass the
-    # `form: FormClass` into the `assign` method.
-    #
-    # def form_class
-    # end
 end
 ```
 
