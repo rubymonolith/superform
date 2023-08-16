@@ -144,8 +144,9 @@ module Superform
       end
 
       class LabelComponent < FieldComponent
-        def template(&)
-          label(**attributes) { field.key.to_s.titleize }
+        def template(&content)
+          content ||= Proc.new { field.key.to_s.titleize }
+          label(**attributes, &content)
         end
 
         def field_attributes
@@ -154,8 +155,9 @@ module Superform
       end
 
       class ButtonComponent < FieldComponent
-        def template(&block)
-          button(**attributes) { button_text }
+        def template(&content)
+          content ||= Proc.new { button_text }
+          button(**attributes, &content)
         end
 
         def button_text
@@ -193,8 +195,9 @@ module Superform
       end
 
       class TextareaComponent < FieldComponent
-        def template(&)
-          textarea(**attributes) { dom.value }
+        def template(&content)
+          content ||= Proc.new { dom.value }
+          textarea(**attributes, &content)
         end
 
         def field_attributes
