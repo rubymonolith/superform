@@ -42,19 +42,23 @@ module Superform
       end
 
       def around_template(&)
-        form action: form_action, method: form_method do
+        form_tag do
           authenticity_token_field
           _method_field
           super
         end
       end
 
+      def form_tag(&)
+        form action: form_action, method: form_method, &
+      end
+
       def template(&block)
         yield_content(&block)
       end
 
-      def submit(value = submit_value)
-        input(
+      def submit(value = submit_value, **attributes)
+        input **attributes.merge(
           name: "commit",
           type: "submit",
           value: value
