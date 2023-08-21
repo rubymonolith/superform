@@ -3,24 +3,37 @@ module Superform
 
   autoload :Rails, "superform/rails"
 
+  # Generates DOM IDs, names, etc. for a Field, Namespace, or Node based on
+  # norms that were established by Rails. These can be used outsidef or Rails in
+  # other Ruby web frameworks since it has now dependencies on Rails.
   class DOM
     def initialize(field:)
       @field = field
     end
 
+    # Converts the value of the field to a String, which is required to work
+    # with Phlex. Assumes that `Object#to_s` emits a format suitable for the web form.
     def value
       @field.value.to_s
     end
 
+    # Walks from the current node to the parent node, grabs the names, and seperates
+    # them with a `_` for a DOM ID. One limitation of this approach is if multiple forms
+    # exist on the same page, the ID may be duplicate.
     def id
       lineage.map(&:key).join("_")
     end
 
+    # The `name` attribute of a node, which is influenced by Rails (not sure where Rails got
+    # it from). All node names, except the parent node, are wrapped in a `[]` and collections
+    # are left empty. For example, `user[addresses][][street]` would be created for a form with
+    # data shaped like `{user: {addresses: [{street: "Sesame Street"}]}}`.
     def name
       root, *names = keys
       names.map { |name| "[#{name}]" }.unshift(root).join
     end
 
+    # Emit the id, name, and value in an HTML tag-ish that doesnt have an element.
     def inspect
       "<id=#{id.inspect} name=#{name.inspect} value=#{value.inspect}/>"
     end
@@ -34,11 +47,15 @@ module Superform
       end
     end
 
+    # One-liner way of walking from the current node all the way up to the parent.
     def lineage
       Enumerator.produce(@field, &:parent).take_while(&:itself).reverse
     end
   end
 
+
+  # Superclass for Namespace and Field classes. Not much to it other than it has a `name`
+  # and `parent` node attribute. Think of it as a tree.
   class Node
     attr_reader :key, :parent
 
@@ -48,6 +65,13 @@ module Superform
     end
   end
 
+  # A Namespace maps and object to values, but doesn't actually have a value itself. For
+  # example, a `User` object or ActiveRecord model could be passed into the `:user` namespace.
+  # To access the values on a Namespace, the `field` can be called for single values.
+  #
+  # Additionally, to access namespaces within a namespace, such as if a `User has_many :addresses` in
+  # ActiveRecord, the `namespace` method can be called which will return another Namespace object and
+  # set the current Namespace as the parent.
   class Namespace < Node
     include Enumerable
 
@@ -61,28 +85,74 @@ module Superform
       yield self if block_given?
     end
 
+    # Creates a `Namespace` child instance with the parent set to the current instance, adds to
+    # the `@children` Hash to ensure duplicate child namespaces aren't created, then calls the
+    # method on the `@object` to get the child object to pass into that namespace.
+    #
+    # For example, if a `User#permission` returns a `Permission` object, we could map that to a
+    # form like this:
+    #
+    # ```ruby
+    # Superform :user, object: User.new do |form|
+    #   form.namespace :permission do |permission|
+    #     form.field :role
+    #   end
+    # end
+    # ```
     def namespace(key, &block)
       create_child(key, self.class, object: object_for(key: key), &block)
     end
 
+    # Maps the `Object#proprety` and `Object#property=` to a field in a web form that can be
+    # read and set by the form. For example, a User form might look like this:
+    #
+    # ```ruby
+    # Superform :user, object: User.new do |form|
+    #   form.field :email
+    #   form.field :name
+    # end
+    # ```
     def field(key)
       create_child(key, @field_class, object: object)
     end
 
+    # Wraps an array of objects in Namespace classes. For example, if `User#addresses` returns
+    # an enumerable or array of `Address` classes:
+    #
+    # ```ruby
+    # Superform :user, object: User.new do |form|
+    #   form.field :email
+    #   form.field :name
+    #   form.collection :addresses do |address|
+    #     address.field(:street)
+    #     address.field(:state)
+    #     address.field(:zip)
+    #   end
+    # end
+    # ```
+    # The object within the block is a `Namespace` object that maps each object within the enumerable
+    # to another `Namespace` or `Field`.
     def collection(key, &block)
       create_child(key, NamespaceCollection, &block)
     end
 
+    # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.
+    # This can be used to safely update ActiveRecord objects without the need for Strong Parameters.
+    # You will want to make sure that all the fields displayed in the form are ones that you're OK updating
+    # from the generated hash.
     def serialize
       each_with_object Hash.new do |child, hash|
         hash[child.key] = child.serialize
       end
     end
 
+    # Iterates through the children of the current namespace, which could be `Namespace` or `Field`
+    # objects.
     def each(&)
       @children.values.each(&)
     end
 
+    # Assigns a hash to the current namespace and children namespace.
     def assign(hash)
       each do |child|
         child.assign hash[child.key]
@@ -90,21 +160,29 @@ module Superform
       self
     end
 
+    # Creates a root Namespace, which is essentially a form.
     def self.root(*args, **kwargs, &block)
       new(*args, parent: nil, **kwargs, &block)
     end
-    private
 
-    def create_child(key, child_class, **options, &block)
-      fetch(key) { child_class.new(key, parent: self, **options, &block) }
-    end
+    protected
 
-    def fetch(key, &build)
-      @children[key] ||= build.call
-    end
-
+    # Calls the corresponding method on the object for the `key` name, if it exists. For example
+    # if the `key` is `email` on `User`, this method would call `User#email` if the method is
+    # present.
+    #
+    # This method could be overwritten if the mapping between the `@object` and `key` name is not
+    # a method call. For example, a `Hash` would be accessed via `user[:email]` instead of `user.send(:email)`
     def object_for(key:)
       @object.send(key) if @object.respond_to? key
+    end
+
+    private
+
+    # Checks if the child exists. If it does then it returns that. If it doesn't, it will
+    # build the child.
+    def create_child(key, child_class, **options, &block)
+      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **options, &block) }
     end
   end
 
