@@ -36,9 +36,9 @@ module Superform
       #
       class CollectionSelect < FieldComponent
 
-        # The array if model instances to display as set of <option> tags
-        # IF no text or value methods are provided then the collection is expected to already be,
-        # an Array of Array, where each entry contains the [TEXT, VALUE] e.g [[name:, :id], [name:, :id] ... ]
+        # The array of model instances to display as set of <option> tags
+        # If no text or value methods are provided then the collection is expected to already be an Array of Array,
+        # where each entry contains [TEXT, VALUE] e.g [[name:, :id], [name:, :id] ... ]
         #
         def collection
           @attributes.fetch(:collection, [])
