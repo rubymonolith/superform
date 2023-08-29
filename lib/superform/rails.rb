@@ -55,6 +55,10 @@ module Superform
           Components::LabelComponent.new(self, attributes: attributes)
         end
 
+        def select(**attributes)
+          Components::CollectionSelect.new(self, attributes: attributes)
+        end
+
         def textarea(**attributes)
           Components::TextareaComponent.new(self, attributes: attributes)
         end
@@ -68,6 +72,7 @@ module Superform
         @model = model
         @action = action
         @method = method
+
         @namespace = Namespace.root(model.model_name.param_key, object: model, field_class: self.class::Field)
       end
 
@@ -114,7 +119,7 @@ module Superform
       end
 
       def _method_field_value
-        @method || @model.persisted? ? "patch" : "post"
+        @method || (@model.persisted? ? "patch" : "post")
       end
 
       def submit_value
@@ -237,3 +242,12 @@ module Superform
     end
   end
 end
+
+module Superform
+  module Rails
+    module Components
+      autoload :CollectionSelect, 'superform/rails/components/collection_select'
+    end
+  end
+end
+
