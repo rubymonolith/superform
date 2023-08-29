@@ -16,7 +16,7 @@ module Superform
       #
       # Can also use shorter form (without specifying text and value methods) :
       #
-      #   select(collection:collection: PulseCore::Jurisdiction.all.pluck(:name, :id).map { |j| [j[0], j[1]] }, options: { class: 'app-input' })
+      #   select(collection:collection: Jurisdiction.all.pluck(:name, :id).map { |j| [j[0], j[1]] }, options: { class: 'app-input' })
       #
       # Options
       #
@@ -26,7 +26,7 @@ module Superform
       # Example in a Form
       #
       #   div class: "w-[300px] field flex-1 mb-2 mt-6" do
-      #     component = field(:jurisdiction_id).select(collection: Jurisdiction.all { |j| option(value: j.id) { j.name }
+      #     component = field(:jurisdiction_id).select(collection: Jurisdiction.all.pluck(:name, :id).map { |j| [j[0], j[1]] },
       #                                                selected: model.jurisdiction_id,
       #                                                options: { class: 'app-input' })
       #
@@ -35,8 +35,6 @@ module Superform
       #   end
       #
       class CollectionSelect < FieldComponent
-
-        attr_reader :selected
 
         # The array if model instances to display as set of <option> tags
         # IF no text or value methods are provided then the collection is expected to already be,

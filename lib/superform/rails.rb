@@ -54,7 +54,7 @@ module Superform
         def label(**attributes)
           Components::LabelComponent.new(self, attributes: attributes)
         end
-        
+
         def select(**attributes)
           Components::CollectionSelect.new(self, attributes: attributes)
         end
