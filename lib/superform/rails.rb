@@ -54,15 +54,7 @@ module Superform
         def label(**attributes)
           Components::LabelComponent.new(self, attributes: attributes)
         end
-
-        # Based on options_from_collection_for_select(@people, "id", "name")
-        # Usage :
-        #
-        #   select(collection: @people, value: :id, text: :name, options: { prompt: 'Select a person' } )
-        #
-        # For efficiency can use pluck as follows
-        #   select(collection: Jurisdiction.all.pluck(:id, :code), value: :first, text: :last, options: { multiple: true, prompt: 'Select something' } )
-        #
+        
         def select(**attributes)
           Components::CollectionSelect.new(self, attributes: attributes)
         end
