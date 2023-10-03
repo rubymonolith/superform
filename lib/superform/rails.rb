@@ -25,6 +25,26 @@ module Superform
             :serialize,
           to: :@namespace
 
+        # The Field class is designed to be extended to create custom forms. To override,
+        # in your subclass you may have something like this:
+        #
+        # ```ruby
+        # class MyForm
+        #   class MyLabel < LabelComponent
+        #     def template(&content)
+        #       label(form: @field.dom.name, class: "text-bold", &content)
+        #     end
+        #   end
+        #
+        #   class Field < Field
+        #     def label(**attributes)
+        #       MyLabel.new(self, attributes: **attributes)
+        #     end
+        #   end
+        # end
+        # ```
+        #
+        # Now all calls to `label` will have the `text-bold` class applied to it.
         class Field < Superform::Field
           def button(**attributes)
             Components::ButtonComponent.new(self, attributes: attributes)
@@ -131,7 +151,7 @@ module Superform
     end
 
     module Components
-      class FieldComponent < ApplicationComponent
+      class BaseComponent < ApplicationComponent
         attr_reader :field, :dom
 
         delegate :dom, to: :field
@@ -157,7 +177,13 @@ module Superform
         end
       end
 
-      class LabelComponent < FieldComponent
+      class FieldComponent < BaseComponent
+        def field_attributes
+          { id: dom.id, name: dom.name }
+        end
+      end
+
+      class LabelComponent < BaseComponent
         def template(&content)
           content ||= Proc.new { field.key.to_s.titleize }
           label(**attributes, &content)
@@ -212,10 +238,6 @@ module Superform
         def template(&content)
           content ||= Proc.new { dom.value }
           textarea(**attributes, &content)
-        end
-
-        def field_attributes
-          { id: dom.id, name: dom.name }
         end
       end
     end
