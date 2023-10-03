@@ -25,6 +25,26 @@ module Superform
             :serialize,
           to: :@namespace
 
+        # The Field class is designed to be extended to create custom forms. To override,
+        # in your subclass you may have something like this:
+        #
+        # ```ruby
+        # class MyForm
+        #   class MyLabel < LabelComponent
+        #     def template(&content)
+        #       label(form: @field.dom.name, class: "text-bold", &content)
+        #     end
+        #   end
+        #
+        #   class Field < Field
+        #     def label(**attributes)
+        #       MyLabel.new(self, attributes: **attributes)
+        #     end
+        #   end
+        # end
+        # ```
+        #
+        # Now all calls to `label` will have the `text-bold` class applied to it.
         class Field < Superform::Field
           def button(**attributes)
             Components::ButtonComponent.new(self, attributes: attributes)
@@ -40,6 +60,10 @@ module Superform
 
           def textarea(**attributes)
             Components::TextareaComponent.new(self, attributes: attributes)
+          end
+
+          def select(*collection, **attributes, &)
+            Components::SelectField.new(self, attributes: attributes, collection: CollectionMapper.new(collection), &)
           end
 
           def title
@@ -130,8 +154,41 @@ module Superform
         end
     end
 
+    # Accept a collection of objects and map them to options suitable for form controls, like `select > options`
+    class CollectionMapper
+      include Enumerable
+
+      def initialize(collection)
+        @collection = collection
+      end
+
+      def each(&options)
+        @collection.each do |object|
+          case object
+            in ActiveRecord::Relation => relation
+              active_record_relation_options_enumerable(relation).each(&options)
+            in id, value
+              options.call id, value
+            in value
+              options.call value, value.to_s
+          end
+        end
+      end
+
+      def active_record_relation_options_enumerable(relation)
+        Enumerator.new do |collection|
+          relation.each do |object|
+            attributes = object.attributes
+            id = attributes.delete(relation.primary_key)
+            value = attributes.values.join(" ")
+            collection << [ id, value ]
+          end
+        end
+      end
+    end
+
     module Components
-      class FieldComponent < ApplicationComponent
+      class BaseComponent < ApplicationComponent
         attr_reader :field, :dom
 
         delegate :dom, to: :field
@@ -157,7 +214,13 @@ module Superform
         end
       end
 
-      class LabelComponent < FieldComponent
+      class FieldComponent < BaseComponent
+        def field_attributes
+          { id: dom.id, name: dom.name }
+        end
+      end
+
+      class LabelComponent < BaseComponent
         def template(&content)
           content ||= Proc.new { field.key.to_s.titleize }
           label(**attributes, &content)
@@ -213,9 +276,38 @@ module Superform
           content ||= Proc.new { dom.value }
           textarea(**attributes, &content)
         end
+      end
 
-        def field_attributes
-          { id: dom.id, name: dom.name }
+      class SelectField < Superform::Rails::Components::FieldComponent
+        def initialize(*, collection: [], **, &)
+          super(*, **, &)
+          @collection = collection
+        end
+
+        def template(&options)
+          if block_given?
+            select(**attributes, &options)
+          else
+            select(**attributes) { options(@collection) }
+          end
+        end
+
+        def options(collection)
+          collection.each do |key, value|
+            option(selected: field.value == key, value: key) { value }
+          end
+        end
+
+        def blank_option(&)
+          option(selected: field.value.nil?, &)
+        end
+
+        def true_option(&)
+          option(selected: field.value == true, value: true.to_s, &)
+        end
+
+        def false_option(&)
+          option(selected: field.value == false, value: false.to_s, &)
         end
       end
     end
