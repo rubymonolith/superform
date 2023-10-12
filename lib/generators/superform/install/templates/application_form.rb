@@ -1,4 +1,5 @@
-class ApplicationForm < Superform::Rails::Form
+class ApplicationForm < ApplicationComponent
+  include Superform::Rails::Form
   include Phlex::Rails::Helpers::Pluralize
 
   def row(component)
