@@ -1,66 +1,50 @@
 module Superform
   module Rails
-    # A Phlex::HTML view that accepts a model and sets a `Superform::Namespace`
+    # A Phlex::HTML view module that accepts a model and sets a `Superform::Namespace`
     # with the `Object#model_name` as the key and maps the object to form fields
     # and namespaces.
     #
-    # The `Form::Field` class is designed to be extended so you can customize the `Form` inputs
+    # The `Form::Field` module is designed to be included in a class and extended so you can customize the `Form` inputs
     # to your applications needs. Defaults for the `input`, `button`, `label`, and `textarea` tags
     # are provided.
     #
     # The `Form` component also handles Rails authenticity tokens via the `authenticity_toklen_field`
     # method and the HTTP verb via the `_method_field`.
-    class Form < Phlex::HTML
-      attr_reader :model
+    module Form
+      extend ActiveSupport::Concern
 
-      delegate \
-          :field,
-          :collection,
-          :namespace,
-          :key,
-          :assign,
-          :serialize,
-        to: :@namespace
+      included do
+        attr_reader :model
 
-      # The Field class is designed to be extended to create custom forms. To override,
-      # in your subclass you may have something like this:
-      #
-      # ```ruby
-      # class MyForm
-      #   class MyLabel < FieldComponent
-      #     def template(&content)
-      #       label(form: @field.dom.name, class: "text-bold", &content)
-      #     end
-      #   end
-      #
-      #   class Field < Field
-      #     def label(**attributes)
-      #       MyLabel.new(self, attributes: **attributes)
-      #     end
-      #   end
-      # end
-      # ```
-      #
-      # Now all calls to `label` will have the `text-bold` class applied to it.
-      class Field < Superform::Field
-        def button(**attributes)
-          Components::ButtonComponent.new(self, attributes: attributes)
-        end
+        delegate \
+            :field,
+            :collection,
+            :namespace,
+            :key,
+            :assign,
+            :serialize,
+          to: :@namespace
 
-        def input(**attributes)
-          Components::InputComponent.new(self, attributes: attributes)
-        end
+        class Field < Superform::Field
+          def button(**attributes)
+            Components::ButtonComponent.new(self, attributes: attributes)
+          end
 
-        def label(**attributes)
-          Components::LabelComponent.new(self, attributes: attributes)
-        end
+          def input(**attributes)
+            Components::InputComponent.new(self, attributes: attributes)
+          end
 
-        def textarea(**attributes)
-          Components::TextareaComponent.new(self, attributes: attributes)
-        end
+          def label(**attributes)
+            Components::LabelComponent.new(self, attributes: attributes)
+          end
 
-        def title
-          key.to_s.titleize
+          def textarea(**attributes)
+            Components::TextareaComponent.new(self, attributes: attributes)
+          end
+
+          def title
+            key.to_s.titleize
+          end
         end
       end
 
