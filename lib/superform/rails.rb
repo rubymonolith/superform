@@ -62,6 +62,10 @@ module Superform
             Components::TextareaComponent.new(self, attributes: attributes)
           end
 
+          def select(*collection, **attributes, &)
+            Components::SelectField.new(self, attributes: attributes, collection: OptionsMapper.new(collection), &)
+          end
+
           def title
             key.to_s.titleize
           end
@@ -148,6 +152,40 @@ module Superform
           form.assign params
           form.model
         end
+    end
+
+    # Accept a collection of objects and map them to options suitable for `option` tags
+    # in a `select` tag.
+    class OptionsMapper
+      include Enumerable
+
+      def initialize(collection)
+        @collection = collection
+      end
+
+      def each(&options)
+        @collection.each do |object|
+          case object
+            in ActiveRecord::Relation => relation
+              active_record_relation_options_enumerable(relation).each(&options)
+            in id, value
+              options.call id, value
+            in value
+              options.call value, value.to_s
+          end
+        end
+      end
+
+      def active_record_relation_options_enumerable(relation)
+        Enumerator.new do |collection|
+          relation.each do |object|
+            attributes = object.attributes
+            id = attributes.delete(relation.primary_key)
+            value = attributes.values.join(" ")
+            collection << [ id, value ]
+          end
+        end
+      end
     end
 
     module Components
@@ -238,6 +276,39 @@ module Superform
         def template(&content)
           content ||= Proc.new { dom.value }
           textarea(**attributes, &content)
+        end
+      end
+
+      class SelectField < Superform::Rails::Components::FieldComponent
+        def initialize(*, collection: [], **, &)
+          super(*, **, &)
+          @collection = collection
+        end
+
+        def template(&options)
+          if block_given?
+            select(**attributes, &options)
+          else
+            select(**attributes) { options(@collection) }
+          end
+        end
+
+        def options(collection)
+          collection.each do |id, value|
+            option(value: id, selected: id == field.value) { value }
+          end
+        end
+
+        def blank_option(&)
+          option(selected: field.value.nil?, &)
+        end
+
+        def true_option(&)
+          option(selected: field.value == true, value: true.to_s, &)
+        end
+
+        def false_option(&)
+          option(selected: field.value == false, value: false.to_s, &)
         end
       end
     end
