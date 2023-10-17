@@ -34,9 +34,9 @@ After installing, create a form in `app/views/*/form.rb`. For example, a form fo
 # ./app/views/posts/form.rb
 class Posts::Form < ApplicationForm
   def template(&)
-    row field(:blog).select(Blog.select(:id, :title))
     row field(:title).input
     row field(:body).textarea
+    row field(:blog).select Blog.select(:id, :title)
   end
 end
 ```
@@ -106,6 +106,64 @@ Then render it from Erb.
 ```
 
 Much better!
+
+## Form field guide
+
+Superform tries to strike a balance between "being as close to HTML forms as possible" and not requiring a lot of boilerplate to create forms. This example is contrived, but it shows all the different ways you can render a form.
+
+In practice, many of the calls below you'd put inside of a method. This cuts down on the number of `render` calls in your HTML code and further reduces boilerplate.
+
+```ruby
+# Everything below is intentionally verbose!
+class SignupForm < ApplicationForm
+  def template
+    # The most basic type of input, which will be autofocused.
+    render field(:name).input.focus
+
+    # Input field with a lot more options on it.
+    render field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
+
+    # You can put fields in a block if that's your thing.
+    render field(:reason) do |f|
+      div do
+        f.label { "Why should we care about you?" }
+        f.textarea(row: 3, col: 80)
+      end
+    end
+
+    # Let's get crazy with Selects. They can accept values as simple as 2 element arrays.
+    div do
+      render field(:contact).label { "Would you like us to spam you to death?" }
+      render field(:contact).select(
+        [true, "Yes"],  # <option value="true">Yes</option>
+        [false, "No"],  # <option value="false">No</option>
+        "Hell no",      # <option value="Hell no">Hell no</option>
+        nil             # <option></option>
+      )
+    end
+
+    div do
+      render field(:source).label { "How did you hear about us?" }
+      field(:source).select do |s|
+        # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
+        # and a "Search" category with "AltaVista, Yahoo, etc."
+        WebSources.select(:id, :name).group_by(:category) do |category, sources|
+          s.optgroup(label: category) do
+            s.options(sources)
+          end
+        end
+      end
+    end
+
+    div do
+      field(:agreement).label { "Check this box if you agree to give us your first born child" }
+      field(:agreement).input(type: :checkbox, value: true)
+    end
+
+    render button { "Submit" }
+  end
+end
+```
 
 ## Extending Superforms
 
