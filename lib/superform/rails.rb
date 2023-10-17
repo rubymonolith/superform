@@ -286,7 +286,7 @@ module Superform
           if block_given?
             select(**attributes, &options)
           else
-            select(**attributes) { options(@collection) }
+            select(**attributes) { options(*@collection) }
           end
         end
 
