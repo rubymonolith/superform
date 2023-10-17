@@ -1,7 +1,12 @@
-module Superform
-  class Error < StandardError; end
+require "zeitwerk"
 
-  autoload :Rails, "superform/rails"
+module Superform
+  Loader = Zeitwerk::Loader.for_gem.tap do |loader|
+    loader.ignore "#{__dir__}/generators"
+    loader.setup
+  end
+
+  class Error < StandardError; end
 
   # Generates DOM IDs, names, etc. for a Field, Namespace, or Node based on
   # norms that were established by Rails. These can be used outsidef or Rails in
