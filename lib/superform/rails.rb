@@ -1,74 +1,73 @@
 module Superform
   module Rails
+    # The `ApplicationComponent` is the superclass for all components in your application.
+    Component = ::ApplicationComponent
+
     # A Phlex::HTML view module that accepts a model and sets a `Superform::Namespace`
     # with the `Object#model_name` as the key and maps the object to form fields
     # and namespaces.
     #
-    # The `Form::Field` module is designed to be included in a class and extended so you can customize the `Form` inputs
+    # The `Form::Field` is a class that's meant to be extended so you can customize the `Form` inputs
     # to your applications needs. Defaults for the `input`, `button`, `label`, and `textarea` tags
     # are provided.
     #
     # The `Form` component also handles Rails authenticity tokens via the `authenticity_toklen_field`
     # method and the HTTP verb via the `_method_field`.
-    module Form
-      extend ActiveSupport::Concern
+    class Form < Component
+      attr_reader :model
 
-      included do
-        attr_reader :model
+      delegate \
+          :field,
+          :collection,
+          :namespace,
+          :key,
+          :assign,
+          :serialize,
+        to: :@namespace
 
-        delegate \
-            :field,
-            :collection,
-            :namespace,
-            :key,
-            :assign,
-            :serialize,
-          to: :@namespace
+      # The Field class is designed to be extended to create custom forms. To override,
+      # in your subclass you may have something like this:
+      #
+      # ```ruby
+      # class MyForm
+      #   class MyLabel < LabelComponent
+      #     def template(&content)
+      #       label(form: @field.dom.name, class: "text-bold", &content)
+      #     end
+      #   end
+      #
+      #   class Field < Field
+      #     def label(**attributes)
+      #       MyLabel.new(self, attributes: **attributes)
+      #     end
+      #   end
+      # end
+      # ```
+      #
+      # Now all calls to `label` will have the `text-bold` class applied to it.
+      class Field < Superform::Field
+        def button(**attributes)
+          Components::ButtonComponent.new(self, attributes: attributes)
+        end
 
-        # The Field class is designed to be extended to create custom forms. To override,
-        # in your subclass you may have something like this:
-        #
-        # ```ruby
-        # class MyForm
-        #   class MyLabel < LabelComponent
-        #     def template(&content)
-        #       label(form: @field.dom.name, class: "text-bold", &content)
-        #     end
-        #   end
-        #
-        #   class Field < Field
-        #     def label(**attributes)
-        #       MyLabel.new(self, attributes: **attributes)
-        #     end
-        #   end
-        # end
-        # ```
-        #
-        # Now all calls to `label` will have the `text-bold` class applied to it.
-        class Field < Superform::Field
-          def button(**attributes)
-            Components::ButtonComponent.new(self, attributes: attributes)
-          end
+        def input(**attributes)
+          Components::InputComponent.new(self, attributes: attributes)
+        end
 
-          def input(**attributes)
-            Components::InputComponent.new(self, attributes: attributes)
-          end
+        def label(**attributes)
+          Components::LabelComponent.new(self, attributes: attributes)
+        end
 
-          def label(**attributes)
-            Components::LabelComponent.new(self, attributes: attributes)
-          end
+        def textarea(**attributes)
+          Components::TextareaComponent.new(self, attributes: attributes)
+        end
 
-          def textarea(**attributes)
-            Components::TextareaComponent.new(self, attributes: attributes)
-          end
+        def select(*collection, **attributes, &)
+          Components::SelectField.new(self, attributes: attributes, collection: CollectionMapper.new(collection), &)
+        end
 
-          def select(*collection, **attributes, &)
-            Components::SelectField.new(self, attributes: attributes, collection: CollectionMapper.new(collection), &)
-          end
-
-          def title
-            key.to_s.titleize
-          end
+        def title
+          key.to_s.titleize
         end
       end
 
@@ -188,7 +187,7 @@ module Superform
     end
 
     module Components
-      class BaseComponent < ApplicationComponent
+      class BaseComponent < Component
         attr_reader :field, :dom
 
         delegate :dom, to: :field
@@ -278,7 +277,7 @@ module Superform
         end
       end
 
-      class SelectField < Superform::Rails::Components::FieldComponent
+      class SelectField < FieldComponent
         def initialize(*, collection: [], **, &)
           super(*, **, &)
           @collection = collection

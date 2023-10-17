@@ -34,6 +34,7 @@ After installing, create a form in `app/views/*/form.rb`. For example, a form fo
 # ./app/views/posts/form.rb
 class Posts::Form < ApplicationForm
   def template(&)
+    row field(:blog).select(Blog.select(:id, :title))
     row field(:title).input
     row field(:body).textarea
   end
