@@ -63,7 +63,7 @@ module Superform
         end
 
         def select(*collection, **attributes, &)
-          Components::SelectField.new(self, attributes: attributes, collection: CollectionMapper.new(collection), &)
+          Components::SelectField.new(self, attributes: attributes, collection: collection, &)
         end
 
         def title
@@ -103,42 +103,41 @@ module Superform
       end
 
       protected
+        def authenticity_token_field
+          input(
+            name: "authenticity_token",
+            type: "hidden",
+            value: helpers.form_authenticity_token
+          )
+        end
 
-      def authenticity_token_field
-        input(
-          name: "authenticity_token",
-          type: "hidden",
-          value: helpers.form_authenticity_token
-        )
-      end
+        def _method_field
+          input(
+            name: "_method",
+            type: "hidden",
+            value: _method_field_value
+          )
+        end
 
-      def _method_field
-        input(
-          name: "_method",
-          type: "hidden",
-          value: _method_field_value
-        )
-      end
+        def _method_field_value
+          @method || @model.persisted? ? "patch" : "post"
+        end
 
-      def _method_field_value
-        @method || @model.persisted? ? "patch" : "post"
-      end
+        def submit_value
+          "#{resource_action.to_s.capitalize} #{@model.model_name}"
+        end
 
-      def submit_value
-        "#{resource_action.to_s.capitalize} #{@model.model_name}"
-      end
+        def resource_action
+          @model.persisted? ? :update : :create
+        end
 
-      def resource_action
-        @model.persisted? ? :update : :create
-      end
+        def form_action
+          @action ||= helpers.url_for(action: resource_action)
+        end
 
-      def form_action
-        @action ||= helpers.url_for(action: resource_action)
-      end
-
-      def form_method
-        @method.to_s.downcase == "get" ? "get" : "post"
-      end
+        def form_method
+          @method.to_s.downcase == "get" ? "get" : "post"
+        end
     end
 
     module StrongParameters
@@ -154,7 +153,7 @@ module Superform
     end
 
     # Accept a collection of objects and map them to options suitable for form controls, like `select > options`
-    class CollectionMapper
+    class OptionMapper
       include Enumerable
 
       def initialize(collection)
@@ -291,8 +290,8 @@ module Superform
           end
         end
 
-        def options(collection)
-          collection.each do |key, value|
+        def options(*collection)
+          map_options(collection).each do |key, value|
             option(selected: field.value == key, value: key) { value }
           end
         end
@@ -308,6 +307,11 @@ module Superform
         def false_option(&)
           option(selected: field.value == false, value: false.to_s, &)
         end
+
+        protected
+          def map_options(collection)
+            OptionMapper.new(collection)
+          end
       end
     end
   end
