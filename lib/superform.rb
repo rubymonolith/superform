@@ -113,7 +113,9 @@ module Superform
     # end
     # ```
     def field(key)
-      create_child(key, @field_class, object: object)
+      create_child(key, @field_class, object: object).tap do |field|
+        yield field if block_given?
+      end
     end
 
     # Wraps an array of objects in Namespace classes. For example, if `User#addresses` returns
@@ -132,8 +134,8 @@ module Superform
     # ```
     # The object within the block is a `Namespace` object that maps each object within the enumerable
     # to another `Namespace` or `Field`.
-    def collection(key, &block)
-      create_child(key, NamespaceCollection, &block)
+    def collection(key, &)
+      create_child(key, NamespaceCollection, &)
     end
 
     # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.
@@ -161,8 +163,8 @@ module Superform
     end
 
     # Creates a root Namespace, which is essentially a form.
-    def self.root(*args, **kwargs, &block)
-      new(*args, parent: nil, **kwargs, &block)
+    def self.root(*, **, &)
+      new(*, parent: nil, **, &)
     end
 
     protected
@@ -181,8 +183,8 @@ module Superform
 
     # Checks if the child exists. If it does then it returns that. If it doesn't, it will
     # build the child.
-    def create_child(key, child_class, **options, &block)
-      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **options, &block) }
+    def create_child(key, child_class, **, &)
+      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **, &) }
     end
   end
 
@@ -246,8 +248,8 @@ module Superform
 
     private
 
-    def build_field(**kwargs)
-      @field.class.new(@index += 1, parent: @field, **kwargs)
+    def build_field(**)
+      @field.class.new(@index += 1, parent: @field, **)
     end
   end
 
@@ -286,8 +288,8 @@ module Superform
       end
     end
 
-    def build_namespace(index, **kwargs)
-      parent.class.new(index, parent: self, **kwargs, &@template)
+    def build_namespace(index, **)
+      parent.class.new(index, parent: self, **, &@template)
     end
 
     def parent_collection
