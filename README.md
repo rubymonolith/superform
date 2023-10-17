@@ -144,7 +144,7 @@ class SignupForm < ApplicationForm
 
     div do
       render field(:source).label { "How did you hear about us?" }
-      field(:source).select do |s|
+      render field(:source).select do |s|
         # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
         # and a "Search" category with "AltaVista, Yahoo, etc."
         WebSources.select(:id, :name).group_by(:category) do |category, sources|
@@ -156,8 +156,8 @@ class SignupForm < ApplicationForm
     end
 
     div do
-      field(:agreement).label { "Check this box if you agree to give us your first born child" }
-      field(:agreement).input(type: :checkbox, value: true)
+      render field(:agreement).label { "Check this box if you agree to give us your first born child" }
+      render field(:agreement).input(type: :checkbox, value: true)
     end
 
     render button { "Submit" }
