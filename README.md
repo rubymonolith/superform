@@ -199,11 +199,11 @@ class Admin::Users::Form < AdminForm
 end
 ```
 
-Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everythign to be in one place, keep the forms in the `app/views/forms/*.rb` folder and the components in `app/views/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
+Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everything to be in one place, keep the forms in the `app/views/forms/*.rb` folder and the components in `app/views/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
 
 ## Automatic strong parameters
 
-Guess what? Superform eliminates then need for Strong Parameters in Rails by assigning the values of the `params` hash _through_ your form via the `assign` method. Here's what it looks like.
+Guess what? Superform eliminates the need for Strong Parameters in Rails by assigning the values of the `params` hash _through_ your form via the `assign` method. Here's what it looks like.
 
 ```ruby
 class PostsController < ApplicationController
