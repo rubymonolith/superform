@@ -71,10 +71,11 @@ module Superform
         end
       end
 
-      def initialize(model, action: nil, method: nil)
+      def initialize(model, action: nil, method: nil, **attributes)
         @model = model
         @action = action
         @method = method
+        @attributes = attributes
         @namespace = Namespace.root(model.model_name.param_key, object: model, field_class: self.class::Field)
       end
 
@@ -87,7 +88,7 @@ module Superform
       end
 
       def form_tag(&)
-        form action: form_action, method: form_method, &
+        form action: form_action, method: form_method, **@attributes, &
       end
 
       def template(&block)
