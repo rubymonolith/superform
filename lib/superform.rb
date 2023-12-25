@@ -188,8 +188,8 @@ module Superform
 
     # Checks if the child exists. If it does then it returns that. If it doesn't, it will
     # build the child.
-    def create_child(key, child_class, **, &)
-      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **, &) }
+    def create_child(key, child_class, **kwargs, &block)
+      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **kwargs, &block) }
     end
   end
 
