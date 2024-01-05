@@ -62,7 +62,7 @@ module Superform
           Components::TextareaComponent.new(self, attributes: attributes)
         end
 
-        def select(*collection, **attributes, &)
+        def select(collection, **attributes, &)
           Components::SelectField.new(self, attributes: attributes, collection: collection, &)
         end
 
