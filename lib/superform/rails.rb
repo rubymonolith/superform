@@ -29,8 +29,8 @@ module Superform
       # in your subclass you may have something like this:
       #
       # ```ruby
-      # class MyForm
-      #   class MyLabel < LabelComponent
+      # class MyForm < Superform::Rails::Form
+      #   class MyLabel < Superform::Rails::Components::LabelComponent
       #     def template(&content)
       #       label(form: @field.dom.name, class: "text-bold", &content)
       #     end
@@ -38,7 +38,7 @@ module Superform
       #
       #   class Field < Field
       #     def label(**attributes)
-      #       MyLabel.new(self, attributes: **attributes)
+      #       MyLabel.new(self, **attributes)
       #     end
       #   end
       # end
