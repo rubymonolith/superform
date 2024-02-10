@@ -54,6 +54,10 @@ module Superform
           Components::InputComponent.new(self, attributes: attributes)
         end
 
+        def checkbox(**attributes)
+          Components::CheckboxComponent.new(self, attributes: attributes)
+        end
+
         def label(**attributes)
           Components::LabelComponent.new(self, attributes: attributes)
         end
@@ -242,6 +246,19 @@ module Superform
 
         def field_attributes
           { id: dom.id, name: dom.name, value: dom.value }
+        end
+      end
+
+      class CheckboxComponent < FieldComponent
+        def template(&)
+          # Rails has a hidden and checkbox input to deal with sending back a value
+          # to the server regardless of if the input is checked or not.
+          input(name: dom.name, type: :hidden, value: "0")
+          input(**attributes)
+        end
+
+        def field_attributes
+          { id: dom.id, name: dom.name, value: "1", checked: field.value, type: :checkbox }
         end
       end
 
