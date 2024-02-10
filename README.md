@@ -157,7 +157,7 @@ class SignupForm < ApplicationForm
 
     div do
       render field(:agreement).label { "Check this box if you agree to give us your first born child" }
-      render field(:agreement).checkbox(value: true)
+      render field(:agreement).checkbox(checked: true)
     end
 
     render button { "Submit" }
