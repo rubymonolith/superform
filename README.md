@@ -54,19 +54,16 @@ Superforms are built out of [Phlex components](https://www.phlex.fun/html/compon
 
 ```ruby
 # ./app/views/forms/application_form.rb
-class ApplicationForm < ApplicationForm
-  class MyInputComponent < ApplicationComponent
+class ApplicationForm < Superform::Rails::Form
+  class MyInputComponent < Superform::Rails::Components::InputComponent
     def template(&)
       div class: "form-field" do
         input(**attributes)
-        if field.errors?
-          p(class: "form-field-error") { field.errors.to_sentence }
-        end
       end
     end
   end
 
-  class Field < Field
+  class Field < Superform::Rails::Form::Field
     def input(**attributes)
       MyInputComponent.new(self, attributes: attributes)
     end
