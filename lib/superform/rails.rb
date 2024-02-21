@@ -80,7 +80,7 @@ module Superform
         @action = action
         @method = method
         @attributes = attributes
-        @namespace = Namespace.root(model.model_name.param_key, object: model, field_class: self.class::Field)
+        @namespace = Namespace.root(namespace_root_key, object: model, field_class: self.class::Field)
       end
 
       def around_template(&)
@@ -142,6 +142,10 @@ module Superform
 
         def form_method
           @method.to_s.downcase == "get" ? "get" : "post"
+        end
+
+        def namespace_root_key
+          @model.model_name.param_key
         end
     end
 
