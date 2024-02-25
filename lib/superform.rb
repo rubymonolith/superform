@@ -159,10 +159,10 @@ module Superform
       @children.values.each(&)
     end
 
-    # Assigns a hash to the current namespace and children namespace.
+    # Assigns a hash-like to the current namespace and children namespace.
     def assign(hash)
       each do |child|
-        child.assign hash[child.key]
+        child.assign(hash[child.key]) if hash.key?(child.key)
       end
       self
     end
