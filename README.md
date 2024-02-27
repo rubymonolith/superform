@@ -104,6 +104,44 @@ Then render it from Erb.
 
 Much better!
 
+### Namespacing forms
+
+By default Superform will namespace a form based on the ActiveModel model name param key.
+
+```ruby
+class UserForm < Superform::Rails::Form
+  def template
+    render field(:email).input
+  end
+end
+
+render LoginForm.new(User.new)
+# This will render inputs with the name `user[email]`
+
+render LoginForm.new(Admin::User.new)
+# This will render inputs with the name `admin_user[email]`
+```
+
+If you want to customize the form namespace, you can override the `key` method in your form.
+
+```ruby
+class UserForm < Superform::Rails::Form
+  def template
+    render field(:email).input
+  end
+  
+  def key
+    "user"
+  end
+end
+
+render UserForm.new(User.new)
+# This will render inputs with the name `user[email]`
+
+render UserForm.new(Admin::User.new)
+# This will also render inputs with the name `user[email]`
+````
+
 ## Form field guide
 
 Superform tries to strike a balance between "being as close to HTML forms as possible" and not requiring a lot of boilerplate to create forms. This example is contrived, but it shows all the different ways you can render a form.
@@ -161,6 +199,7 @@ class SignupForm < ApplicationForm
   end
 end
 ```
+
 
 ## Extending Superforms
 

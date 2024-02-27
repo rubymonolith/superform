@@ -20,7 +20,6 @@ module Superform
           :field,
           :collection,
           :namespace,
-          :key,
           :assign,
           :serialize,
         to: :@namespace
@@ -80,7 +79,7 @@ module Superform
         @action = action
         @method = method
         @attributes = attributes
-        @namespace = Namespace.root(model.model_name.param_key, object: model, field_class: self.class::Field)
+        @namespace = Namespace.root(key, object: model, field_class: self.class::Field)
       end
 
       def around_template(&)
@@ -105,6 +104,10 @@ module Superform
           type: "submit",
           value: value
         )
+      end
+
+      def key
+        @model.model_name.param_key
       end
 
       protected
