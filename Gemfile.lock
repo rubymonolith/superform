@@ -118,7 +118,6 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    mini_portile2 (2.8.5)
     minitest (5.18.1)
     nenv (0.3.0)
     net-imap (0.3.6)
@@ -131,8 +130,9 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     nio4r (2.5.9)
-    nokogiri (1.15.3)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.15.3-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.15.3-x86_64-linux)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
@@ -145,6 +145,9 @@ GEM
       phlex (~> 1.7)
       rails (>= 6.1, < 8)
       zeitwerk (~> 2.6)
+    phlex-testing-nokogiri (0.1.0)
+      nokogiri (~> 1.13)
+      phlex (>= 0.5)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -214,6 +217,7 @@ PLATFORMS
 
 DEPENDENCIES
   guard-rspec (~> 4.7)
+  phlex-testing-nokogiri (~> 0.1.0)
   rake (~> 13.0)
   rspec (~> 3.0)
   superform!

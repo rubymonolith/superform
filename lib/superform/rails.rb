@@ -128,7 +128,7 @@ module Superform
         end
 
         def _method_field_value
-          @method || @model.persisted? ? "patch" : "post"
+          @method || (@model.persisted? ? "patch" : "post")
         end
 
         def submit_value
