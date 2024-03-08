@@ -1,16 +1,29 @@
 # Superform
 
-Superform aims to be the best way to build forms in Rails applications. Here's what it does differently.
+Superform aims to be the best way to build forms in Rails applications. Here's
+what it does differently.
 
-* **Everything is a component.** Superform is built on top of [Phlex](https://phlex.fun), so every bit of HTML in the form can be customized to your precise needs. Use it with your own CSS Framework or go crazy customizing every last bit of TailwindCSS.
+* **Everything is a component.** Superform is built on top of
+  [Phlex](https://phlex.fun), so every bit of HTML in the form can be customized
+  to your precise needs. Use it with your own CSS Framework or go crazy
+  customizing every last bit of TailwindCSS.
 
-* **Automatic strong parameters.** Superform automatically permits form fields so you don't have to facepalm yourself after adding a field, wondering why it doesn't persist, only to realize you forgot to add the parameter to your controller. No more! Superform was architected with safety & security in mind, meaning it can automatically permit your form parameters.
+* **Automatic strong parameters.** Superform automatically permits form fields
+  so you don't have to facepalm yourself after adding a field, wondering why it
+  doesn't persist, only to realize you forgot to add the parameter to your
+  controller. No more! Superform was architected with safety & security in mind,
+  meaning it can automatically permit your form parameters.
 
-* **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on top of POROs, so you can easily compose classes, modules, & ruby code together to create complex forms. You can even extend forms to create new forms with a different look and feel.
+* **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on
+  top of POROs, so you can easily compose classes, modules, & ruby code together
+  to create complex forms. You can even extend forms to create new forms with
+  a different look and feel.
 
-It's a complete rewrite of Rails form's internals that's inspired by Reactive component design patterns.
+It's a complete rewrite of Rails form's internals that's inspired by Reactive
+component design patterns.
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/0e4dfe2a1ece26e3a59e/maintainability)](https://codeclimate.com/github/rubymonolith/superform/maintainability) [![Ruby](https://github.com/rubymonolith/superform/actions/workflows/main.yml/badge.svg)](https://github.com/rubymonolith/superform/actions/workflows/main.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/0e4dfe2a1ece26e3a59e/maintainability)](https://codeclimate.com/github/rubymonolith/superform/maintainability)
+[![Ruby](https://github.com/rubymonolith/superform/actions/workflows/main.yml/badge.svg)](https://github.com/rubymonolith/superform/actions/workflows/main.yml)
 
 ## Installation
 
@@ -26,9 +39,15 @@ This will install both Phlex Rails and Superform.
 
 ## Usage
 
-Superform streamlines the development of forms on Rails applications by making everything a component.
+Superform streamlines the development of forms on Rails applications by making
+everything a Phlex component.
 
-After installing, create a form in `app/views/*/form.rb`. For example, a form for a `Post` resource might look like this.
+They are designed to work like the form builders you are already used to. You
+can pass a model and it will infer attributes like `method` and `action`. These
+can be overridden by passing arguments when initializing the component.
+
+After installing, create a form in `app/views/*/form.rb`. For example, a form
+for a `Post` resource might look like this.
 
 ```ruby
 # ./app/views/posts/form.rb
@@ -45,7 +64,15 @@ Then render it in your templates. Here's what it looks like from an Erb file.
 
 ```erb
 <h1>New post</h1>
-<%= render Posts::Form.new @post %>
+<%= render Posts::Form.new(
+    @post,
+    # These options are inferred from the model but can be overwritten
+    # just like your regular rails forms
+    action: new_post_path,
+    method: :post,
+    # Other html attributes can be passed in too
+    data: { controller: "some_stimulus_controller" }
+) %>
 ```
 
 ## Customization
