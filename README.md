@@ -70,10 +70,14 @@ Then render it in your templates. Here's what it looks like from an Erb file.
     # just like your regular rails forms
     action: new_post_path,
     method: :post,
-    # Other html attributes can be passed in too
+    # Other html attributes can be passed in as keyword arguments
     data: { controller: "some_stimulus_controller" }
 ) %>
 ```
+
+At minimum your model should implement `ActiveModel::Naming` and respond to
+`persisted?`. Including either `ActiveModel::Model` or `ActiveModel::API` is
+a common way to meet these requirements for plain old ruby objects.
 
 ## Customization
 
@@ -113,7 +117,7 @@ end
 ```
 
 That looks like a LOT of code, and it is, but look at how easy it is to create
-forms.
+forms:
 
 ```ruby
 # ./app/views/users/form.rb
@@ -127,7 +131,7 @@ class Users::Form < ApplicationForm
 end
 ```
 
-Then render it from Erb.
+Then render it from Erb:
 
 ```erb
 <%= render Users::Form.new @user %>
@@ -297,7 +301,6 @@ class SignupForm < ApplicationForm
   end
 end
 ```
-
 
 ## Extending Superforms
 
