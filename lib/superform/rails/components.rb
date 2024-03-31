@@ -61,10 +61,11 @@ module Superform
 
       class CheckboxComponent < FieldComponent
         def template(&)
-          # Rails has a hidden and checkbox input to deal with sending back a value
-          # to the server regardless of if the input is checked or not.
+          # Rails has a hidden and checkbox input to deal with sending back
+          # a value to the server regardless of if the input is checked or not.
           input(name: dom.name, type: :hidden, value: "0")
-          # The hard coded keys need to be in here so the user can't overrite them.
+          # The hard coded keys need to be in here so the user can't overrite
+          # them.
           input(type: :checkbox, value: "1", **attributes)
         end
 

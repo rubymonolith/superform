@@ -64,7 +64,12 @@ module Superform
         end
 
         def select(*collection, **attributes, &)
-          Components::SelectField.new(self, attributes: attributes, collection: collection, &)
+          Components::SelectField.new(
+            self,
+            attributes: attributes,
+            collection: collection,
+            &
+          )
         end
 
         def title
@@ -77,7 +82,11 @@ module Superform
         @action = action
         @method = method
         @attributes = attributes
-        @namespace = Namespace.root(key, object: model, field_class: self.class::Field)
+        @namespace = Namespace.root(
+          key,
+          object: model,
+          field_class: self.class::Field
+        )
       end
 
       def around_template(&)
