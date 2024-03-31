@@ -79,6 +79,9 @@ GEM
     concurrent-ruby (1.2.2)
     crass (1.0.6)
     date (3.3.3)
+    debug (1.9.2)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.5.0)
     erb (4.0.2)
       cgi (>= 0.3.3)
@@ -103,6 +106,10 @@ GEM
       rspec (>= 2.99.0, < 4.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    io-console (0.7.2)
+    irb (1.12.0)
+      rdoc
+      reline (>= 0.4.2)
     listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -148,6 +155,8 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    psych (5.1.2)
+      stringio
     racc (1.7.1)
     rack (2.2.7)
     rack-test (2.1.0)
@@ -184,6 +193,10 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    rdoc (6.6.3.1)
+      psych (>= 4.0.0)
+    reline (0.5.0)
+      io-console (~> 0.5)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -198,6 +211,7 @@ GEM
       rspec-support (~> 3.12.0)
     rspec-support (3.12.0)
     shellany (0.0.1)
+    stringio (3.1.0)
     thor (1.2.2)
     timeout (0.4.0)
     tzinfo (2.0.6)
@@ -213,6 +227,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  debug
   guard-rspec (~> 4.7)
   rake (~> 13.0)
   rspec (~> 3.0)

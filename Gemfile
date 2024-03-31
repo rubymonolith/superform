@@ -5,6 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in superform.gemspec
 gemspec
 
+gem "debug"
 gem "rake", "~> 13.0"
 
 # Run tests
