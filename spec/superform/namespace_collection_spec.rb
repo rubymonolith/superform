@@ -1,11 +1,10 @@
 RSpec.describe Superform::NamespaceCollection do
   describe "#assign" do
     it "assigns the value to each namespace" do
-      object = double(
-        "object",
+      object = OpenStruct.new(
         bars: [
-          double("bar"),
-          double("bar")
+          OpenStruct.new(baz: "A"),
+          OpenStruct.new(baz: "B")
         ]
       )
 
