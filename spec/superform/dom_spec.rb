@@ -64,13 +64,13 @@ RSpec.describe Superform::DOM do
         grandparent: Superform::Namespace.new(
           "grandparent",
           parent: nil,
-          object: double("Collection", parent: nil)
+          object: double("Collection", bars: [{ baz: "A" }])
         ),
-        parent: Superform::NamespaceCollection,
-        child: Superform::Field
+        bars: Superform::NamespaceCollection,
+        baz: Superform::Field
       )
 
-      expect(field.dom.id).to eq("grandparent_parent_child")
+      expect(field.dom.id).to eq("grandparent_bars_baz")
     end
   end
 end

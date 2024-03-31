@@ -24,12 +24,12 @@ RSpec.describe Superform::Namespace do
       parent = described_class.new(
         "foo",
         parent: nil,
-        object: double("object", bar: ["A"])
+        object: double("object", bar: [{ baz: "A" }])
       )
 
-      parent.collection("bar") do |child|
-        expect(child).to be_a(Superform::FieldCollection)
-        expect(child.key).to eq("bar")
+      parent.collection(:bar) do |child|
+        expect(child).to be_a(Superform::Namespace)
+        expect(child.key).to eq(0)
       end
     end
   end
