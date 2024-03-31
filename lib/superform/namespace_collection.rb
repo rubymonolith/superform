@@ -39,6 +39,14 @@ module Superform
     end
 
     def parent_collection
+      unless @parent.respond_to? :object
+        raise(
+          ArgumentError,
+          "Parent of a #{self.class} must respond to :object, " \
+            "#{@parent.class} does not"
+        )
+      end
+
       @parent.object.send @key
     end
   end
