@@ -39,15 +39,17 @@ module Superform
     end
 
     def parent_collection
-      unless @parent.respond_to? :object
-        raise(
-          ArgumentError,
-          "Parent of a #{self.class} must respond to :object, " \
-            "#{@parent.class} does not"
-        )
-      end
+      raise_missing_object unless @parent.respond_to? :object
 
       @parent.object.send @key
+    end
+
+    def raise_missing_object
+      raise(
+        ArgumentError,
+        "Parent of a #{self.class} must respond to :object, " \
+          "#{@parent.class} does not"
+      )
     end
   end
 end

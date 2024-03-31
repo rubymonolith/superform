@@ -16,4 +16,20 @@ RSpec.describe Superform::Field do
       expect(field.value).to eq("bar")
     end
   end
+
+  describe "#value" do
+    it "returns the value of the object" do
+      object = double("object", foo: "bar")
+      field = described_class.new("foo", parent: nil, object: object)
+
+      expect(field.value).to eq("bar")
+    end
+
+    it "returns the value if the object does not respond to" do
+      object = double("object")
+      field = described_class.new("foo", parent: nil, object: object, value: "bar")
+
+      expect(field.value).to eq("bar")
+    end
+  end
 end
