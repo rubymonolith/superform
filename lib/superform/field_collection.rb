@@ -9,8 +9,10 @@ module Superform
     end
 
     def each(&)
-      values.each do |value|
-        yield build_field(value: value)
+      Enumerator.new do |collection|
+        values.each do |value|
+          collection.yield build_field(value: value)
+        end
       end
     end
 
