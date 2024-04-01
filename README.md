@@ -104,9 +104,60 @@ Then render it from Erb.
 
 Much better!
 
-### Namespacing forms
+## Namespaces & Collections
 
-By default Superform will namespace a form based on the ActiveModel model name param key.
+Superform uses a different syntax for namespacing and collections than Rails, which can be a bit confusing since the same terminology is used but the application is slightly different.
+
+Consider a form for an account that lets people edit the names and email of the owner and users of an account.
+
+```ruby
+class AccountForm < Superform::Rails::Form
+  def template
+    # Account#owner returns a single object
+    namespace :owner do |owner|
+      # Renders input with the name `account[owner][name]`
+      render owner.field(:name).input
+      # Renders input with the name `account[owner][email]`
+      render owner.field(:email).input(type: :email)
+    end
+
+    # Account#members returns a collection of objects
+    collection(:members).each do |member|
+      # Renders input with the name `account[members][0][name]`,
+      # `account[members][1][name]`, ...
+      render member.field(:name).input
+      # Renders input with the name `account[members][0][email]`,
+      # `account[members][1][email]`, ...
+      render member.field(:email).input(type: :email)
+
+      # Member#permissions returns an array of values like
+      # ["read", "write", "delete"].
+      member.field(:permissions).collection do |permission|
+        # Renders input with the name `account[members][0][permissions][]`,
+        # `account[members][1][permissions][]`, ...
+        render permission.label do
+          plain permisson.value.humanize
+          render permission.checkbox
+        end
+      end
+    end
+  end
+end
+```
+
+One big difference between Superform and Rails is the `collection` methods require the use of the `each` method to enumerate over each item in the collection.
+
+There's three different types of namespaces and collections to consider:
+
+1. **Namespace** - `namespace(:field_name)` is used to map form fields to a single object that's a child of another object. In ActiveRecord, this could be a `has_one` or `belongs_to` relationship.
+
+2. **Collection** - `collection(:field_name).each` is used to map a collection of objects to a form. In this case, the members of the account. In ActiveRecord, this could be a `has_many` relationship.
+
+3. **Field Collection** - `field(:field_name).collection.each` is used when the value of a field is enumerable, like an array of values. In ActiveRecord, this could be an attribute that's an Array type.
+
+### Change a form's root namespace
+
+By default Superform namespaces a form based on the ActiveModel model name param key.
 
 ```ruby
 class UserForm < Superform::Rails::Form
@@ -116,13 +167,13 @@ class UserForm < Superform::Rails::Form
 end
 
 render LoginForm.new(User.new)
-# This will render inputs with the name `user[email]`
+# Renders input with the name `user[email]`
 
 render LoginForm.new(Admin::User.new)
-# This will render inputs with the name `admin_user[email]`
+# Renders input with the name `admin_user[email]`
 ```
 
-If you want to customize the form namespace, you can override the `key` method in your form.
+To customize the form namespace, like an ActiveRecord model nested within a module, the `key` method can be overriden.
 
 ```ruby
 class UserForm < Superform::Rails::Form
@@ -136,11 +187,11 @@ class UserForm < Superform::Rails::Form
 end
 
 render UserForm.new(User.new)
-# This will render inputs with the name `user[email]`
+# Renders input with the name `user[email]`
 
 render UserForm.new(Admin::User.new)
 # This will also render inputs with the name `user[email]`
-````
+```
 
 ## Form field guide
 
