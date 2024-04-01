@@ -272,7 +272,17 @@ module Superform
         end
 
         def field_attributes
-          { id: dom.id, name: dom.name, value: dom.value, type: type }
+          {
+            id: dom.id,
+            name: dom.name,
+            type: type
+          }.tap do |attrs|
+            attrs[:value] = field.value if value?
+          end
+        end
+
+        def value?
+          @attributes[:type] != "file"
         end
 
         def type
