@@ -345,6 +345,13 @@ module Superform
         end
 
         protected
+
+          def field_attributes
+            super.merge(
+              name: @multiple ? "#{dom.name}[]" : dom.name,
+            )
+          end
+
           def map_options(collection)
             OptionMapper.new(collection)
           end
