@@ -349,6 +349,7 @@ module Superform
           def field_attributes
             super.merge(
               name: @multiple ? "#{dom.name}[]" : dom.name,
+              multiple: @multiple
             )
           end
 
