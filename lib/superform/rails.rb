@@ -299,16 +299,30 @@ module Superform
       end
 
       class SelectField < FieldComponent
-        def initialize(*, collection: [], **, &)
+        def initialize(
+          *,
+          collection: [],
+          multiple: false,
+          include_blank: false,
+          **,
+          &
+        )
           super(*, **, &)
           @collection = collection
+          @multiple = multiple
+          @include_blank = include_blank
         end
 
         def template(&options)
+          input(type: "hidden", name: dom.name, value: "") if @multiple
+
           if block_given?
             select(**attributes, &options)
           else
-            select(**attributes) { options(*@collection) }
+            select(**attributes) do
+              blank_option if @include_blank
+              options(*@collection)
+            end
           end
         end
 
