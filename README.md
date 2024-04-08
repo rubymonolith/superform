@@ -258,9 +258,9 @@ If you want to add file upload fields to your form you will need to initialize y
 class User::ImageForm < ApplicationForm
   def template
     # render label
-    render field(:image).upload.label { "Choose file" }
+    render field(:image).input(type: "file").label { "Choose file" }
     # render file input with accept attribute for png and jpeg images
-    render field(:image).upload(accept: "image/png, image/jpeg")
+    render field(:image).input(type: "file", accept: "image/png, image/jpeg")
   end
 end
 
