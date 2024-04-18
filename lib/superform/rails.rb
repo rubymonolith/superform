@@ -30,7 +30,7 @@ module Superform
       # ```ruby
       # class MyForm < Superform::Rails::Form
       #   class MyLabel < Superform::Rails::Components::LabelComponent
-      #     def template(&content)
+      #     def view_template(&content)
       #       label(form: @field.dom.name, class: "text-bold", &content)
       #     end
       #   end
@@ -94,9 +94,10 @@ module Superform
         form action: form_action, method: form_method, **@attributes, &
       end
 
-      def template(&block)
+      def view_template(&block)
         yield_content(&block)
       end
+      alias :view_template :template
 
       def submit(value = submit_value, **attributes)
         input **attributes.merge(
@@ -227,7 +228,7 @@ module Superform
       end
 
       class LabelComponent < BaseComponent
-        def template(&content)
+        def view_template(&content)
           content ||= Proc.new { field.key.to_s.titleize }
           label(**attributes, &content)
         end
@@ -238,7 +239,7 @@ module Superform
       end
 
       class ButtonComponent < FieldComponent
-        def template(&content)
+        def view_template(&content)
           content ||= Proc.new { button_text }
           button(**attributes, &content)
         end
@@ -253,7 +254,7 @@ module Superform
       end
 
       class CheckboxComponent < FieldComponent
-        def template(&)
+        def view_template(&)
           # Rails has a hidden and checkbox input to deal with sending back a value
           # to the server regardless of if the input is checked or not.
           input(name: dom.name, type: :hidden, value: "0")
@@ -267,7 +268,7 @@ module Superform
       end
 
       class InputComponent < FieldComponent
-        def template(&)
+        def view_template(&)
           input(**attributes)
         end
 
@@ -292,7 +293,7 @@ module Superform
       end
 
       class TextareaComponent < FieldComponent
-        def template(&content)
+        def view_template(&content)
           content ||= Proc.new { dom.value }
           textarea(**attributes, &content)
         end
@@ -304,7 +305,7 @@ module Superform
           @collection = collection
         end
 
-        def template(&options)
+        def view_template(&options)
           if block_given?
             select(**attributes, &options)
           else
