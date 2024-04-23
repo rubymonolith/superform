@@ -251,6 +251,24 @@ class SignupForm < ApplicationForm
 end
 ```
 
+### Upload fields
+If you want to add file upload fields to your form you will need to initialize your form with the `enctype` attribute set to `multipart/form-data` as shown in the following example code:
+
+```ruby
+class User::ImageForm < ApplicationForm
+  def template
+    # render label
+    render field(:image).input(type: "file").label { "Choose file" }
+    # render file input with accept attribute for png and jpeg images
+    render field(:image).input(type: "file", accept: "image/png, image/jpeg")
+  end
+end
+
+# IMPORTANT
+# When rendering the form remember to init the User::ImageForm like that
+render User::ImageForm.new(@usermodel, enctype: "multipart/form-data")
+```
+
 
 ## Extending Superforms
 
