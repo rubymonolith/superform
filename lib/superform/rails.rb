@@ -275,14 +275,22 @@ module Superform
           {
             id: dom.id,
             name: dom.name,
-            type: type
-          }.tap do |attrs|
-            attrs[:value] = field.value if value?
+            type: type,
+            value: value
+          }
+        end
+
+        def client_provided_value?
+          case type
+          when "file", "image"
+            false
+          else
+            true
           end
         end
 
-        def value?
-          @attributes[:type] != "file"
+        def value
+          dom.value unless client_provided_value?
         end
 
         def type
