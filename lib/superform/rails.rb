@@ -276,7 +276,25 @@ module Superform
         end
 
         def field_attributes
-          { id: dom.id, name: dom.name, value: dom.value, type: type }
+          {
+            id: dom.id,
+            name: dom.name,
+            type: type,
+            value: value
+          }
+        end
+
+        def client_provided_value?
+          case type
+          when "file", "image"
+            false
+          else
+            true
+          end
+        end
+
+        def value
+          dom.value unless client_provided_value?
         end
 
         def type
