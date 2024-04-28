@@ -69,6 +69,10 @@ module Superform
           Components::SelectField.new(self, attributes: attributes, collection: collection, &)
         end
 
+        def multiple_select(*collection, **attributes, &)
+          Components::MultipleSelectField.new(self, attributes: attributes, collection: collection, &)
+        end
+
         def title
           key.to_s.titleize
         end
@@ -299,30 +303,16 @@ module Superform
       end
 
       class SelectField < FieldComponent
-        def initialize(
-          *,
-          collection: [],
-          multiple: false,
-          include_blank: false,
-          **,
-          &
-        )
+        def initialize(*, collection: [], **, &)
           super(*, **, &)
           @collection = collection
-          @multiple = multiple
-          @include_blank = include_blank
         end
 
         def template(&options)
-          input(type: "hidden", name: dom.name, value: "") if @multiple
-
           if block_given?
             select(**attributes, &options)
           else
-            select(**attributes) do
-              blank_option if @include_blank
-              options(*@collection)
-            end
+            select(**attributes) { options(*@collection) }
           end
         end
 
@@ -346,15 +336,30 @@ module Superform
 
         protected
 
-          def field_attributes
-            super.merge(
-              name: @multiple ? "#{dom.name}[]" : dom.name,
-              multiple: @multiple
-            )
-          end
-
           def map_options(collection)
             OptionMapper.new(collection)
+          end
+      end
+
+      class MultipleSelectField < SelectField
+        def template(...)
+          # The HTML specification says when multiple parameter passed to select
+          # and all options got deselected web browsers do not send any value to
+          # server. Unfortunately this introduces a gotcha: if a User model has
+          # many roles and have role_ids accessor, and in the form that edits
+          # roles of the user the user deselects all roles from role_ids
+          # multiple select box, no role_ids parameter is sent.
+          input(type: "hidden", name: dom.name, value: "")
+          super(...)
+        end
+
+        protected
+
+          def field_attributes
+            super.merge(
+              name: "#{dom.name}[]",
+              multiple: true
+            )
           end
       end
     end
