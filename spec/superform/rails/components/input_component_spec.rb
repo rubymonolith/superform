@@ -13,6 +13,9 @@ RSpec.describe Superform::Rails::Components::InputComponent do
 
   context "type: :text" do
     it { is_expected.to_not have_client_provided_value }
+    it "is type: :text by default" do
+      expect(subject.type).to be_text
+    end
   end
 
   context "type: :image" do

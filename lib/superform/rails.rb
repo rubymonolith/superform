@@ -298,23 +298,30 @@ module Superform
         end
 
         def type
-          @type ||= @attributes[:type] || @attributes["type"] || infer_type
+          @type ||= ActiveSupport::StringInquirer.new(attribute_type || value_type)
         end
 
-        def infer_type
-          case field.value
-          when URI
-            "url"
-          when Integer
-            "number"
-          when Date, DateTime
-            "date"
-          when Time
-            "time"
-          else
-            "text"
+        protected
+          def value_type
+            case field.value
+            when URI
+              "url"
+            when Integer
+              "number"
+            when Date, DateTime
+              "date"
+            when Time
+              "time"
+            else
+              "text"
+            end
           end
-        end
+
+          def attribute_type
+            if type = @attributes[:type] || @attributes["type"]
+              type.to_s
+            end
+          end
       end
 
       class TextareaComponent < FieldComponent
