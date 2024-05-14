@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    superform (0.4.7)
+    superform (0.4.8)
       phlex-rails (~> 1.0)
       zeitwerk (~> 2.6)
 
