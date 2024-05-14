@@ -306,7 +306,7 @@ module Superform
             case field.value
             when URI
               "url"
-            when Integer
+            when Integer, Float
               "number"
             when Date, DateTime
               "date"
