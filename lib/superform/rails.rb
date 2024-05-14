@@ -284,9 +284,9 @@ module Superform
           }
         end
 
-        def client_provided_value?
-          case type.to_s
-          when "file", "image"
+        def has_client_provided_value?
+          case type.to_sym
+          when :file, :image
             true
           else
             false
@@ -294,10 +294,14 @@ module Superform
         end
 
         def value
-          dom.value unless client_provided_value?
+          dom.value unless has_client_provided_value?
         end
 
         def type
+          @type ||= @attributes[:type] || @attributes["type"] || infer_type
+        end
+
+        def infer_type
           case field.value
           when URI
             "url"
