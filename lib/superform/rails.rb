@@ -285,8 +285,8 @@ module Superform
         end
 
         def has_client_provided_value?
-          case type.to_sym
-          when :file, :image
+          case type.to_s
+          when "file", "image"
             true
           else
             false
