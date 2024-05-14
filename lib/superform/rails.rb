@@ -285,11 +285,11 @@ module Superform
         end
 
         def client_provided_value?
-          case type
+          case type.to_s
           when "file", "image"
-            false
-          else
             true
+          else
+            false
           end
         end
 
