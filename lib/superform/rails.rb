@@ -74,17 +74,18 @@ module Superform
         end
       end
 
-      def initialize(model, action: nil, method: nil, **attributes)
+      def initialize(model, action: nil, method: nil, authenticity_token: true, **attributes)
         @model = model
         @action = action
         @method = method
+        @authenticity_token = authenticity_token
         @attributes = attributes
         @namespace = Namespace.root(key, object: model, field_class: self.class::Field)
       end
 
       def around_template(&)
         form_tag do
-          authenticity_token_field
+          authenticity_token_field if @authenticity_token
           _method_field
           super
         end
