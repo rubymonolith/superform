@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Superform
-  VERSION = "0.4.8"
+  VERSION = "0.4.9"
 end
