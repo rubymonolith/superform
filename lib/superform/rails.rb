@@ -14,7 +14,7 @@ module Superform
     # The `Form` component also handles Rails authenticity tokens via the `authenticity_toklen_field`
     # method and the HTTP verb via the `_method_field`.
     class Form < Component
-      attr_reader :model
+      attr_accessor :model
 
       delegate \
           :field,
