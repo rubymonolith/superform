@@ -140,7 +140,7 @@ module Superform
     # The object within the block is a `Namespace` object that maps each object within the enumerable
     # to another `Namespace` or `Field`.
     def collection(key, &)
-      create_child(key, NamespaceCollection, &)
+      create_child(key, NamespaceCollection, field_class: @field_class, &)
     end
 
     # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.
@@ -261,8 +261,9 @@ module Superform
   class NamespaceCollection < Node
     include Enumerable
 
-    def initialize(key, parent:, &template)
+    def initialize(key, parent:, field_class:, &template)
       super(key, parent: parent)
+      @field_class = field_class
       @template = template
       @namespaces = enumerate(parent_collection)
     end
@@ -294,7 +295,7 @@ module Superform
     end
 
     def build_namespace(index, **)
-      parent.class.new(index, parent: self, **, &@template)
+      parent.class.new(index, parent: self, field_class: @field_class, **, &@template)
     end
 
     def parent_collection
