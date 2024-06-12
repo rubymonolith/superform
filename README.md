@@ -63,12 +63,15 @@ class ApplicationForm < Superform::Rails::Form
     end
   end
 
+  # Redefining the base Field class lets us override every field component.
   class Field < Superform::Rails::Form::Field
     def input(**attributes)
       MyInputComponent.new(self, attributes: attributes)
     end
   end
 
+  # Here we make a simple helper to make our syntax shorter. Given a field it
+  # will also render its label.
   def labeled(component)
     div class: "form-row" do
       render component.field.label
