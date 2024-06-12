@@ -2,6 +2,8 @@
 
 require "superform"
 require "phlex"
+require "phlex-rails"
+require "phlex/testing/capybara"
 require "rails"
 
 ::ApplicationComponent = Phlex::HTML
@@ -16,4 +18,6 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.include Phlex::Testing::Capybara::ViewHelper, type: :rails
 end
