@@ -57,8 +57,8 @@ module Superform
           Components::CheckboxComponent.new(self, attributes: attributes)
         end
 
-        def label(**attributes)
-          Components::LabelComponent.new(self, attributes: attributes)
+        def label(**attributes, &)
+          Components::LabelComponent.new(self, attributes: attributes, &)
         end
 
         def textarea(**attributes)
