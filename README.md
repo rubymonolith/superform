@@ -33,10 +33,10 @@ After installing, create a form in `app/views/*/form.rb`. For example, a form fo
 ```ruby
 # ./app/views/posts/form.rb
 class Posts::Form < ApplicationForm
-  def template(&)
-    row field(:title).input
-    row field(:body).textarea
-    row field(:blog).select Blog.select(:id, :title)
+  def view_template(&)
+    labeled field(:title).input
+    labeled field(:body).textarea
+    labeled field(:blog).select Blog.select(:id, :title)
   end
 end
 ```
@@ -56,19 +56,22 @@ Superforms are built out of [Phlex components](https://www.phlex.fun/html/compon
 # ./app/views/forms/application_form.rb
 class ApplicationForm < Superform::Rails::Form
   class MyInputComponent < Superform::Rails::Components::InputComponent
-    def template(&)
+    def view_template(&)
       div class: "form-field" do
         input(**attributes)
       end
     end
   end
 
+  # Redefining the base Field class lets us override every field component.
   class Field < Superform::Rails::Form::Field
     def input(**attributes)
       MyInputComponent.new(self, attributes: attributes)
     end
   end
 
+  # Here we make a simple helper to make our syntax shorter. Given a field it
+  # will also render its label.
   def labeled(component)
     div class: "form-row" do
       render component.field.label
@@ -87,7 +90,7 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 ```ruby
 # ./app/views/users/form.rb
 class Users::Form < ApplicationForm
-  def template(&)
+  def view_template(&)
     labeled field(:name).input
     labeled field(:email).input(type: :email)
 
@@ -112,7 +115,7 @@ Consider a form for an account that lets people edit the names and email of the 
 
 ```ruby
 class AccountForm < Superform::Rails::Form
-  def template
+  def view_template
     # Account#owner returns a single object
     namespace :owner do |owner|
       # Renders input with the name `account[owner][name]`
@@ -161,7 +164,7 @@ By default Superform namespaces a form based on the ActiveModel model name param
 
 ```ruby
 class UserForm < Superform::Rails::Form
-  def template
+  def view_template
     render field(:email).input
   end
 end
@@ -177,7 +180,7 @@ To customize the form namespace, like an ActiveRecord model nested within a modu
 
 ```ruby
 class UserForm < Superform::Rails::Form
-  def template
+  def view_template
     render field(:email).input
   end
   
@@ -202,7 +205,7 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 ```ruby
 # Everything below is intentionally verbose!
 class SignupForm < ApplicationForm
-  def template
+  def view_template
     # The most basic type of input, which will be autofocused.
     render field(:name).input.focus
 
@@ -256,7 +259,7 @@ If you want to add file upload fields to your form you will need to initialize y
 
 ```ruby
 class User::ImageForm < ApplicationForm
-  def template
+  def view_template
     # render label
     render field(:image).label { "Choose file" }
     # render file input with accept attribute for png and jpeg images
@@ -277,7 +280,7 @@ The best part? If you have forms with a completely different look and feel, you 
 ```ruby
 class AdminForm < ApplicationForm
   class AdminInput < ApplicationComponent
-    def template(&)
+    def view_template(&)
       input(**attributes)
       small { admin_tool_tip_for field.key }
     end
@@ -295,7 +298,7 @@ Then, just like you did in your Erb, you create the form:
 
 ```ruby
 class Admin::Users::Form < AdminForm
-  def template(&)
+  def view_template(&)
     labeled field(:name).tooltip_input
     labeled field(:email).tooltip_input(type: :email)
 
