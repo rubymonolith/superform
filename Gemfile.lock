@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    superform (0.4.10)
+    superform (0.5.0)
       phlex-rails (~> 1.0)
       zeitwerk (~> 2.6)
 
@@ -97,7 +97,7 @@ GEM
     psych (5.1.2)
       stringio
     racc (1.8.1)
-    rack (3.1.7)
+    rack (3.1.8)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -137,7 +137,7 @@ GEM
     rspec-expectations (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.1)
+    rspec-mocks (3.13.2)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
@@ -149,7 +149,7 @@ GEM
       concurrent-ruby (~> 1.0)
     useragent (0.16.10)
     webrick (1.8.2)
-    zeitwerk (2.6.18)
+    zeitwerk (2.7.0)
 
 PLATFORMS
   arm64-darwin-22
@@ -163,4 +163,4 @@ DEPENDENCIES
   superform!
 
 BUNDLED WITH
-   2.4.8
+   2.5.9
