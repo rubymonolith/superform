@@ -110,19 +110,6 @@ RSpec.describe Superform do
       expect(form_with_email_field.field(:email).input.dom.name).to eql("user[email]")
     end
 
-    # This test passed before changes to superform.rb, it replicates the bug in the original code (raises NoMethodError)
-    # it "raises NoMethodError when calling input on a field within a namespace" do
-    #   form_with_ns = Superform :user, object: user, field_class: Superform::Rails::Form::Field do |f|
-    #     f.namespace(:settings) do |settings|
-    #       settings.field(:locale)
-    #     end
-    #   end
-
-    #   expect {
-    #     form_with_ns.namespace(:settings).field(:locale).input
-    #   }.to raise_error(NoMethodError, /undefined method `input'/)
-    # end
-
     it "returns an InputComponent when calling input on a field within a namespace" do
       form_with_ns = Superform :user, object: user, field_class: Superform::Rails::Form::Field do |f|
         f.namespace(:settings) do |settings|
