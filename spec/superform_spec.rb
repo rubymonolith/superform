@@ -5,6 +5,7 @@ RSpec.describe Superform do
   let(:user) do
     OpenStruct.new \
       name: OpenStruct.new(first: "William", last: "Bills"),
+      email: "william@example.com",
       nicknames: ["Bill", "Billy", "Will"],
       addresses: [
         OpenStruct.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
@@ -94,6 +95,43 @@ RSpec.describe Superform do
         expect(dom.id).to eql("user_one_two_three_four")
         expect(dom.name).to eql("user[one][two][three][four]")
       end
+    end
+  end
+
+  context "input behavior" do
+    let(:form_with_email_field) do
+      Superform :user, object: user, field_class: Superform::Rails::Form::Field do |f|
+        f.field(:admin)
+      end
+    end
+
+    it "returns an InputComponent when calling input on a standalone field" do
+      expect(form_with_email_field.field(:email).input).to be_a(Superform::Rails::Components::InputComponent)
+      expect(form_with_email_field.field(:email).input.dom.name).to eql("user[email]")
+    end
+
+    # This test passed before changes to superform.rb, it replicates the bug in the original code (raises NoMethodError)
+    # it "raises NoMethodError when calling input on a field within a namespace" do
+    #   form_with_ns = Superform :user, object: user, field_class: Superform::Rails::Form::Field do |f|
+    #     f.namespace(:settings) do |settings|
+    #       settings.field(:locale)
+    #     end
+    #   end
+
+    #   expect {
+    #     form_with_ns.namespace(:settings).field(:locale).input
+    #   }.to raise_error(NoMethodError, /undefined method `input'/)
+    # end
+
+    it "returns an InputComponent when calling input on a field within a namespace" do
+      form_with_ns = Superform :user, object: user, field_class: Superform::Rails::Form::Field do |f|
+        f.namespace(:settings) do |settings|
+          settings.field(:locale)
+        end
+      end
+
+      expect(form_with_ns.namespace(:settings).field(:locale).input).to be_a(Superform::Rails::Components::InputComponent)
+      expect(form_with_ns.namespace(:settings).field(:locale).input.dom.name).to eql("user[settings][locale]")
     end
   end
 end
