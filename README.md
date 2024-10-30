@@ -213,10 +213,10 @@ class SignupForm < ApplicationForm
     render field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
 
     # You can put fields in a block if that's your thing.
-    render field(:reason) do |f|
+    field(:reason) do |f|
       div do
-        f.label { "Why should we care about you?" }
-        f.textarea(row: 3, col: 80)
+        render f.label { "Why should we care about you?" }
+        render f.textarea(row: 3, col: 80)
       end
     end
 
