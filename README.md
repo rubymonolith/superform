@@ -227,18 +227,67 @@ class SignupForm < ApplicationForm
         [true, "Yes"],  # <option value="true">Yes</option>
         [false, "No"],  # <option value="false">No</option>
         "Hell no",      # <option value="Hell no">Hell no</option>
-        nil             # <option></option>
+        nil,            # <option></option>
+        WebSources.select(:id, :name)
+        # Iterates through the `WebSources` scope and generates options
+        # where `id` is the value and `name` is the label.
       )
     end
 
     div do
       render field(:source).label { "How did you hear about us?" }
       render field(:source).select do |s|
-        # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
-        # and a "Search" category with "AltaVista, Yahoo, etc."
+        # Pretend WebSources is an ActiveRecord scope with a "Social" category that
+        # has "Facebook, X, etc" and a "Search" category with "AltaVista, Yahoo, etc."
         WebSources.select(:id, :name).group_by(:category) do |category, sources|
           s.optgroup(label: category) do
             s.options(sources)
+          end
+        end
+      end
+    end
+
+    div do
+      render field(:channel).label { "How should we annoy you?" }
+      # Time for radio buttons! Pass arguments into the `radio` method and each one is
+      # an option with a label. A hidden input gets rendered that's the current value of the
+      # `channel` field.
+      render field(:channel).radio(
+        # <input type="hidden" value="" id="channel_email" name="channel">
+        ["email", "Email"],
+        # <label for="channel_email">
+        #   <input type="radio" value="email" id="channel_email" name="channel"> Email
+        # </label>
+        ["phone", "Phone"],
+        # <label for="channel_phone">
+        #   <input type="radio" value="phone" id="channel_phone" name="channel"> Phone
+        # </label>
+        ["mail", "Mail"],
+        # <label for="channel_mail">
+        #   <input type="radio" value="mail" id="channel_mail" name="channel"> Mail
+        # </label>
+        "House Visit",
+        # <label for="channel_house_visit">
+        #   <input type="radio" value="House Visit" id="channel_house_visit" name="channel">
+        #   House Visit
+        # </label>
+        nil,
+        # <input type="radio" value="" id="channel_nil" name="channel">
+        # <label for="channel_nil">None</label>m
+        TimesOfDay.select(:id, :name)
+        # Iterates through TimesOfDay scope and generates options where `id` is the value
+        # and `name` is the label.
+      )
+    end
+
+    div do
+      render field(:time).label { "When should we interupt you?" }
+      # Pass a block into the `radio` method and each one is an option with a label.
+      render field(:time).radio do |r|
+        TimesOfDay.select(:id, :name) do |time|
+          r.label do
+            span(class: "font-bold") { time.name }
+            r.input(value: time.id)
           end
         end
       end
