@@ -55,17 +55,55 @@ RSpec.describe Superform do
     })
   end
 
-  it "assigns params to form and discards garbage" do
-    form.assign(params)
-    expect(form.serialize).to eql({
-      name: { first: "Brad", last: "Gessler" },
-      nicknames: ["Brad", "Bradley"],
-      addresses: [
-        {street: "Main St", city: "Salem", state: nil},
-        {street: "Wall St", city: "New York", state: "New York"}
-      ],
-      one: {two: {three: {four: 100}}}
-    })
+  context 'with an empty object' do
+    let(:user) do
+      OpenStruct.new \
+        name: OpenStruct.new(first: nil, last: nil),
+        nicknames: [],
+        addresses: [
+          OpenStruct.new(street: nil, city: nil, state: nil),
+          OpenStruct.new(street: nil, city: nil, state: nil),
+        ]
+    end
+
+    it "assigns params to form and serializes" do
+      form.assign(params)
+      expect(form.serialize).to eql({
+                                      name: { first: "Brad", last: "Gessler" },
+                                      nicknames: ["Brad", "Bradley"],
+                                      addresses: [
+                                        {street: "Main St", city: "Salem", state: nil},
+                                        {street: "Wall St", city: "New York", state: "New York"}
+                                      ],
+                                      one: {two: {three: {four: 100}}}
+                                    })
+    end
+
+  end
+
+  context 'with a filled object' do
+    let(:user) do
+      OpenStruct.new \
+        name: OpenStruct.new(first: "William", last: "Bills"),
+        nicknames: ["Bill", "Billy", "Will"],
+        addresses: [
+          OpenStruct.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
+          OpenStruct.new(street: "Main St", city: "Salem", state: "Indiana"),
+        ]
+    end
+
+    it "assigns params to form and serializes, preserving existing attributes if not present in params" do
+      form.assign(params)
+      expect(form.serialize).to eql({
+                                      name: { first: "Brad", last: "Gessler" },
+                                      nicknames: ["Brad", "Bradley"],
+                                      addresses: [
+                                        {street: "Main St", city: "Salem", state: 'New Mexico'},
+                                        {street: "Wall St", city: "New York", state: "New York"}
+                                      ],
+                                      one: {two: {three: {four: 100}}}
+                                    })
+    end
   end
 
   it "has correct DOM names" do
