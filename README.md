@@ -234,6 +234,8 @@ class SignupForm < ApplicationForm
     div do
       render field(:source).label { "How did you hear about us?" }
       render field(:source).select do |s|
+        # Renders a blank option.
+        s.blank_option
         # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
         # and a "Search" category with "AltaVista, Yahoo, etc."
         WebSources.select(:id, :name).group_by(:category) do |category, sources|
