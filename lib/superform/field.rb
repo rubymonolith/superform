@@ -6,7 +6,7 @@ module Superform
       super key, parent: parent
       @object = object
       @value = value
-      @dom = DOM.new(field: self)
+      @dom = Superform::DOM.new(field: self)
     end
 
     def value
