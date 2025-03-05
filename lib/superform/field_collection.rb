@@ -1,4 +1,6 @@
 module Superform
+  # A FieldCollection represents values that are collections of literals. For example, a Note
+  # ActiveRecord object might have a collection of tags that's an array of string literals.
   class FieldCollection
     include Enumerable
 

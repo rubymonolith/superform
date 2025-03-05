@@ -1,4 +1,7 @@
 module Superform
+  # A Field represents the data associated with a form element. This class provides
+  # methods for accessing and modifying the field's value. HTML concerns are all
+  # delegated to the DOM object.
   class Field < Node
     attr_reader :dom
 

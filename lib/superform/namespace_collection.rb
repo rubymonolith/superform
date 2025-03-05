@@ -1,4 +1,7 @@
 module Superform
+  # A NamespaceCollection represents values that are collections of namespaces. For example, a User
+  # ActiveRecord object might have many Addresses. Each individual address is then delegated out
+  # to a Namespace object.
   class NamespaceCollection < Node
     include Enumerable
 
