@@ -50,7 +50,7 @@ Then render it in your templates. Here's what it looks like from an Erb file.
 
 ## Customization
 
-Superforms are built out of [Phlex components](https://www.phlex.fun/html/components/). The method names correspeond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
+Superforms are built out of [Phlex components](https://www.phlex.fun/html/components/). The method names correspond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
 
 ```ruby
 # ./app/views/forms/application_form.rb
@@ -183,7 +183,7 @@ class UserForm < Superform::Rails::Form
   def view_template
     render field(:email).input
   end
-  
+
   def key
     "user"
   end
