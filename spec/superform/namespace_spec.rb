@@ -7,6 +7,21 @@ RSpec.describe Superform::Namespace do
         expect(child.key).to eq(:bar)
       end
     end
+
+    context 'with a given field_class' do
+      before do
+        allow(described_class).to receive(:new).and_call_original
+      end
+
+      it "forwards the fields_class to the child namespace" do
+        parent = described_class.new(:foo, parent: nil, field_class: Superform::Rails::Form::Field)
+
+        expect(described_class).to receive(:new).with(:bar,
+                                                      parent:, object: nil, field_class: Superform::Rails::Form::Field)
+
+        parent.namespace(:bar)
+      end
+    end
   end
 
   describe "#field" do
@@ -15,6 +30,16 @@ RSpec.describe Superform::Namespace do
       parent.field(:bar) do |child|
         expect(child).to be_a(Superform::Field)
         expect(child.key).to eq(:bar)
+      end
+    end
+
+    context 'with a given field_class' do
+      it "builds a field of the given class" do
+        parent = described_class.new(:foo, parent: nil, object: nil, field_class: Superform::Rails::Form::Field)
+        parent.field(:bar) do |child|
+          expect(child).to be_a(Superform::Rails::Form::Field)
+          expect(child.key).to eq(:bar)
+        end
       end
     end
   end

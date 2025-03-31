@@ -34,7 +34,7 @@ module Superform
     # end
     # ```
     def namespace(key, &block)
-      create_child(key, self.class, object: object_for(key: key), &block)
+      create_child(key, self.class, object: object_for(key: key), field_class: @field_class, &block)
     end
 
     # Maps the `Object#proprety` and `Object#property=` to a field in a web form that can be
