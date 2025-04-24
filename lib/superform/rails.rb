@@ -45,28 +45,28 @@ module Superform
       #
       # Now all calls to `label` will have the `text-bold` class applied to it.
       class Field < Superform::Field
-        def button(**attributes)
-          Components::ButtonComponent.new(self, attributes: attributes)
+        def button(...)
+          Components::ButtonComponent.new(self, ...)
         end
 
-        def input(**attributes)
-          Components::InputComponent.new(self, attributes: attributes)
+        def input(...)
+          Components::InputComponent.new(self, ...)
         end
 
-        def checkbox(**attributes)
-          Components::CheckboxComponent.new(self, attributes: attributes)
+        def checkbox(...)
+          Components::CheckboxComponent.new(self, ...)
         end
 
-        def label(**attributes, &)
-          Components::LabelComponent.new(self, attributes: attributes, &)
+        def label(...)
+          Components::LabelComponent.new(self, ...)
         end
 
-        def textarea(**attributes)
-          Components::TextareaComponent.new(self, attributes: attributes)
+        def textarea(...)
+          Components::TextareaComponent.new(self, ...)
         end
 
         def select(*collection, **attributes, &)
-          Components::SelectField.new(self, attributes: attributes, collection: collection, &)
+          Components::SelectField.new(self, collection: collection, **attributes, &)
         end
 
         def title
@@ -203,7 +203,7 @@ module Superform
 
         delegate :dom, to: :field
 
-        def initialize(field, attributes: {})
+        def initialize(field, **attributes)
           @field = field
           @attributes = attributes
         end

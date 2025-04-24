@@ -1,6 +1,9 @@
 RSpec.describe Superform::Rails::Components::InputComponent do
+  subject(:component) do
+    described_class.new(field, **attributes)
+  end
+
   let(:field) do
-    object = double("object", "foo=": nil)
     object = double("object", "foo": value)
     Superform::Field.new(:foo, parent: nil, object:)
   end
@@ -10,10 +13,6 @@ RSpec.describe Superform::Rails::Components::InputComponent do
   let(:attributes) do
     {}
   end
-  let(:component) do
-    described_class.new(field, attributes: attributes)
-  end
-  subject { component }
 
   it { is_expected.to_not have_client_provided_value }
   it "is type: :text by default" do
