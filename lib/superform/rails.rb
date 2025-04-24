@@ -74,12 +74,12 @@ module Superform
         end
       end
 
-      def initialize(model, action: nil, method: nil, **attributes)
+      def initialize(model, action: nil, method: nil, namespace: nil, **attributes)
         @model = model
         @action = action
         @method = method
         @attributes = attributes
-        @namespace = Namespace.root(key, object: model, field_class: self.class::Field)
+        @namespace = Namespace.root(namespace || key, object: model, field_class: self.class::Field)
       end
 
       def around_template(&)
