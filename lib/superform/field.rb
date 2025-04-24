@@ -10,6 +10,7 @@ module Superform
       @object = object
       @value = value
       @dom = Superform::DOM.new(field: self)
+      yield self if block_given?
     end
 
     def value

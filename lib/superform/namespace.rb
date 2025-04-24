@@ -9,10 +9,10 @@ module Superform
   class Namespace < Node
     include Enumerable
 
-    attr_reader :object
+    attr_reader :object, :field_class
 
     def initialize(key, parent:, object: nil, field_class: Field)
-      super(key, parent: parent)
+      super(key, parent:)
       @object = object
       @field_class = field_class
       @children = Hash.new
@@ -33,8 +33,8 @@ module Superform
     #   end
     # end
     # ```
-    def namespace(key, &block)
-      create_child(key, self.class, object: object_for(key: key), &block)
+    def namespace(key, &)
+      create_child(key, self.class, object: object_for(key:), field_class:, &)
     end
 
     # Maps the `Object#proprety` and `Object#property=` to a field in a web form that can be
@@ -46,10 +46,8 @@ module Superform
     #   form.field :name
     # end
     # ```
-    def field(key)
-      create_child(key, @field_class, object: object).tap do |field|
-        yield field if block_given?
-      end
+    def field(key, &)
+      create_child(key, field_class, object:, &)
     end
 
     # Wraps an array of objects in Namespace classes. For example, if `User#addresses` returns
@@ -69,7 +67,7 @@ module Superform
     # The object within the block is a `Namespace` object that maps each object within the enumerable
     # to another `Namespace` or `Field`.
     def collection(key, &)
-      create_child(key, NamespaceCollection, &)
+      create_child(key, NamespaceCollection, field_class:, &)
     end
 
     # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.
@@ -117,8 +115,8 @@ module Superform
 
     # Checks if the child exists. If it does then it returns that. If it doesn't, it will
     # build the child.
-    def create_child(key, child_class, **kwargs, &block)
-      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **kwargs, &block) }
+    def create_child(key, child_class, **, &)
+      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **, &) }
     end
   end
 end
