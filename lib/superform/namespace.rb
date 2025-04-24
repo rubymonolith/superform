@@ -34,7 +34,7 @@ module Superform
     # end
     # ```
     def namespace(key, &block)
-      create_child(key, self.class, object: object_for(key: key), &block)
+      create_child(key, self.class, object: object_for(key: key), field_class: @field_class, &block)
     end
 
     # Maps the `Object#proprety` and `Object#property=` to a field in a web form that can be
@@ -69,7 +69,7 @@ module Superform
     # The object within the block is a `Namespace` object that maps each object within the enumerable
     # to another `Namespace` or `Field`.
     def collection(key, &)
-      create_child(key, NamespaceCollection, &)
+      create_child(key, NamespaceCollection, field_class: @field_class, &)
     end
 
     # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.
