@@ -9,13 +9,13 @@ module Superform
   class Namespace < Node
     include Enumerable
 
-    attr_reader :object, :field_class
+    attr_reader :object
 
     def initialize(key, parent:, object: nil, field_class: Field)
       super(key, parent:)
       @object = object
-      @field_class = field_class
       @children = Hash.new
+      @field_class = field_class unless parent
       yield self if block_given?
     end
 
@@ -34,10 +34,10 @@ module Superform
     # end
     # ```
     def namespace(key, &)
-      create_child(key, self.class, object: object_for(key:), field_class:, &)
+      create_child(key, self.class, object: object_for(key:), &)
     end
 
-    # Maps the `Object#proprety` and `Object#property=` to a field in a web form that can be
+    # Maps the `Object#property` and `Object#property=` to a field in a web form that can be
     # read and set by the form. For example, a User form might look like this:
     #
     # ```ruby
@@ -67,7 +67,7 @@ module Superform
     # The object within the block is a `Namespace` object that maps each object within the enumerable
     # to another `Namespace` or `Field`.
     def collection(key, &)
-      create_child(key, NamespaceCollection, field_class:, &)
+      create_child(key, NamespaceCollection, &)
     end
 
     # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.

@@ -7,6 +7,17 @@ module Superform
     def initialize(key, parent:)
       @key = key
       @parent = parent
+      @field_class = nil
+    end
+
+    protected
+
+    def field_class
+      if parent
+        parent.field_class
+      else
+        @field_class
+      end
     end
   end
 end

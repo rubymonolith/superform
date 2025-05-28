@@ -19,7 +19,7 @@ RSpec.describe Superform::NamespaceCollection do
     it "creates an indexed namespace for each item" do
       object.bars.each.with_index do |bar, index|
         expect(Superform::Namespace).to receive(:new).with(
-          index, parent: collection, object: bar, field_class: Superform::Field
+          index, parent: collection, object: bar
         ).ordered
       end
 
@@ -33,17 +33,15 @@ RSpec.describe Superform::NamespaceCollection do
       )
     end
 
-    context "with another field_class" do
-      subject(:collection) do
-        described_class.new(:bars, parent: namespace, field_class: Superform::Rails::Form::Field) do |collection|
-          collection.field(:baz)
-        end
+    context "with a namespace using another field_class" do
+      let(:namespace) do
+        Superform::Namespace.new(:foo, parent: nil, object: object, field_class: Superform::Rails::Form::Field)
       end
 
-      it "creates an indexed namespace for each item, with the collection field_class" do
+      it "creates an indexed namespace for each item" do
         object.bars.each.with_index do |bar, index|
           expect(Superform::Namespace).to receive(:new).with(
-            index, parent: collection, object: bar, field_class: Superform::Rails::Form::Field
+            index, parent: collection, object: bar
           ).ordered
         end
 
