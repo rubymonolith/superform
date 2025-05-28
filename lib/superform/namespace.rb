@@ -113,10 +113,18 @@ module Superform
 
     private
 
+    def create_child(key, child_class, **, &)
+      register_child(build(child_class, key:, **, &))
+    end
+
     # Checks if the child exists. If it does then it returns that. If it doesn't, it will
     # build the child.
-    def create_child(key, child_class, **, &)
-      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **, &) }
+    def register_child(node)
+      @children.fetch(node.key) { @children[node.key] = node }
+    end
+
+    def build(child_class, key:, **, &)
+      child_class.new(key, parent: self, **, &)
     end
   end
 end
