@@ -5,7 +5,7 @@ RSpec.describe Superform::NamespaceCollection do
     end
   end
 
-  let(:namespace) { Superform::Namespace.new(:foo, parent: nil, object: object) }
+  let(:namespace) { Superform::Namespace.root(:foo, object: object) }
   let(:object) do
     OpenStruct.new(
       bars: [
@@ -19,7 +19,7 @@ RSpec.describe Superform::NamespaceCollection do
     it "creates an indexed namespace for each item" do
       object.bars.each.with_index do |bar, index|
         expect(Superform::Namespace).to receive(:new).with(
-          index, parent: collection, object: bar
+          index, factory: a_kind_of(Superform::Factory), parent: collection, object: bar
         ).ordered
       end
 
@@ -33,15 +33,16 @@ RSpec.describe Superform::NamespaceCollection do
       )
     end
 
-    context "with a namespace using another field_class" do
+    context "with a namespace using another factory" do
+      let(:factory) { Superform::Rails::Factory.new }
       let(:namespace) do
-        Superform::Namespace.new(:foo, parent: nil, object: object, field_class: Superform::Rails::Form::Field)
+        Superform::Namespace.root(:foo, object:, factory:)
       end
 
       it "creates an indexed namespace for each item" do
         object.bars.each.with_index do |bar, index|
           expect(Superform::Namespace).to receive(:new).with(
-            index, parent: collection, object: bar
+            index, factory:, parent: collection, object: bar
           ).ordered
         end
 
