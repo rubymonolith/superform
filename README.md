@@ -12,6 +12,12 @@ It's a complete rewrite of Rails form's internals that's inspired by Reactive co
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/0e4dfe2a1ece26e3a59e/maintainability)](https://codeclimate.com/github/rubymonolith/superform/maintainability) [![Ruby](https://github.com/rubymonolith/superform/actions/workflows/main.yml/badge.svg)](https://github.com/rubymonolith/superform/actions/workflows/main.yml)
 
+## Video course
+
+Support this project and [become a Superform pro](https://beautifulruby.com/phlex/forms/overview) by ordering the [Phlex on Rails video course](https://beautifulruby.com/phlex).
+
+[![](https://immutable.terminalwire.com/NgTt6nzO1aEnExV8j6ODuKt2iZpY74ZF8ecpUSCp4A0tXA0ErpJIS4cdMX0tQQKOWwZSl65jWnpzpgCLJThhhWtZJGr42XKt7WIi.png)](https://beautifulruby.com/phlex/forms/overview)
+
 ## Installation
 
 Add to the Rails application's Gemfile by executing:
