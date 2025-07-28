@@ -1,7 +1,7 @@
 module Superform
   module Rails
     # The `ApplicationComponent` is the superclass for all components in your application.
-    Component = ::ApplicationComponent
+    Component = ::Components::Base
 
     # A Phlex::HTML view module that accepts a model and sets a `Superform::Namespace`
     # with the `Object#model_name` as the key and maps the object to form fields
