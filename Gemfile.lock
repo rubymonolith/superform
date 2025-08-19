@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     superform (0.5.1)
-      phlex-rails (>= 1.0, < 3.0)
+      phlex-rails (~> 2.0)
       zeitwerk (~> 2.6)
 
 GEM
@@ -87,10 +87,12 @@ GEM
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
-    phlex (1.10.3)
-    phlex-rails (1.2.1)
-      phlex (~> 1.10.0)
-      railties (>= 6.1, < 8)
+    phlex (2.3.1)
+      zeitwerk (~> 2.7)
+    phlex-rails (2.3.1)
+      phlex (~> 2.3.0)
+      railties (>= 7.1, < 9)
+      zeitwerk (~> 2.7)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
