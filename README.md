@@ -189,7 +189,7 @@ class UserForm < Superform::Rails::Form
   def view_template
     render field(:email).input
   end
-  
+
   def key
     "user"
   end
@@ -287,7 +287,7 @@ The best part? If you have forms with a completely different look and feel, you 
 
 ```ruby
 class AdminForm < ApplicationForm
-  class AdminInput < ApplicationComponent
+  class AdminInput < Components::Base
     def view_template(&)
       input(**attributes)
       small { admin_tool_tip_for field.key }
