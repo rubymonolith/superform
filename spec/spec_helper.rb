@@ -4,7 +4,9 @@ require "superform"
 require "phlex"
 require "rails"
 
-::ApplicationComponent = Phlex::HTML
+module Components
+  Base = Phlex::HTML
+end
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
