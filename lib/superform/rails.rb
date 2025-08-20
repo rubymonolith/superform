@@ -2,8 +2,10 @@ require "phlex/rails"
 
 module Superform
   module Rails
-    # The `ApplicationComponent` is the superclass for all components in your application.
-    Component = ::Phlex::HTML
+    # When this is included in a Rails app, check if `Components::Base` is defined and
+    # inherit from that so we get all the users stuff; otherwise inherit from Phlex::HTML,
+    # which means we won't have all the users methods and overrides.
+    Component = defined?(::Components::Base) ? ::Components::Base : ::Phlex::HTML
 
     # A Phlex::HTML view module that accepts a model and sets a `Superform::Namespace`
     # with the `Object#model_name` as the key and maps the object to form fields
