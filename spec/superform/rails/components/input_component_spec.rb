@@ -1,4 +1,4 @@
-RSpec.describe Superform::Rails::Components::InputComponent do
+RSpec.describe Superform::Rails::Components::Input do
   let(:field) do
     object = double("object", "foo=": nil)
     object = double("object", "foo": value)
