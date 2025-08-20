@@ -61,7 +61,7 @@ Superforms are built out of [Phlex components](https://www.phlex.fun/html/compon
 ```ruby
 # ./app/views/forms/application_form.rb
 class ApplicationForm < Superform::Rails::Form
-  class MyInputComponent < Superform::Rails::Components::InputComponent
+  class MyInput < Superform::Rails::Components::Input
     def view_template(&)
       div class: "form-field" do
         input(**attributes)
@@ -72,7 +72,7 @@ class ApplicationForm < Superform::Rails::Form
   # Redefining the base Field class lets us override every field component.
   class Field < Superform::Rails::Form::Field
     def input(**attributes)
-      MyInputComponent.new(self, attributes: attributes)
+      MyInput.new(self, attributes: attributes)
     end
   end
 

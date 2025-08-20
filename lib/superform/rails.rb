@@ -16,7 +16,7 @@ module Superform
       const_get SUPERCLASSES.find { |const| const_defined?(const) }
     end
 
-    # Set the base class for the remainder of this library.
+    # Set the base class for the rem
     Component = base_class
 
     # A Phlex::HTML view module that accepts a model and sets a `Superform::Namespace`
@@ -65,27 +65,27 @@ module Superform
       # Now all calls to `label` will have the `text-bold` class applied to it.
       class Field < Superform::Field
         def button(**attributes)
-          Components::ButtonComponent.new(self, attributes:)
+          Components::Button.new(self, attributes:)
         end
 
         def input(**attributes)
-          Components::InputComponent.new(self, attributes:)
+          Components::Input.new(self, attributes:)
         end
 
         def checkbox(**attributes)
-          Components::CheckboxComponent.new(self, attributes:)
+          Components::Checkbox.new(self, attributes:)
         end
 
         def label(**attributes, &)
-          Components::LabelComponent.new(self, attributes:, &)
+          Components::Label.new(self, attributes:, &)
         end
 
         def textarea(**attributes)
-          Components::TextareaComponent.new(self, attributes:)
+          Components::Textarea.new(self, attributes:)
         end
 
         def select(*collection, **attributes, &)
-          Components::SelectField.new(self, attributes:, collection:, &)
+          Components::Select.new(self, attributes:, collection:, &)
         end
 
         def title
@@ -221,7 +221,7 @@ module Superform
     end
 
     module Components
-      class BaseComponent < Component
+      class Base < Component
         attr_reader :field, :dom
 
         delegate :dom, to: :field
@@ -247,13 +247,13 @@ module Superform
         end
       end
 
-      class FieldComponent < BaseComponent
+      class Field < Base
         def field_attributes
           { id: dom.id, name: dom.name }
         end
       end
 
-      class LabelComponent < BaseComponent
+      class LabelComponent < Base
         def view_template(&content)
           content ||= Proc.new { field.key.to_s.titleize }
           label(**attributes, &content)
@@ -264,7 +264,7 @@ module Superform
         end
       end
 
-      class ButtonComponent < FieldComponent
+      class Button < Field
         def view_template(&content)
           content ||= Proc.new { button_text }
           button(**attributes, &content)
@@ -279,7 +279,7 @@ module Superform
         end
       end
 
-      class CheckboxComponent < FieldComponent
+      class Checkbox < Field
         def view_template(&)
           # Rails has a hidden and checkbox input to deal with sending back a value
           # to the server regardless of if the input is checked or not.
@@ -293,7 +293,7 @@ module Superform
         end
       end
 
-      class InputComponent < FieldComponent
+      class Input < Field
         def view_template(&)
           input(**attributes)
         end
@@ -347,14 +347,14 @@ module Superform
           end
       end
 
-      class TextareaComponent < FieldComponent
+      class Textarea < Field
         def view_template(&content)
           content ||= Proc.new { dom.value }
           textarea(**attributes, &content)
         end
       end
 
-      class SelectField < FieldComponent
+      class Select < Field
         def initialize(*, collection: [], **, &)
           super(*, **, &)
           @collection = collection
