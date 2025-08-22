@@ -18,6 +18,7 @@ module Superform
 
       delegate \
           :field,
+          :Field,
           :collection,
           :namespace,
           :assign,

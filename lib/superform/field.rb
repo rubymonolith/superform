@@ -36,5 +36,24 @@ module Superform
     def collection(&)
       @collection ||= FieldCollection.new(field: self, &)
     end
+
+    class Kit
+      def initialize(field:, form:)
+        @field = field
+        @form = form
+      end
+
+      def method_missing(method_name, *, **, &)
+        if @field.respond_to?(method_name)
+          @form.render @field.send(method_name, *, **, &)
+        else
+          super
+        end
+      end
+    end
+
+    def kit(form)
+      Kit.new(field: self, form:)
+    end
   end
 end

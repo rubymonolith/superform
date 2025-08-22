@@ -54,5 +54,19 @@ RSpec.describe Superform::Rails::Form, type: :view do
       it { is_expected.to include('name="user[email]"') }
       it { is_expected.to include('name="user[name]"') }
     end
+
+     context "Field kit" do
+      subject do
+        render(form) do |f|
+          f.Field(:email).input
+          f.Field(:name).input
+          f.namespace(:address).Field(:street).input(type: :email)
+        end
+      end
+
+      it { is_expected.to include('name="user[email]"') }
+      it { is_expected.to include('name="user[name]"') }
+      it { is_expected.to include('name="user[address][street]"') }
+    end
   end
 end
