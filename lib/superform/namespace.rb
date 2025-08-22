@@ -57,6 +57,9 @@ module Superform
       @children[key] ||= build_field(key, &)
     end
 
+    def Field(...)
+      field(...).kit(@form)
+    end
     # Wraps an array of objects in Namespace classes. For example, if `User#addresses` returns
     # an enumerable or array of `Address` classes:
     #
