@@ -4,6 +4,17 @@
 
 This release includes several breaking changes to improve consistency with Phlex 2.x conventions and better organize the codebase.
 
+#### Form Instance Architecture Changes
+
+The framework now passes form instances instead of field classes throughout the namespace hierarchy:
+
+- `Namespace` constructor now accepts `form:` parameter instead of `field_class:`
+- `NamespaceCollection` constructor now accepts `form:` parameter instead of `field_class:`
+- Form instances must implement a `build_field` method for field creation
+- Rails forms now pass themselves as form instances to namespaces
+
+This change enables better encapsulation and allows forms to customize field creation logic.
+
 #### Component Class Naming Changes
 
 All Rails component classes have been renamed to match Phlex 2.x conventions by removing the "Component" suffix:
@@ -30,7 +41,13 @@ Rails classes have been moved into separate files for better organization:
 
 ### How to Upgrade
 
-1. **Update component class names** in your custom form classes:
+#### Custom Form Classes
+
+Custom form classes with Rails now automatically pass themselves as form instances (no changes needed for basic usage).
+
+#### Update Component Class Names
+
+Update component class names in your custom form classes:
 
    ```ruby
    # Before (0.5.x)
@@ -40,7 +57,7 @@ Rails classes have been moved into separate files for better organization:
 
    class Field < Superform::Rails::Form::Field
      def input(**attributes)
-       MyInputComponent.new(self, attributes: attributes)
+       MyInput.new(self, attributes: attributes)
      end
    end
    ```
@@ -58,14 +75,18 @@ Rails classes have been moved into separate files for better organization:
    end
    ```
 
-2. **Update your Gemfile** to ensure compatibility:
+#### Update Your Gemfile
+
+Update your Gemfile to ensure compatibility:
 
    ```ruby
    gem 'phlex-rails', '~> 2.0'
    gem 'superform', '~> 0.6.0'
    ```
 
-3. **Run bundle update** to update dependencies:
+#### Run Bundle Update
+
+Run bundle update to update dependencies:
 
    ```bash
    bundle update phlex-rails superform
@@ -73,11 +94,16 @@ Rails classes have been moved into separate files for better organization:
 
 ### Added
 
+- Form instance architecture for better encapsulation and customization
+- `NullForm` class for default form behavior without Rails
+- `build_field` method delegation to form instances
 - Better file organization with Rails classes in separate files
 - Improved Phlex 2.x compatibility and conventions
 
 ### Changed
 
+- **Breaking**: `Namespace` and `NamespaceCollection` constructors now accept `form:` instead of `field_class:`
+- **Breaking**: Form instances must implement `build_field` method
 - Rails component classes moved to individual files
 - Component class names simplified to match Phlex conventions
 - Dependency updated to require phlex-rails 2.x
