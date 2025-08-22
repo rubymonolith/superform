@@ -9,16 +9,9 @@ module Superform
   class Namespace < Node
     include Enumerable
 
-    # Default form class for basic usage when no form instance is provided
-    class NullForm < Phlex::HTML
-      def build_field(...)
-        Field.new(...)
-      end
-    end
-
     attr_reader :object, :form
 
-    def initialize(key, parent:, object: nil, form: NullForm.new)
+    def initialize(key, parent:, object: nil, form: Superform::Form.new)
       super(key, parent:)
       @object = object
       @form = form
