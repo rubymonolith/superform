@@ -2,7 +2,7 @@
 
 require "superform"
 require "phlex"
-require "rails"
+require_relative "support/test_app"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -14,4 +14,7 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # Set up RSpec Rails view testing
+  config.infer_spec_type_from_file_location!
 end
