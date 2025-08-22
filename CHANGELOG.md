@@ -95,7 +95,7 @@ Run bundle update to update dependencies:
 ### Added
 
 - Form instance architecture for better encapsulation and customization
-- `NullForm` class for default form behavior without Rails
+- `Superform::Form` class for basic form behavior without Rails dependencies
 - `build_field` method delegation to form instances
 - Better file organization with Rails classes in separate files
 - Improved Phlex 2.x compatibility and conventions
