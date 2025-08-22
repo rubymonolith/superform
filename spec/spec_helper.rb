@@ -2,6 +2,7 @@
 
 require "superform"
 require "phlex"
+require "ostruct"
 require_relative "support/test_app"
 
 RSpec.configure do |config|

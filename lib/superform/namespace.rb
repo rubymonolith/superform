@@ -9,12 +9,19 @@ module Superform
   class Namespace < Node
     include Enumerable
 
-    attr_reader :object, :field_class
+    # Default form class for basic usage when no form instance is provided
+    class NullForm < Phlex::HTML
+      def build_field(...)
+        Field.new(...)
+      end
+    end
 
-    def initialize(key, parent:, object: nil, field_class: Field)
+    attr_reader :object, :form
+
+    def initialize(key, parent:, object: nil, form: NullForm.new)
       super(key, parent:)
       @object = object
-      @field_class = field_class
+      @form = form
       @children = Hash.new
       yield self if block_given?
     end
@@ -115,17 +122,17 @@ module Superform
 
     # Builds a new field child
     def build_field(key, &)
-      field_class.new(key, parent: self, object:, &)
+      @form.build_field(key, parent: self, object:, &)
     end
 
     # Builds a new namespace child
     def build_namespace(key, &)
-      self.class.new(key, parent: self, object: object_for(key:), field_class:, &)
+      self.class.new(key, parent: self, object: object_for(key:), form:, &)
     end
 
     # Builds a new collection child
     def build_collection(key, &)
-      NamespaceCollection.new(key, parent: self, field_class:, &)
+      NamespaceCollection.new(key, parent: self, form:, &)
     end
   end
 end

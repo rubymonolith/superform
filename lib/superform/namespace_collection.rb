@@ -5,12 +5,12 @@ module Superform
   class NamespaceCollection < Node
     include Enumerable
 
-    attr_reader :field_class
+    attr_reader :form
 
-    def initialize(key, parent:, field_class: Field, &template)
+    def initialize(key, parent:, form: parent.form, &template)
       super(key, parent:)
       @template = template
-      @field_class = field_class
+      @form = form
       @namespaces = enumerate(parent_collection)
     end
 
@@ -41,7 +41,7 @@ module Superform
     end
 
     def build_namespace(index, **)
-      parent.class.new(index, parent: self, field_class:, **, &@template)
+      parent.class.new(index, parent: self, form:, **, &@template)
     end
 
     def parent_collection
