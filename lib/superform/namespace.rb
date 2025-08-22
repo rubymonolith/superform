@@ -34,7 +34,7 @@ module Superform
     # end
     # ```
     def namespace(key, &)
-      create_child(key, self.class, object: object_for(key:), field_class:, &)
+      @children[key] ||= build_namespace(key, &)
     end
 
     # Maps the `Object#proprety` and `Object#property=` to a field in a web form that can be
@@ -47,7 +47,7 @@ module Superform
     # end
     # ```
     def field(key, &)
-      create_child(key, field_class, object:, &)
+      @children[key] ||= build_field(key, &)
     end
 
     # Wraps an array of objects in Namespace classes. For example, if `User#addresses` returns
@@ -67,7 +67,7 @@ module Superform
     # The object within the block is a `Namespace` object that maps each object within the enumerable
     # to another `Namespace` or `Field`.
     def collection(key, &)
-      create_child(key, NamespaceCollection, field_class:, &)
+      @children[key] ||= build_collection(key, &)
     end
 
     # Creates a Hash of Hashes and Arrays that represent the fields and collections of the Superform.
@@ -113,10 +113,19 @@ module Superform
 
     private
 
-    # Checks if the child exists. If it does then it returns that. If it doesn't, it will
-    # build the child.
-    def create_child(key, child_class, **, &)
-      @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **, &) }
+    # Builds a new field child
+    def build_field(key, &)
+      field_class.new(key, parent: self, object:, &)
+    end
+
+    # Builds a new namespace child
+    def build_namespace(key, &)
+      self.class.new(key, parent: self, object: object_for(key:), field_class:, &)
+    end
+
+    # Builds a new collection child
+    def build_collection(key, &)
+      NamespaceCollection.new(key, parent: self, field_class:, &)
     end
   end
 end
