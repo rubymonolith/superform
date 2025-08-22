@@ -37,23 +37,43 @@ module Superform
       @collection ||= FieldCollection.new(field: self, &)
     end
 
+    # Make the name more obvious for extending or writing docs.
+    def field
+      self
+    end
+
     class Kit
       def initialize(field:, form:)
         @field = field
         @form = form
+        define_field_methods
       end
 
-      def method_missing(method_name, *, **, &)
-        if @field.respond_to?(method_name)
-          @form.render @field.send(method_name, *, **, &)
-        else
-          super
+      private
+
+      def define_field_methods
+        # Get all methods that should be excluded (base Ruby/Superform methods)
+        base_methods = (Object.instance_methods + Node.instance_methods + 
+                       [:dom, :value, :serialize, :assign, :collection, :field, :kit]).to_set
+        
+        # Get all public methods from the field, including inherited ones
+        @field.public_methods.each do |method_name|
+          next if base_methods.include?(method_name)
+          next if method_name.to_s.end_with?('=')
+          
+          # Define the method directly on this instance
+          define_singleton_method(method_name) do |*args, **kwargs, &block|
+            result = @field.send(method_name, *args, **kwargs, &block)
+            @form.render result
+          end
         end
       end
+
+
     end
 
     def kit(form)
-      Kit.new(field: self, form:)
+      Kit.new(field:, form:)
     end
   end
 end
