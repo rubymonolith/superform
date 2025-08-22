@@ -95,7 +95,7 @@ module Superform
       end
 
       def view_template(&block)
-        yield_content(&block)
+        yield self if block_given?
       end
 
       def submit(value = submit_value, **attributes)
