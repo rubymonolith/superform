@@ -29,7 +29,7 @@ module Superform
       #
       # ```ruby
       # class MyForm < Superform::Rails::Form
-      #   class MyLabel < Superform::Rails::Components::LabelComponent
+      #   class MyLabel < Superform::Rails::Components::Label
       #     def view_template(&content)
       #       label(form: @field.dom.name, class: "text-bold", &content)
       #     end
@@ -58,7 +58,7 @@ module Superform
         end
 
         def label(**attributes, &)
-          Components::LabelComponent.new(self, attributes:, &)
+          Components::Label.new(self, attributes:, &)
         end
 
         def textarea(**attributes)

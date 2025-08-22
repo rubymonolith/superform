@@ -1,7 +1,7 @@
 module Superform
   module Rails
     module Components
-      class LabelComponent < Base
+      class Label < Base
         def view_template(&content)
           content ||= Proc.new { field.key.to_s.titleize }
           label(**attributes, &content)
