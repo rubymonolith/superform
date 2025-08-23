@@ -38,7 +38,7 @@ After installing, create a form in `app/views/*/form.rb`. For example, a form fo
 
 ```ruby
 # ./app/views/posts/form.rb
-class Posts::Form < ApplicationForm
+class Posts::Form < Components::Form
   def view_template(&)
     render field(:title).input
     render field(:body).textarea
@@ -60,7 +60,7 @@ Inspired from [`Phlex::Kit`](https://www.phlex.fun/components/kits), Superform s
 
 ```ruby
 # ./app/views/posts/form.rb
-class Posts::Form < ApplicationForm
+class Posts::Form < Components::Form
   def view_template(&)
     Field(:title).input
     Field(:body).textarea
@@ -88,7 +88,7 @@ Superforms are built out of [Phlex components](https://www.phlex.fun/html/compon
 
 ```ruby
 # ./app/views/forms/application_form.rb
-class ApplicationForm < Superform::Rails::Form
+class Components::Form < Superform::Rails::Form
   class MyInput < Superform::Rails::Components::Input
     def view_template(&)
       div class: "form-field" do
@@ -123,7 +123,7 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 
 ```ruby
 # ./app/views/users/form.rb
-class Users::Form < ApplicationForm
+class Users::Form < Components::Form
   def view_template(&)
     labeled field(:name).input
     labeled field(:email).input(type: :email)
@@ -238,7 +238,7 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 
 ```ruby
 # Everything below is intentionally verbose!
-class SignupForm < ApplicationForm
+class SignupForm < Components::Form
   def view_template
     # The most basic type of input, which will be autofocused.
     render field(:name).input.focus
@@ -294,7 +294,7 @@ end
 If you want to add file upload fields to your form you will need to initialize your form with the `enctype` attribute set to `multipart/form-data` as shown in the following example code:
 
 ```ruby
-class User::ImageForm < ApplicationForm
+class User::ImageForm < Components::Form
   def view_template
     # render label
     render field(:image).label { "Choose file" }
@@ -314,7 +314,7 @@ render User::ImageForm.new(@usermodel, enctype: "multipart/form-data")
 The best part? If you have forms with a completely different look and feel, you can extend the forms just like you would a Ruby class:
 
 ```ruby
-class AdminForm < ApplicationForm
+class AdminForm < Components::Form
   class AdminInput < Components::Base
     def view_template(&)
       input(**attributes)
