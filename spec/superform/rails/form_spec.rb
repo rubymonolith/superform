@@ -1,5 +1,5 @@
 RSpec.describe Superform::Rails::Form, type: :view do
-  let(:model) { User.new(name: "John", email: "john@example.com") }
+  let(:model) { User.new(first_name: "John", last_name: "Doe", email: "john@example.com") }
   let(:form) { described_class.new(model, action: "/users") }
 
   describe "#initialize" do
@@ -36,7 +36,7 @@ RSpec.describe Superform::Rails::Form, type: :view do
     it { is_expected.to include('type="hidden"') }
 
     context "when model is persisted" do
-      let(:model) { User.new(id: 1, name: "John", email: "john@example.com") }
+      let(:model) { User.new(id: 1, first_name: "John", last_name: "Doe", email: "john@example.com") }
       let(:form) { described_class.new(model, action: "/users/1") }
 
       it { is_expected.to include('name="_method"') }
@@ -46,27 +46,53 @@ RSpec.describe Superform::Rails::Form, type: :view do
     context "when block is given" do
       subject do
         render(form) do |f|
-          f.render f.field(:email).input
-          f.render f.field(:name).input
+          f.render f.field(:email).input(type: :email)
+          f.render f.field(:first_name).input
+          f.render f.field(:last_name).input
         end
       end
 
       it { is_expected.to include('name="user[email]"') }
-      it { is_expected.to include('name="user[name]"') }
+      it { is_expected.to include('name="user[first_name]"') }
+      it { is_expected.to include('name="user[last_name]"') }
     end
 
      context "Field kit" do
       subject do
         render(form) do |f|
-          f.Field(:email).input
-          f.Field(:name).input
-          f.namespace(:address).Field(:street).input(type: :email)
+          f.Field(:email).input(type: :email)
+          f.Field(:first_name).input
+          f.Field(:last_name).input
+          f.namespace(:address).Field(:street).input
         end
       end
 
       it { is_expected.to include('name="user[email]"') }
-      it { is_expected.to include('name="user[name]"') }
+      it { is_expected.to include('name="user[first_name]"') }
+      it { is_expected.to include('name="user[last_name]"') }
       it { is_expected.to include('name="user[address][street]"') }
+    end
+
+    context "Kit in ERB template" do
+      subject do
+        render inline: <<~ERB, locals: { form: form }
+          <div class="before">Before Kit</div>
+          <%= render(form) do |f| %>
+            <%= f.Field(:email).input(type: :email) %>
+            <div class="between">Between Kit</div>
+            <%= f.Field(:first_name).input
+                f.Field(:last_name).input
+             %>
+          <% end %>
+          <div class="after">After Kit</div>
+        ERB
+      end
+
+      it "renders Kit fields in correct order with surrounding content" do
+        expect(subject).to match(
+          /Before Kit.*name="user\[email\]".*Between Kit.*id="user_first_name".*id="user_last_name".*After Kit/m
+        )
+      end
     end
   end
 end

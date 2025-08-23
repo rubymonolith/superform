@@ -38,11 +38,13 @@ class User
   include ActiveModel::Attributes
   include ActiveModel::AttributeAssignment
 
-  attribute :name, :string
+  attribute :first_name, :string
+  attribute :last_name, :string
   attribute :email, :string
   attribute :id, :integer
 
-  validates :name, presence: true
+  validates :first_name, presence: true
+  validates :last_name, presence: true
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   def persisted?

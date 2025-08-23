@@ -33,16 +33,16 @@ This will install both Phlex Rails and Superform.
 ## Usage
 
 Superform streamlines the development of forms on Rails applications by making everything a component.
-
+A
 After installing, create a form in `app/views/*/form.rb`. For example, a form for a `Post` resource might look like this.
 
 ```ruby
 # ./app/views/posts/form.rb
 class Posts::Form < ApplicationForm
   def view_template(&)
-    labeled field(:title).input
-    labeled field(:body).textarea
-    labeled field(:blog).select Blog.select(:id, :title)
+    render field(:title).input
+    render field(:body).textarea
+    render field(:blog).select Blog.select(:id, :title)
   end
 end
 ```
@@ -52,6 +52,34 @@ Then render it in your templates. Here's what it looks like from an Erb file.
 ```erb
 <h1>New post</h1>
 <%= render Posts::Form.new @post %>
+```
+
+### Field Kits
+
+Inspired from [`Phlex::Kit`](https://www.phlex.fun/components/kits), Superform ships with "Field Kits" that are a shortcut for the `render` ceremony.
+
+```ruby
+# ./app/views/posts/form.rb
+class Posts::Form < ApplicationForm
+  def view_template(&)
+    Field(:title).input
+    Field(:body).textarea
+    Field(:blog).select Blog.select(:id, :title)
+  end
+end
+```
+
+### Rendering from Erb
+
+Superforms with Field Kits and Ruby 3.4 work great from Erb, even if most of your Rails app is implemented in Erb.
+
+```erb
+<h1>New Post</h1>
+<%= render Component::Form.new @user do
+  it.Field(:title).input
+  it.Field(:body).textarea
+  it.Field(:blog).select Blog.select(:id, :title)
+end %>
 ```
 
 ## Customization
