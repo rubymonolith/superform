@@ -1,10 +1,13 @@
 RSpec.describe Superform::NamespaceCollection do
+  Bar = Struct.new(:baz, keyword_init: true)
+  TestObject = Struct.new(:bars, keyword_init: true)
+
   describe "#assign" do
     it "assigns the value to each namespace" do
-      object = OpenStruct.new(
+      object = TestObject.new(
         bars: [
-          OpenStruct.new(baz: "A"),
-          OpenStruct.new(baz: "B")
+          Bar.new(baz: "A"),
+          Bar.new(baz: "B")
         ]
       )
 
