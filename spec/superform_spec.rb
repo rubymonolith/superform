@@ -1,15 +1,19 @@
 # frozen_string_literal: true
-require "ostruct"
 
 RSpec.describe Superform do
+  TestName = Struct.new(:first, :last, keyword_init: true)
+  TestAddress = Struct.new(:street, :city, :state, keyword_init: true)
+  TestUser = Struct.new(:name, :nicknames, :addresses, keyword_init: true)
+
   let(:user) do
-    OpenStruct.new \
-      name: OpenStruct.new(first: "William", last: "Bills"),
+    TestUser.new(
+      name: TestName.new(first: "William", last: "Bills"),
       nicknames: ["Bill", "Billy", "Will"],
       addresses: [
-        OpenStruct.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
-        OpenStruct.new(street: "Main St", city: "Salem", state: "Indiana"),
+        TestAddress.new(street: "Birch Ave", city: "Williamsburg", state: "New Mexico"),
+        TestAddress.new(street: "Main St", city: "Salem", state: "Indiana"),
       ]
+    )
   end
 
   let(:params) do
