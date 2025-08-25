@@ -1,8 +1,12 @@
 Description:
-    Installs Phlex Rails and Superform
+    Installs Superform with proper component structure
 
 Example:
     bin/rails generate superform:install
 
     This will create:
-        app/views/forms/application_form.rb
+        app/components/forms/base.rb
+
+    Prerequisites:
+        phlex-rails must be installed. If not installed, run:
+        bundle add phlex-rails

@@ -38,7 +38,7 @@ After installing, create a form in `app/views/*/form.rb`. For example, a form fo
 
 ```ruby
 # ./app/views/posts/form.rb
-class Posts::Form < Components::Form
+class Posts::Form < Components::Forms::Base
   def view_template(&)
     render field(:title).input
     render field(:body).textarea
@@ -60,7 +60,7 @@ Inspired from [`Phlex::Kit`](https://www.phlex.fun/components/kits), Superform s
 
 ```ruby
 # ./app/views/posts/form.rb
-class Posts::Form < Components::Form
+class Posts::Form < Components::Forms::Base
   def view_template(&)
     Field(:title).input
     Field(:body).textarea
@@ -87,8 +87,8 @@ end %>
 Superforms are built out of [Phlex components](https://www.phlex.fun/html/components/). The method names correspond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
 
 ```ruby
-# ./app/views/forms/application_form.rb
-class Components::Form < Superform::Rails::Form
+# ./app/components/forms/base.rb
+class Components::Forms::Base < Superform::Rails::Form
   class MyInput < Superform::Rails::Components::Input
     def view_template(&)
       div class: "form-field" do
@@ -123,7 +123,7 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 
 ```ruby
 # ./app/views/users/form.rb
-class Users::Form < Components::Form
+class Users::Form < Components::Forms::Base
   def view_template(&)
     labeled field(:name).input
     labeled field(:email).input(type: :email)
@@ -238,7 +238,7 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 
 ```ruby
 # Everything below is intentionally verbose!
-class SignupForm < Components::Form
+class SignupForm < Components::Forms::Base
   def view_template
     # The most basic type of input, which will be autofocused.
     render field(:name).input.focus
@@ -294,7 +294,7 @@ end
 If you want to add file upload fields to your form you will need to initialize your form with the `enctype` attribute set to `multipart/form-data` as shown in the following example code:
 
 ```ruby
-class User::ImageForm < Components::Form
+class User::ImageForm < Components::Forms::Base
   def view_template
     # render label
     render field(:image).label { "Choose file" }
@@ -314,7 +314,7 @@ render User::ImageForm.new(@usermodel, enctype: "multipart/form-data")
 The best part? If you have forms with a completely different look and feel, you can extend the forms just like you would a Ruby class:
 
 ```ruby
-class AdminForm < Components::Form
+class AdminForm < Components::Forms::Base
   class AdminInput < Components::Base
     def view_template(&)
       input(**attributes)
@@ -343,7 +343,7 @@ class Admin::Users::Form < AdminForm
 end
 ```
 
-Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everything to be in one place, keep the forms in the `app/views/forms/*.rb` folder and the components in `app/views/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
+Since Superforms are just Ruby objects, you can organize them however you want. You can keep your view component classes embedded in your Superform file if you prefer for everything to be in one place, keep the forms in the `app/components/forms/*.rb` folder and the components in `app/components/forms/**/*_component.rb`, use Ruby's `include` and `extend` features to modify different form classes, or put them in a gem and share them with an entire organization or open source community. It's just Ruby code!
 
 ## Automatic strong parameters
 
