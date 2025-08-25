@@ -3,31 +3,20 @@ require "bundler"
 class Superform::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path("templates", __dir__)
 
-  APPLICATION_CONFIGURATION_PATH = Rails.root.join("config/application.rb")
-
-  def install_phlex_rails
-    return if gem_in_bundle? "phlex-rails"
-
-    gem "phlex-rails"
-    generate "phlex:install"
-  end
-
-  def autoload_components
-    return unless APPLICATION_CONFIGURATION_PATH.exist?
-
-    inject_into_class(
-      APPLICATION_CONFIGURATION_PATH,
-      "Application",
-      %(    config.autoload_paths << "\#{root}/app/views/forms"\n)
-    )
+  def check_phlex_rails_dependency
+    unless gem_in_bundle?("phlex-rails")
+      say "ERROR: phlex-rails is not installed. Please run 'bundle add phlex-rails' first.", :red
+      exit 1
+    end
   end
 
   def create_application_form
-    template "application_form.rb", Rails.root.join("app/views/forms/application_form.rb")
+    template "base.rb", Rails.root.join("app/components/forms/base.rb")
   end
 
   private
-    def gem_in_bundle?(gem_name)
-      Bundler.load.specs.any? { |spec| spec.name == gem_name }
-    end
+
+  def gem_in_bundle?(gem_name)
+    Bundler.load.specs.any? { |spec| spec.name == gem_name }
+  end
 end
