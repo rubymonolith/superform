@@ -5,7 +5,7 @@ Example:
     bin/rails generate superform:install
 
     This will create:
-        app/components/forms/base.rb
+        app/components/form.rb
 
     Prerequisites:
         phlex-rails must be installed. If not installed, run:
