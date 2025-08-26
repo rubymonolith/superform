@@ -61,7 +61,7 @@ You probably want to use the same form for creating and editing resources. In su
 
 ```ruby
 # app/views/posts/form.rb
-class Posts::Form < Components::Forms::Base
+class Posts::Form < Components::Form
   def view_template
     Field(:title).text
     Field(:body).textarea(rows: 10)
@@ -123,7 +123,7 @@ Use `save!` for the bang version that raises exceptions on validation failure or
 Superform includes helpers for all HTML5 input types:
 
 ```ruby
-class UserForm < Components::Forms::Base
+class UserForm < Components::Form
   def view_template
     Field(:email).email           # type="email"
     Field(:password).password     # type="password"
@@ -145,7 +145,7 @@ end
 If you're already using Phlex throughout your Rails application, you can leverage Superform's full component architecture:
 
 ```ruby
-class Posts::Form < Components::Forms::Base
+class Posts::Form < Components::Form
   def view_template
     div(class: "form-section") do
       h2 { "Post Details" }
@@ -173,8 +173,8 @@ This gives you complete control over markup, styling, and component composition 
 Superforms are built out of [Phlex components](https://www.phlex.fun/html/components/). The method names correspeond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
 
 ```ruby
-# ./app/components/forms/base.rb
-class Components::Forms::Base < Superform::Rails::Form
+# ./app/components/form.rb
+class Components::Form < Superform::Rails::Form
   class MyInput < Superform::Rails::Components::Input
     def view_template(&)
       div class: "form-field" do
@@ -209,7 +209,7 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 
 ```ruby
 # ./app/views/users/form.rb
-class Users::Form < Components::Forms::Base
+class Users::Form < Components::Form
   def view_template(&)
     labeled field(:name).input
     labeled field(:email).input(type: :email)
@@ -324,7 +324,7 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 
 ```ruby
 # Everything below is intentionally verbose!
-class SignupForm < Components::Forms::Base
+class SignupForm < Components::Form
   def view_template
     # The most basic type of input, which will be autofocused.
     Field(:name).input.focus
@@ -380,7 +380,7 @@ end
 If you want to add file upload fields to your form you will need to initialize your form with the `enctype` attribute set to `multipart/form-data` as shown in the following example code:
 
 ```ruby
-class User::ImageForm < Components::Forms::Base
+class User::ImageForm < Components::Form
   def view_template
     # render label
     Field(:image).label { "Choose file" }
@@ -400,7 +400,7 @@ render User::ImageForm.new(@usermodel, enctype: "multipart/form-data")
 The best part? If you have forms with a completely different look and feel, you can extend the forms just like you would a Ruby class:
 
 ```ruby
-class AdminForm < Components::Forms::Base
+class AdminForm < Components::Form
   class AdminInput < Components::Base
     def view_template(&)
       input(**attributes)

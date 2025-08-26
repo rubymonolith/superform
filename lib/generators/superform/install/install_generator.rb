@@ -11,7 +11,7 @@ class Superform::InstallGenerator < Rails::Generators::Base
   end
 
   def create_application_form
-    template "base.rb", Rails.root.join("app/components/forms/base.rb")
+    template "base.rb", Rails.root.join("app/components/form.rb")
   end
 
   private

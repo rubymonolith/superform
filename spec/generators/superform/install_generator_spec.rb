@@ -39,16 +39,16 @@ RSpec.describe Superform::InstallGenerator, type: :generator do
     it "creates the base form component" do
       generator.invoke_all
 
-      expect(File.exist?(File.join(destination_root, "app/components/forms/base.rb"))).to be true
+      expect(File.exist?(File.join(destination_root, "app/components/form.rb"))).to be true
     end
 
     describe "generated file" do
-      subject { File.read(File.join(destination_root, "app/components/forms/base.rb")) }
+      subject { File.read(File.join(destination_root, "app/components/form.rb")) }
 
       before { generator.invoke_all }
 
       it { is_expected.to include("module Components") }
-      it { is_expected.to include("class Base < Superform::Rails::Form") }
+      it { is_expected.to include("class Form < Superform::Rails::Form") }
       it { is_expected.to include("def row(component)") }
       it { is_expected.to include("def error_messages") }
     end
