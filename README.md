@@ -55,9 +55,9 @@ The form automatically generates proper Rails form tags, includes CSRF tokens, a
 
 Notice anything missing? Superform doesn't need `<% %>` tags around every single line, unlike all other Rails form helpers.
 
-### Extract to dedicated form classes
+### Extract inline forms to dedicated classes to use in other views
 
-You probably want to use the same form for creating and editing resources. In superform, you extract forms into their own Ruby classes right along with your views.
+You probably want to use the same form for creating and editing resources. In Superform, you extract forms into their own Ruby classes right along with your views.
 
 ```ruby
 # app/views/posts/form.rb
@@ -72,7 +72,7 @@ class Posts::Form < Components::Form
 end
 ```
 
-Now your templates stay clean:
+Then render this in your views:
 
 ```erb
 <!-- app/views/posts/new.html.erb -->
@@ -82,7 +82,7 @@ Now your templates stay clean:
 
 Cool, but you're about to score a huge benefit from extracting forms into their own Ruby classes with automatic strong parameters.
 
-### RESTful controllers with automatic strong parameters
+### Automatically permit strong parameters with form classes
 
 Include `Superform::Rails::StrongParameters` in your controllers for automatic parameter handling:
 
@@ -118,7 +118,7 @@ The `save` method automatically:
 
 Use `save!` for the bang version that raises exceptions on validation failure or `permit` if you want to assign parameters to a model without saving it.
 
-### Rich input types with smart helpers
+### Concise HTML5 form helpers
 
 Superform includes helpers for all HTML5 input types:
 
@@ -140,9 +140,9 @@ class UserForm < Components::Form
 end
 ```
 
-### For Phlex users
+### Works great with Phlex
 
-If you're already using Phlex throughout your Rails application, you can leverage Superform's full component architecture:
+Superform was built from the ground-up using Phlex components, which means you'll feel right at home using it with your existing Phlex views and components.
 
 ```ruby
 class Posts::Form < Components::Form
