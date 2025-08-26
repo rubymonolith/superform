@@ -122,6 +122,15 @@ Run bundle update to update dependencies:
   - `field.file` for file input type
   - `field.hidden` for hidden input type
   - `field.radio(value)` for radio button input type
+- Readonly field functionality:
+  - `field.readonly` and `field.readonly(true/false)` methods to mark fields as read-only
+  - `field.read_only = true` alias for setting readonly state
+  - `field.read_only?` method to check if field is readonly
+  - Automatic readonly detection from Rails model `readonly_attributes`
+  - Readonly attribute support in input components (renders `readonly` HTML attribute)
+  - Disabled attribute support for select and checkbox components when readonly
+  - Readonly fields are automatically excluded from strong parameter assignment
+  - Input type methods accept `readonly: true` attribute (e.g., `field.email(readonly: true)`)
 
 ### Changed
 

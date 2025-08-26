@@ -15,6 +15,15 @@ module Superform
           end
         end
 
+        def field_attributes
+          attrs = {
+            id: dom.id,
+            name: dom.name
+          }
+          attrs[:disabled] = true if field.read_only?
+          attrs
+        end
+
         def options(*collection)
           map_options(collection).each do |key, value|
             option(selected: field.value == key, value: key) { value }

@@ -9,6 +9,7 @@ module Superform
       super key, parent: parent
       @object = object
       @value = value
+      @readonly = false
       @dom = Superform::DOM.new(field: self)
       yield self if block_given?
     end
@@ -23,6 +24,8 @@ module Superform
     alias :serialize :value
 
     def assign(value)
+      return if read_only?
+    
       if @object and @object.respond_to? "#{@key}="
         @object.send "#{@key}=", value
       else
@@ -40,6 +43,33 @@ module Superform
     # Make the name more obvious for extending or writing docs.
     def field
       self
+    end
+
+    # Sets the field as readonly
+    def readonly(value = true)
+      @readonly = value
+      self
+    end
+    alias :read_only= :readonly
+
+    # Checks if the field is readonly based on multiple conditions
+    def read_only?
+      return true if @readonly
+      return true if model_attribute_readonly?
+      false
+    end
+
+    def kit(form)
+      self.class::Kit.new(field: self, form: form)
+    end
+
+    private
+
+    # Check if the model attribute is marked as readonly
+    def model_attribute_readonly?
+      return false unless @object
+      return false unless @object.class.respond_to?(:readonly_attributes)
+      @object.class.readonly_attributes.include?(@key.to_s)
     end
 
     # High-performance Kit proxy that wraps field methods with form.render calls.
@@ -80,10 +110,6 @@ module Superform
       
       # Only add method to THIS class's Kit, not subclasses (isolation)
       add_method_to_kit(method_name, self::Kit)
-    end
-
-    def kit(form)
-      self.class::Kit.new(field: self, form: form)
     end
 
     private

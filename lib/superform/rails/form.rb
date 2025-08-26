@@ -51,11 +51,13 @@ module Superform
         end
 
         def input(**attributes)
+          handle_readonly_attribute(attributes)
           Components::Input.new(self, attributes:)
         end
 
-        def text(*, **, &)
-          input(*, **, type: :text, &)
+        def text(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :text, &)
         end
 
         def checkbox(**attributes)
@@ -67,6 +69,7 @@ module Superform
         end
 
         def textarea(**attributes)
+          handle_readonly_attribute(attributes)
           Components::Textarea.new(self, attributes:)
         end
 
@@ -81,69 +84,85 @@ module Superform
         #   field(:birthday).date
         #   field(:secret).hidden(value: "token123")
         #   field(:gender).radio("male", id: "user_gender_male")
-        def hidden(*, **, &)
-          input(*, **, type: :hidden, &)
+        def hidden(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :hidden, &)
         end
 
-        def password(*, **, &)
-          input(*, **, type: :password, &)
+        def password(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :password, &)
         end
 
-        def email(*, **, &)
-          input(*, **, type: :email, &)
+        def email(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :email, &)
         end
 
-        def url(*, **, &)
-          input(*, **, type: :url, &)
+        def url(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :url, &)
         end
 
-        def tel(*, **, &)
-          input(*, **, type: :tel, &)
+        def tel(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :tel, &)
         end
         alias_method :phone, :tel
 
-        def number(*, **, &)
-          input(*, **, type: :number, &)
+        def number(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :number, &)
         end
 
-        def range(*, **, &)
-          input(*, **, type: :range, &)
+        def range(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :range, &)
         end
 
-        def date(*, **, &)
-          input(*, **, type: :date, &)
+        def date(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :date, &)
         end
 
-        def time(*, **, &)
-          input(*, **, type: :time, &)
+        def time(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :time, &)
         end
 
-        def datetime(*, **, &)
-          input(*, **, type: :"datetime-local", &)
+        def datetime(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :"datetime-local", &)
         end
 
-        def month(*, **, &)
-          input(*, **, type: :month, &)
+        def month(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :month, &)
         end
 
-        def week(*, **, &)
-          input(*, **, type: :week, &)
+        def week(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :week, &)
         end
 
-        def color(*, **, &)
-          input(*, **, type: :color, &)
+        def color(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :color, &)
         end
 
-        def search(*, **, &)
-          input(*, **, type: :search, &)
+        def search(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :search, &)
         end
 
-        def file(*, **, &)
-          input(*, **, type: :file, &)
+        def file(*, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :file, &)
         end
 
-        def radio(value, *, **, &)
-          input(*, **, type: :radio, value: value, &)
+        def radio(value, *, **attributes, &)
+          handle_readonly_attribute(attributes)
+          input(*, **attributes, type: :radio, value: value, &)
         end
 
         # Rails compatibility aliases
@@ -152,6 +171,17 @@ module Superform
 
         def title
           key.to_s.titleize
+        end
+
+        private
+
+        def handle_readonly_attribute(attributes)
+          if attributes[:readonly] || attributes['readonly']
+            readonly(true)
+            # Remove from attributes since it's handled by the field
+            attributes.delete(:readonly)
+            attributes.delete('readonly')
+          end
         end
       end
 

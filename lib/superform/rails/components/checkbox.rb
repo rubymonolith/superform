@@ -11,7 +11,9 @@ module Superform
         end
 
         def field_attributes
-          { id: dom.id, name: dom.name, checked: field.value }
+          attrs = { id: dom.id, name: dom.name, checked: field.value }
+          attrs[:disabled] = true if field.read_only?
+          attrs
         end
       end
     end

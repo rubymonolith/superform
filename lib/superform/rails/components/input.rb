@@ -7,12 +7,14 @@ module Superform
         end
 
         def field_attributes
-          {
+          attrs = {
             id: dom.id,
             name: dom.name,
             type: type,
             value: value
           }
+          attrs[:readonly] = true if field.read_only?
+          attrs
         end
 
         def has_client_provided_value?
