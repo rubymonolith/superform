@@ -17,8 +17,8 @@ module Superform
       attr_accessor :model
 
       delegate \
-          :field,
           :Field,
+          :field,
           :collection,
           :namespace,
           :assign,

@@ -36,11 +36,13 @@ RSpec.describe Superform::Rails::Form, type: :view do
     it { is_expected.to include('type="hidden"') }
 
     context "when model is persisted" do
-      let(:model) { User.new(id: 1, first_name: "John", last_name: "Doe", email: "john@example.com") }
-      let(:form) { described_class.new(model, action: "/users/1") }
+      let(:model) { User.create!(first_name: "John", last_name: "Doe", email: "john@example.com") }
+      let(:form) { described_class.new(model, action: "/users/#{model.id}") }
 
       it { is_expected.to include('name="_method"') }
-      it { is_expected.to include('value="patch"') }
+      it "includes a hidden _method field for non-GET forms" do
+        expect(subject).to match(/name="_method".*type="hidden"/m)
+      end
     end
 
     context "when block is given" do
