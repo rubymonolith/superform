@@ -99,6 +99,29 @@ Run bundle update to update dependencies:
 - `build_field` method delegation to form instances
 - Better file organization with Rails classes in separate files
 - Improved Phlex 2.x compatibility and conventions
+- Strong Parameters support with `Superform::Rails::StrongParameters` module:
+  - `permit(form)` method for assigning permitted params without saving
+  - `save(form)` method for saving models with permitted params
+  - `save!(form)` method for saving with exception handling on validation failure
+  - Automatic parameter filtering based on form field declarations
+  - Safe mass assignment protection against unauthorized attributes
+- Field input type helper methods for Rails forms:
+  - `field.email` for email input type
+  - `field.password` for password input type  
+  - `field.url` for URL input type
+  - `field.tel` (with `phone` alias) for telephone input type
+  - `field.number` for number input type
+  - `field.range` for range input type
+  - `field.date` for date input type
+  - `field.time` for time input type
+  - `field.datetime` for datetime-local input type
+  - `field.month` for month input type
+  - `field.week` for week input type
+  - `field.color` for color input type
+  - `field.search` for search input type
+  - `field.file` for file input type
+  - `field.hidden` for hidden input type
+  - `field.radio(value)` for radio button input type
 
 ### Changed
 

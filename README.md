@@ -1,14 +1,16 @@
 # Superform
 
-Superform aims to be the best way to build forms in Rails applications. Here's what it does differently.
+**The best Rails form library.** Whether you're using ERB, HAML, or Phlex, Superform makes building forms delightful.
 
-* **Everything is a component.** Superform is built on top of [Phlex](https://phlex.fun), so every bit of HTML in the form can be customized to your precise needs. Use it with your own CSS Framework or go crazy customizing every last bit of TailwindCSS.
+* **No more strong parameters headaches.** Add a field to your form and it automatically gets permitted. Never again wonder why your new field isn't saving. Superform handles parameter security for you.
 
-* **Automatic strong parameters.** Superform automatically permits form fields so you don't have to facepalm yourself after adding a field, wondering why it doesn't persist, only to realize you forgot to add the parameter to your controller. No more! Superform was architected with safety & security in mind, meaning it can automatically permit your form parameters.
+* **Works beautifully with ERB.** Start using Superform in your existing Rails app without changing a single ERB template. All the power, zero migration pain.
 
-* **Compose complex forms with Plain 'ol Ruby Objects.** Superform is built on top of POROs, so you can easily compose classes, modules, & ruby code together to create complex forms. You can even extend forms to create new forms with a different look and feel.
+* **Concise field helpers.** `field(:publish_at).date`, `field(:email).email`, `field(:price).number` — intuitive methods that generate the right input types with proper validation.
 
-It's a complete rewrite of Rails form's internals that's inspired by Reactive component design patterns.
+* **RESTful controller helpers** Superform's `save` and `save!` methods work exactly like ActiveRecord, making controller code predictable and Rails-like.
+
+Superform is a complete reimagining of Rails forms, built on solid Ruby foundations with modern component architecture under the hood.
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/0e4dfe2a1ece26e3a59e/maintainability)](https://codeclimate.com/github/rubymonolith/superform/maintainability) [![Ruby](https://github.com/rubymonolith/superform/actions/workflows/main.yml/badge.svg)](https://github.com/rubymonolith/superform/actions/workflows/main.yml)
 
@@ -32,55 +34,139 @@ This will install both Phlex Rails and Superform.
 
 ## Usage
 
-Superform streamlines the development of forms on Rails applications by making everything a component.
-A
-After installing, create a form in `app/views/*/form.rb`. For example, a form for a `Post` resource might look like this.
+### Start with inline forms in your ERB templates
+
+Superform works instantly in your existing Rails ERB templates. Here's what a form for a blog post might look like:
+
+```erb
+<!-- app/views/posts/new.html.erb -->
+<h1>New Post</h1>
+
+<%= render Components::Form.new @post do
+  it.Field(:title).text
+  it.Field(:body).textarea
+  it.Field(:publish_at).date
+  it.Field(:featured).checkbox
+  it.submit "Create Post"
+end %>
+```
+
+The form automatically generates proper Rails form tags, includes CSRF tokens, and handles validation errors.
+
+Notice anything missing? Superform doesn't need `<% %>` tags around every single line, unlike all other Rails form helpers.
+
+### Extract to dedicated form classes
+
+You probably want to use the same form for creating and editing resources. In superform, you extract forms into their own Ruby classes right along with your views.
 
 ```ruby
-# ./app/views/posts/form.rb
+# app/views/posts/form.rb
 class Posts::Form < Components::Forms::Base
-  def view_template(&)
-    render field(:title).input
-    render field(:body).textarea
-    render field(:blog).select Blog.select(:id, :title)
+  def view_template
+    Field(:title).text
+    Field(:body).textarea(rows: 10)
+    Field(:publish_at).date
+    Field(:featured).checkbox
+    submit
   end
 end
 ```
 
-Then render it in your templates. Here's what it looks like from an Erb file.
+Now your templates stay clean:
 
 ```erb
-<h1>New post</h1>
+<!-- app/views/posts/new.html.erb -->
+<h1>New Post</h1>
 <%= render Posts::Form.new @post %>
 ```
 
-### Field Kits
+Cool, but you're about to score a huge benefit from extracting forms into their own Ruby classes with automatic strong parameters.
 
-Inspired from [`Phlex::Kit`](https://www.phlex.fun/components/kits), Superform ships with "Field Kits" that are a shortcut for the `render` ceremony.
+### RESTful controllers with automatic strong parameters
+
+Include `Superform::Rails::StrongParameters` in your controllers for automatic parameter handling:
 
 ```ruby
-# ./app/views/posts/form.rb
-class Posts::Form < Components::Forms::Base
-  def view_template(&)
-    Field(:title).input
-    Field(:body).textarea
-    Field(:blog).select Blog.select(:id, :title)
+class PostsController < ApplicationController
+  include Superform::Rails::StrongParameters
+
+  def create
+    @post = Post.new
+    if save Posts::Form.new(@post)
+      redirect_to @post, notice: 'Post created!'
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    @post = Post.find(params[:id])
+    if save Posts::Form.new(@post)
+      redirect_to @post, notice: 'Post updated!'
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 end
 ```
 
-### Rendering from Erb
+The `save` method automatically:
+- Permits only the parameters defined in your form
+- Assigns them to your model
+- Attempts to save the model
+- Returns `true` if successful, `false` if validation fails
 
-Superforms with Field Kits and Ruby 3.4 work great from Erb, even if most of your Rails app is implemented in Erb.
+Use `save!` for the bang version that raises exceptions on validation failure or `permit` if you want to assign parameters to a model without saving it.
 
-```erb
-<h1>New Post</h1>
-<%= render Component::Form.new @user do
-  it.Field(:title).input
-  it.Field(:body).textarea
-  it.Field(:blog).select Blog.select(:id, :title)
-end %>
+### Rich input types with smart helpers
+
+Superform includes helpers for all HTML5 input types:
+
+```ruby
+class UserForm < Components::Forms::Base
+  def view_template
+    Field(:email).email           # type="email"
+    Field(:password).password     # type="password"
+    Field(:website).url           # type="url"
+    Field(:phone).tel             # type="tel"
+    Field(:age).number(min: 18)   # type="number"
+    Field(:birthday).date         # type="date"
+    Field(:appointment).datetime  # type="datetime-local"
+    Field(:favorite_color).color  # type="color"
+    Field(:bio).textarea(rows: 5)
+    Field(:terms).checkbox
+    submit
+  end
+end
 ```
+
+### For Phlex users
+
+If you're already using Phlex throughout your Rails application, you can leverage Superform's full component architecture:
+
+```ruby
+class Posts::Form < Components::Forms::Base
+  def view_template
+    div(class: "form-section") do
+      h2 { "Post Details" }
+      Field(:title).text(class: "form-control")
+      Field(:body).textarea(class: "form-control", rows: 10)
+    end
+
+    div(class: "form-section") do
+      h2 { "Publishing" }
+      Field(:publish_at).date(class: "form-control")
+      Field(:featured).checkbox(class: "form-check-input")
+    end
+
+    div(class: "form-actions") do
+      submit "Save Post", class: "btn btn-primary"
+    end
+  end
+end
+```
+
+This gives you complete control over markup, styling, and component composition while maintaining all the strong parameter and validation benefits.
 
 ## Customization
 
@@ -153,19 +239,19 @@ class AccountForm < Superform::Rails::Form
     # Account#owner returns a single object
     namespace :owner do |owner|
       # Renders input with the name `account[owner][name]`
-      render owner.field(:name).input
+      owner.Field(:name).text
       # Renders input with the name `account[owner][email]`
-      render owner.field(:email).input(type: :email)
+      owner.Field(:email).email
     end
 
     # Account#members returns a collection of objects
     collection(:members).each do |member|
       # Renders input with the name `account[members][0][name]`,
       # `account[members][1][name]`, ...
-      render member.field(:name).input
+      member.Field(:name).input
       # Renders input with the name `account[members][0][email]`,
       # `account[members][1][email]`, ...
-      render member.field(:email).input(type: :email)
+      member.Field(:email).input(type: :email)
 
       # Member#permissions returns an array of values like
       # ["read", "write", "delete"].
@@ -241,10 +327,10 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 class SignupForm < Components::Forms::Base
   def view_template
     # The most basic type of input, which will be autofocused.
-    render field(:name).input.focus
+    Field(:name).input.focus
 
     # Input field with a lot more options on it.
-    render field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
+    Field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
 
     # You can put fields in a block if that's your thing.
     field(:reason) do |f|
@@ -256,8 +342,8 @@ class SignupForm < Components::Forms::Base
 
     # Let's get crazy with Selects. They can accept values as simple as 2 element arrays.
     div do
-      render field(:contact).label { "Would you like us to spam you to death?" }
-      render field(:contact).select(
+      Field(:contact).label { "Would you like us to spam you to death?" }
+      Field(:contact).select(
         [true, "Yes"],  # <option value="true">Yes</option>
         [false, "No"],  # <option value="false">No</option>
         "Hell no",      # <option value="Hell no">Hell no</option>
@@ -266,8 +352,8 @@ class SignupForm < Components::Forms::Base
     end
 
     div do
-      render field(:source).label { "How did you hear about us?" }
-      render field(:source).select do |s|
+      Field(:source).label { "How did you hear about us?" }
+      Field(:source).select do |s|
         # Renders a blank option.
         s.blank_option
         # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
@@ -281,8 +367,8 @@ class SignupForm < Components::Forms::Base
     end
 
     div do
-      render field(:agreement).label { "Check this box if you agree to give us your first born child" }
-      render field(:agreement).checkbox(checked: true)
+      Field(:agreement).label { "Check this box if you agree to give us your first born child" }
+      Field(:agreement).checkbox(checked: true)
     end
 
     render button { "Submit" }
@@ -297,9 +383,9 @@ If you want to add file upload fields to your form you will need to initialize y
 class User::ImageForm < Components::Forms::Base
   def view_template
     # render label
-    render field(:image).label { "Choose file" }
+    Field(:image).label { "Choose file" }
     # render file input with accept attribute for png and jpeg images
-    render field(:image).input(type: "file", accept: "image/png, image/jpeg")
+    Field(:image).input(type: "file", accept: "image/png, image/jpeg")
   end
 end
 
@@ -347,37 +433,46 @@ Since Superforms are just Ruby objects, you can organize them however you want. 
 
 ## Automatic strong parameters
 
-Guess what? Superform eliminates the need for Strong Parameters in Rails by assigning the values of the `params` hash _through_ your form via the `assign` method. Here's what it looks like.
+Superform eliminates the need to manually define strong parameters. Just include `Superform::Rails::StrongParameters` in your controllers and use the `save`, `save!`, and `permit` methods:
 
 ```ruby
 class PostsController < ApplicationController
   include Superform::Rails::StrongParameters
 
+  # Standard Rails CRUD with automatic strong parameters
   def create
-    @post = assign params.require(:post), to: Posts::Form.new(Post.new)
-
-    if @post.save
-      # Success path
+    @post = Post.new
+    if save Posts::Form.new(@post)
+      redirect_to @post, notice: 'Post created successfully.'
     else
-      # Error path
+      render :new, status: :unprocessable_entity
     end
   end
 
   def update
     @post = Post.find(params[:id])
-
-    assign params.require(:post), to: Posts::Form.new(@post)
-
-    if @post.save
-      # Success path
+    if save Posts::Form.new(@post)
+      redirect_to @post, notice: 'Post updated successfully.'
     else
-      # Error path
+      render :edit, status: :unprocessable_entity
     end
+  end
+
+  # For cases where you want to assign params without saving
+  def preview
+    @post = Post.new
+    permit Posts::Form.new(@post)  # Assigns params but doesn't save
+    render :preview
   end
 end
 ```
 
-How does it work? An instance of the form is created, then the hash is assigned to it. If the params include data outside of what a form accepts, it will be ignored.
+**How it works:** Superform automatically permits only the parameters that correspond to fields defined in your form. Attempts to mass-assign other parameters are safely ignored, protecting against parameter pollution attacks.
+
+**Available methods:**
+- `save(form)` - Assigns permitted params and saves the model, returns `true`/`false`
+- `save!(form)` - Same as `save` but raises exception on validation failure
+- `permit(form)` - Assigns permitted params without saving, returns the model
 
 ## Comparisons
 
