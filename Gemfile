@@ -15,3 +15,6 @@ gem "guard-rspec", "~> 4.7"
 # Minimal Rails for testing
 gem "rails", "~> 8.0"
 gem "actionpack", "~> 8.0"
+
+# Database for in-memory ActiveRecord tests
+gem "sqlite3"
