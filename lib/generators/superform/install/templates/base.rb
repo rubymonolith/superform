@@ -12,7 +12,7 @@ module Components
     def around_template(&)
       super do
         error_messages
-        yield
+        yield if block_given?
         submit
       end
     end
