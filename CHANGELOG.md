@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.6.1] - 2025-08-28
+
 ### Breaking Changes
 
 This release includes several breaking changes to improve consistency with Phlex 2.x conventions and better organize the codebase.
@@ -107,7 +109,7 @@ Run bundle update to update dependencies:
   - Safe mass assignment protection against unauthorized attributes
 - Field input type helper methods for Rails forms:
   - `field.email` for email input type
-  - `field.password` for password input type  
+  - `field.password` for password input type
   - `field.url` for URL input type
   - `field.tel` (with `phone` alias) for telephone input type
   - `field.number` for number input type
