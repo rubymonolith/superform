@@ -42,6 +42,28 @@ module Superform
       self
     end
 
+    # A helper, borrowed from Phlex, that makes it easy to "grab" values
+    # passed into a method that are reserved keywords. For example, this
+    # would throw a syntax error because `class` and `end` are reserved:
+    #
+    # def foo(end:, class:)
+    #   puts class
+    #   puts end
+    # end
+    #
+    # So you "grab" them like this:
+    # def foo(end:, class:)
+    #   puts grab(end:)
+    #   puts grab(class:)
+    # end
+    private def grab(**bindings)
+      if bindings.size > 1
+       	bindings.values
+      else
+     	  bindings.values.first
+      end
+    end
+
     # High-performance Kit proxy that wraps field methods with form.render calls.
     # Uses Ruby class hooks to define methods at the class level for maximum speed:
     # - Methods are defined once per Field class, not per Kit instance
