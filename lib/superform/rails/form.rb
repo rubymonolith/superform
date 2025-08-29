@@ -54,10 +54,6 @@ module Superform
           Components::Input.new(self, attributes:)
         end
 
-        def text(*, **, &)
-          input(*, **, type: :text, &)
-        end
-
         def checkbox(**attributes)
           Components::Checkbox.new(self, attributes:)
         end
@@ -81,6 +77,10 @@ module Superform
         #   field(:birthday).date
         #   field(:secret).hidden(value: "token123")
         #   field(:gender).radio("male", id: "user_gender_male")
+        def text(*, **, &)
+          input(*, **, type: :text, &)
+        end
+
         def hidden(*, **, &)
           input(*, **, type: :hidden, &)
         end
