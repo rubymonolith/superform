@@ -16,9 +16,9 @@ Superform is a complete reimagining of Rails forms, built on solid Ruby foundati
 
 ## Video course
 
-Support this project and [become a Superform pro](https://beautifulruby.com/phlex/forms/overview) by ordering the [Phlex on Rails video course](https://beautifulruby.com/phlex).
+Support this project and [become a Superform pro](https://beautifulruby.com/phlex/forms/introduction) by ordering the [Phlex on Rails video course](https://beautifulruby.com/phlex).
 
-[![](https://immutable.terminalwire.com/NgTt6nzO1aEnExV8j6ODuKt2iZpY74ZF8ecpUSCp4A0tXA0ErpJIS4cdMX0tQQKOWwZSl65jWnpzpgCLJThhhWtZJGr42XKt7WIi.png)](https://beautifulruby.com/phlex/forms/overview)
+[![](https://immutable.terminalwire.com/hmM9jvv7yF89frBUfjikUfRmdUsTVZ8YvXc7OnnYoERXfLJLzDcj5dFM7qdfMG2bqQLuw633Zt1gl3O7z0zKmH6k8QmifN7z0kJo.png)](https://beautifulruby.com/phlex/forms/introduction)
 
 ## Installation
 
