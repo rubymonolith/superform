@@ -12,37 +12,41 @@ module Superform
     #   end
     #
     #   class Field < Field
-    #     def label(**attributes)
-    #       MyLabel.new(self, **attributes)
+    #     def label(**, &)
+    #       MyLabel.new(self, **, &)
+    #     end
+    #
+    #     def input(class: nil, **)
+    #       super(class: ["input input-outline", grab(class:)])
     #     end
     #   end
     # end
     # ```
-    ##
+    #
     # Now all calls to `label` will have the `text-bold` class applied to it.
     class Field < Superform::Field
       def button(**attributes)
-        Components::Button.new(self, attributes:)
+        Components::Button.new(field, attributes:)
       end
 
       def input(**attributes)
-        Components::Input.new(self, attributes:)
+        Components::Input.new(field, attributes:)
       end
 
       def checkbox(**attributes)
-        Components::Checkbox.new(self, attributes:)
+        Components::Checkbox.new(field, attributes:)
       end
 
       def label(**attributes, &)
-        Components::Label.new(self, attributes:, &)
+        Components::Label.new(field, attributes:, &)
       end
 
       def textarea(**attributes)
-        Components::Textarea.new(self, attributes:)
+        Components::Textarea.new(field, attributes:)
       end
 
       def select(*collection, **attributes, &)
-        Components::Select.new(self, attributes:, collection:, &)
+        Components::Select.new(field, attributes:, collection:, &)
       end
 
       # HTML5 input type convenience methods - clean API without _field suffix
