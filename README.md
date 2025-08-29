@@ -61,7 +61,7 @@ You probably want to use the same form for creating and editing resources. In Su
 
 ```ruby
 # app/views/posts/form.rb
-class Posts::Form < Components::Form
+class Views::Posts::Form < Components::Form
   def view_template
     Field(:title).text
     Field(:body).textarea(rows: 10)
@@ -77,7 +77,7 @@ Then render this in your views:
 ```erb
 <!-- app/views/posts/new.html.erb -->
 <h1>New Post</h1>
-<%= render Posts::Form.new @post %>
+<%= render Views::Posts::Form.new @post %>
 ```
 
 Cool, but you're about to score a huge benefit from extracting forms into their own Ruby classes with automatic strong parameters.
@@ -92,21 +92,14 @@ class PostsController < ApplicationController
 
   def create
     @post = Post.new
-    if save Posts::Form.new(@post)
+    if save Views::Posts::Form.new(@post)
       redirect_to @post, notice: 'Post created!'
     else
       render :new, status: :unprocessable_entity
     end
   end
 
-  def update
-    @post = Post.find(params[:id])
-    if save Posts::Form.new(@post)
-      redirect_to @post, notice: 'Post updated!'
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
+  # ... other actions ...
 end
 ```
 
@@ -145,7 +138,7 @@ end
 Superform was built from the ground-up using Phlex components, which means you'll feel right at home using it with your existing Phlex views and components.
 
 ```ruby
-class Posts::Form < Components::Form
+class Views::Posts::Form < Components::Form
   def view_template
     div(class: "form-section") do
       h2 { "Post Details" }
@@ -438,11 +431,12 @@ Superform eliminates the need to manually define strong parameters. Just include
 ```ruby
 class PostsController < ApplicationController
   include Superform::Rails::StrongParameters
+  include Views::Posts
 
   # Standard Rails CRUD with automatic strong parameters
   def create
     @post = Post.new
-    if save Posts::Form.new(@post)
+    if save Form.new(@post)
       redirect_to @post, notice: 'Post created successfully.'
     else
       render :new, status: :unprocessable_entity
@@ -451,7 +445,7 @@ class PostsController < ApplicationController
 
   def update
     @post = Post.find(params[:id])
-    if save Posts::Form.new(@post)
+    if save! Form.new(@post)
       redirect_to @post, notice: 'Post updated successfully.'
     else
       render :edit, status: :unprocessable_entity
@@ -461,7 +455,7 @@ class PostsController < ApplicationController
   # For cases where you want to assign params without saving
   def preview
     @post = Post.new
-    permit Posts::Form.new(@post)  # Assigns params but doesn't save
+    permit Form.new(@post)  # Assigns params but doesn't save
     render :preview
   end
 end
