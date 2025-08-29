@@ -43,6 +43,40 @@ Rails classes have been moved into separate files for better organization:
 
 ### How to Upgrade
 
+#### Phlex 2.x compatibility
+
+The `ApplicationForm` file should be moved to `Components::Form` at `./app/components/form.rb` to better match Phlex 2.x conventions.
+
+   ```ruby
+   # Before (0.5.x)
+   class ApplicationForm < Superform::Rails::Form
+     # ...
+   end
+   ```
+
+   ```ruby
+   # After (0.6.0)
+   class Components::Form < Superform::Rails::Form
+     # ...
+   end
+   ```
+
+Form variants may organized in the `./app/components/forms/` directory.
+
+   ```ruby
+   # Before (0.5.x)
+   class Forms::User < ApplicationForm
+     # ...
+   end
+   ```
+
+   ```ruby
+   # After (0.6.0)
+   class Forms::User < Components::Form
+     # ...
+   end
+   ```
+
 #### Custom Form Classes
 
 Custom form classes with Rails now automatically pass themselves as form instances (no changes needed for basic usage).
