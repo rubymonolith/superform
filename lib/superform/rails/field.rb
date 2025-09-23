@@ -49,6 +49,18 @@ module Superform
         Components::Select.new(field, attributes:, collection:, &)
       end
 
+      def errors
+        object.errors[key]
+      end
+
+      def invalid?
+        errors.any?
+      end
+
+      def valid?
+        not invalid?
+      end
+
       # HTML5 input type convenience methods - clean API without _field suffix
       # Examples:
       #   field(:email).email(class: "form-input")
