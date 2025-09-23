@@ -3,7 +3,12 @@ module Superform
   # methods for accessing and modifying the field's value. HTML concerns are all
   # delegated to the DOM object.
   class Field < Node
-    attr_reader :dom
+    # Helpful for overriding methods in the `input`, `email`, `label`, etc. calls.
+    include Phlex::Helpers
+
+    # Expose these as a reader so they're accessible from the `input`, `label`,
+    # etc. methods.
+    attr_reader :dom, :object
 
     def initialize(key, parent:, object: nil, value: nil)
       super key, parent: parent
@@ -42,28 +47,6 @@ module Superform
       self
     end
 
-    # A helper, borrowed from Phlex, that makes it easy to "grab" values
-    # passed into a method that are reserved keywords. For example, this
-    # would throw a syntax error because `class` and `end` are reserved:
-    #
-    # def foo(end:, class:)
-    #   puts class
-    #   puts end
-    # end
-    #
-    # So you "grab" them like this:
-    # def foo(end:, class:)
-    #   puts grab(end:)
-    #   puts grab(class:)
-    # end
-    private def grab(**bindings)
-      if bindings.size > 1
-       	bindings.values
-      else
-     	  bindings.values.first
-      end
-    end
-
     # High-performance Kit proxy that wraps field methods with form.render calls.
     # Uses Ruby class hooks to define methods at the class level for maximum speed:
     # - Methods are defined once per Field class, not per Kit instance
@@ -85,7 +68,7 @@ module Superform
       # Create a new Kit class for each Field subclass with true isolation
       # Copy methods from parent Field classes at creation time, not through inheritance
       subclass.const_set(:Kit, Class.new(Field::Kit))
-      
+
       # Copy all existing methods from the inheritance chain
       field_class = self
       while field_class != Field
@@ -99,7 +82,7 @@ module Superform
       # Skip if this is the base Field class or if we don't have a Kit class yet
       return if self == Field
       return unless const_defined?(:Kit, false)
-      
+
       # Only add method to THIS class's Kit, not subclasses (isolation)
       add_method_to_kit(method_name, self::Kit)
     end
@@ -111,14 +94,14 @@ module Superform
     private
 
     def self.copy_field_methods_to_kit(field_class, kit_class)
-      base_methods = (Object.instance_methods + Node.instance_methods + 
+      base_methods = (Object.instance_methods + Node.instance_methods +
                      [:dom, :value, :serialize, :assign, :collection, :field, :kit]).to_set
-      
+
       field_class.instance_methods(false).each do |method_name|
         next if method_name.to_s.end_with?('=')
         next if base_methods.include?(method_name)
         next if kit_class.method_defined?(method_name)
-        
+
         kit_class.define_method(method_name) do |*args, **kwargs, &block|
           result = @field.send(method_name, *args, **kwargs, &block)
           @form.render result
@@ -128,12 +111,12 @@ module Superform
 
     def self.add_method_to_kit(method_name, kit_class)
       return if method_name.to_s.end_with?('=')
-      
-      base_methods = (Object.instance_methods + Node.instance_methods + 
+
+      base_methods = (Object.instance_methods + Node.instance_methods +
                      [:dom, :value, :serialize, :assign, :collection, :field, :kit]).to_set
       return if base_methods.include?(method_name)
       return if kit_class.method_defined?(method_name)
-      
+
       kit_class.define_method(method_name) do |*args, **kwargs, &block|
         result = @field.send(method_name, *args, **kwargs, &block)
         @form.render result
