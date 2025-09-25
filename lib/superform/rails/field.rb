@@ -61,6 +61,10 @@ module Superform
         not invalid?
       end
 
+      def human_attribute_name
+        object.class.human_attribute_name key
+      end
+
       # HTML5 input type convenience methods - clean API without _field suffix
       # Examples:
       #   field(:email).email(class: "form-input")

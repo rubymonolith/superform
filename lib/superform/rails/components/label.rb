@@ -12,7 +12,7 @@ module Superform
         end
 
         def label_text
-          field.key.to_s.titleize
+          field.human_attribute_name
         end
       end
     end
