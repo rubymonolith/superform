@@ -46,7 +46,18 @@ module Superform
       end
 
       def select(*collection, **attributes, &)
-        Components::Select.new(field, attributes:, collection:, &)
+        # Extract select-specific options from attributes if passed as keyword arguments
+        collection = attributes.delete(:collection) if collection.empty? && attributes.key?(:collection)
+        multiple = attributes.delete(:multiple) || false
+        include_blank = attributes.delete(:include_blank) || false
+        Components::Select.new(
+          field,
+          attributes:,
+          collection:,
+          multiple:,
+          include_blank:,
+          &
+        )
       end
 
       def errors

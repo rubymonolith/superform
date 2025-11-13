@@ -195,6 +195,58 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
+  describe 'using field helper method' do
+    let(:form_field) do
+      Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
+    end
+
+    context 'with positional collection arguments' do
+      subject do
+        render(form_field.select([1, 'Admin'], [2, 'Editor'], [3, 'Viewer']))
+      end
+
+      it 'renders select with options from positional args' do
+        expect(subject).to include('>Admin</option>')
+        expect(subject).to include('>Editor</option>')
+        expect(subject).to include('>Viewer</option>')
+      end
+    end
+
+    context 'with collection keyword argument' do
+      subject do
+        render(
+          form_field.select(
+            collection: [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']]
+          )
+        )
+      end
+
+      it 'renders select with options from collection kwarg' do
+        expect(subject).to include('>Admin</option>')
+        expect(subject).to include('>Editor</option>')
+        expect(subject).to include('>Viewer</option>')
+      end
+    end
+
+    context 'with multiple: true keyword argument' do
+      subject do
+        render(
+          form_field.select(
+            collection: [[1, 'Admin'], [2, 'Editor']],
+            multiple: true
+          )
+        )
+      end
+
+      it 'renders multiple select with collection kwarg' do
+        expect(subject).to include('multiple')
+        expect(subject).to include('name="role_ids[]"')
+        expect(subject).to include('>Admin</option>')
+        expect(subject).to include('>Editor</option>')
+      end
+    end
+  end
+
   describe '#blank_option' do
     let(:component) do
       described_class.new(field, attributes: attributes, collection: [])
