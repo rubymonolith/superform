@@ -2,16 +2,35 @@ module Superform
   module Rails
     module Components
       class Select < Field
-        def initialize(*, collection: [], **, &)
+        def initialize(
+          *,
+          collection: [],
+          multiple: false,
+          include_blank: false,
+          **,
+          &
+        )
           super(*, **, &)
           @collection = collection
+          @multiple = multiple
+          @include_blank = include_blank
         end
 
         def view_template(&options)
+          # Hidden input ensures a value is sent even when all options are
+          # deselected in a multiple select
+          if @multiple
+            hidden_name = field.parent.is_a?(Superform::Field) ? dom.name : "#{dom.name}[]"
+            input(type: "hidden", name: hidden_name, value: "")
+          end
+
           if block_given?
             select(**attributes, &options)
           else
-            select(**attributes) { options(*@collection) }
+            select(**attributes) do
+              blank_option if @include_blank
+              options(*@collection)
+            end
           end
         end
 
@@ -36,6 +55,18 @@ module Superform
         protected
           def map_options(collection)
             OptionMapper.new(collection)
+          end
+
+          def field_attributes
+            attrs = super
+            if @multiple
+              # Only append [] if the field doesn't already have a Field parent
+              # (which would mean it's already in a collection and has [] notation)
+              name = field.parent.is_a?(Superform::Field) ? attrs[:name] : "#{attrs[:name]}[]"
+              attrs.merge(multiple: true, name: name)
+            else
+              attrs
+            end
           end
       end
     end

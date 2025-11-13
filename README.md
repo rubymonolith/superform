@@ -63,10 +63,10 @@ You probably want to use the same form for creating and editing resources. In Su
 # app/views/posts/form.rb
 class Views::Posts::Form < Components::Form
   def view_template
-    Field(:title).text
-    Field(:body).textarea(rows: 10)
-    Field(:publish_at).date
-    Field(:featured).checkbox
+    field(:title).text
+    field(:body).textarea(rows: 10)
+    field(:publish_at).date
+    field(:featured).checkbox
     submit
   end
 end
@@ -118,16 +118,16 @@ Superform includes helpers for all HTML5 input types:
 ```ruby
 class UserForm < Components::Form
   def view_template
-    Field(:email).email           # type="email"
-    Field(:password).password     # type="password"
-    Field(:website).url           # type="url"
-    Field(:phone).tel             # type="tel"
-    Field(:age).number(min: 18)   # type="number"
-    Field(:birthday).date         # type="date"
-    Field(:appointment).datetime  # type="datetime-local"
-    Field(:favorite_color).color  # type="color"
-    Field(:bio).textarea(rows: 5)
-    Field(:terms).checkbox
+    field(:email).email           # type="email"
+    field(:password).password     # type="password"
+    field(:website).url           # type="url"
+    field(:phone).tel             # type="tel"
+    field(:age).number(min: 18)   # type="number"
+    field(:birthday).date         # type="date"
+    field(:appointment).datetime  # type="datetime-local"
+    field(:favorite_color).color  # type="color"
+    field(:bio).textarea(rows: 5)
+    field(:terms).checkbox
     submit
   end
 end
@@ -142,14 +142,14 @@ class Views::Posts::Form < Components::Form
   def view_template
     div(class: "form-section") do
       h2 { "Post Details" }
-      Field(:title).text(class: "form-control")
-      Field(:body).textarea(class: "form-control", rows: 10)
+      field(:title).text(class: "form-control")
+      field(:body).textarea(class: "form-control", rows: 10)
     end
 
     div(class: "form-section") do
       h2 { "Publishing" }
-      Field(:publish_at).date(class: "form-control")
-      Field(:featured).checkbox(class: "form-check-input")
+      field(:publish_at).date(class: "form-control")
+      field(:featured).checkbox(class: "form-check-input")
     end
 
     div(class: "form-actions") do
@@ -232,19 +232,19 @@ class AccountForm < Superform::Rails::Form
     # Account#owner returns a single object
     namespace :owner do |owner|
       # Renders input with the name `account[owner][name]`
-      owner.Field(:name).text
+      owner.field(:name).text
       # Renders input with the name `account[owner][email]`
-      owner.Field(:email).email
+      owner.field(:email).email
     end
 
     # Account#members returns a collection of objects
     collection(:members).each do |member|
       # Renders input with the name `account[members][0][name]`,
       # `account[members][1][name]`, ...
-      member.Field(:name).input
+      member.field(:name).input
       # Renders input with the name `account[members][0][email]`,
       # `account[members][1][email]`, ...
-      member.Field(:email).input(type: :email)
+      member.field(:email).input(type: :email)
 
       # Member#permissions returns an array of values like
       # ["read", "write", "delete"].
@@ -252,7 +252,7 @@ class AccountForm < Superform::Rails::Form
         # Renders input with the name `account[members][0][permissions][]`,
         # `account[members][1][permissions][]`, ...
         render permission.label do
-          plain permisson.value.humanize
+          plain permission.value.humanize
           render permission.checkbox
         end
       end
@@ -320,10 +320,10 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 class SignupForm < Components::Form
   def view_template
     # The most basic type of input, which will be autofocused.
-    Field(:name).input.focus
+    field(:name).input.focus
 
     # Input field with a lot more options on it.
-    Field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
+    field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
 
     # You can put fields in a block if that's your thing.
     field(:reason) do |f|
@@ -335,8 +335,8 @@ class SignupForm < Components::Form
 
     # Let's get crazy with Selects. They can accept values as simple as 2 element arrays.
     div do
-      Field(:contact).label { "Would you like us to spam you to death?" }
-      Field(:contact).select(
+      field(:contact).label { "Would you like us to spam you to death?" }
+      field(:contact).select(
         [true, "Yes"],  # <option value="true">Yes</option>
         [false, "No"],  # <option value="false">No</option>
         "Hell no",      # <option value="Hell no">Hell no</option>
@@ -345,8 +345,8 @@ class SignupForm < Components::Form
     end
 
     div do
-      Field(:source).label { "How did you hear about us?" }
-      Field(:source).select do |s|
+      field(:source).label { "How did you hear about us?" }
+      field(:source).select do |s|
         # Renders a blank option.
         s.blank_option
         # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
@@ -359,9 +359,34 @@ class SignupForm < Components::Form
       end
     end
 
+    # Select with include_blank option
     div do
-      Field(:agreement).label { "Check this box if you agree to give us your first born child" }
-      Field(:agreement).checkbox(checked: true)
+      field(:country).label { "Select your country" }
+      field(:country).select([[1, "USA"], [2, "Canada"], [3, "Mexico"]], include_blank: true)
+    end
+
+    # Multiple select for choosing multiple options
+    div do
+      field(:role_ids).label { "Select roles" }
+      field(:role_ids).select(
+        [[1, "Admin"], [2, "Editor"], [3, "Viewer"]],
+        multiple: true
+      )
+    end
+
+    # Multiple select with include_blank
+    div do
+      field(:tag_ids).label { "Select tags" }
+      field(:tag_ids).select(
+        [[1, "Ruby"], [2, "Rails"], [3, "Phlex"]],
+        multiple: true,
+        include_blank: true
+      )
+    end
+
+    div do
+      field(:agreement).label { "Check this box if you agree to give us your first born child" }
+      field(:agreement).checkbox(checked: true)
     end
 
     render button { "Submit" }
@@ -376,9 +401,9 @@ If you want to add file upload fields to your form you will need to initialize y
 class User::ImageForm < Components::Form
   def view_template
     # render label
-    Field(:image).label { "Choose file" }
+    field(:image).label { "Choose file" }
     # render file input with accept attribute for png and jpeg images
-    Field(:image).input(type: "file", accept: "image/png, image/jpeg")
+    field(:image).input(type: "file", accept: "image/png, image/jpeg")
   end
 end
 
