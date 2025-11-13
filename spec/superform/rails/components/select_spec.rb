@@ -33,6 +33,16 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     it 'does not include multiple attribute' do
       expect(subject).not_to include('multiple')
     end
+
+    it 'renders complete HTML structure' do
+      expect(subject).to eq(
+        '<select id="role_ids" name="role_ids">' \
+        '<option value="1">Admin</option>' \
+        '<option value="2">Editor</option>' \
+        '<option value="3">Viewer</option>' \
+        '</select>'
+      )
+    end
   end
 
   describe 'with multiple: true' do
@@ -64,6 +74,17 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     it 'renders hidden input with empty value' do
       expect(subject).to include('type="hidden" name="role_ids[]" value=""')
     end
+
+    it 'renders complete HTML structure with hidden input' do
+      expect(subject).to eq(
+        '<input type="hidden" name="role_ids[]" value="">' \
+        '<select id="role_ids" name="role_ids[]" multiple>' \
+        '<option value="1">Admin</option>' \
+        '<option value="2">Editor</option>' \
+        '<option value="3">Viewer</option>' \
+        '</select>'
+      )
+    end
   end
 
   describe 'with include_blank: true' do
@@ -85,6 +106,17 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     it 'renders blank option before collection options' do
       expect(subject).to match(
         %r{<option[^>]*selected[^>]*></option>.*>Admin<}m
+      )
+    end
+
+    it 'renders complete HTML structure with blank option' do
+      expect(subject).to eq(
+        '<select id="role_ids" name="role_ids">' \
+        '<option selected></option>' \
+        '<option value="1">Admin</option>' \
+        '<option value="2">Editor</option>' \
+        '<option value="3">Viewer</option>' \
+        '</select>'
       )
     end
   end
@@ -129,6 +161,17 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
 
     it 'renders hidden input with correct name' do
       expect(subject).to include('type="hidden" name="users[][]" value=""')
+    end
+
+    it 'renders complete HTML structure without extra brackets' do
+      expect(subject).to eq(
+        '<input type="hidden" name="users[][]" value="">' \
+        '<select id="users_1_role_ids" name="users[][]" multiple>' \
+        '<option value="1">Admin</option>' \
+        '<option value="2">Editor</option>' \
+        '<option value="3">Viewer</option>' \
+        '</select>'
+      )
     end
   end
 
