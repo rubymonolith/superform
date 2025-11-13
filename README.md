@@ -390,11 +390,14 @@ class SignupForm < Components::Form
       )
     end
 
-    # Select options can also be ActiveRecord relations or enumerables
+    # Select options can also be ActiveRecord relations
+    # The relation is passed as a single argument (not splatted)
+    # OptionMapper extracts the primary key and joins other attributes for the label
     div do
       field(:author_id).label { "Select author" }
-      # Assumes User has id and name attributes
-      field(:author_id).select(*User.select(:id, :name))
+      # For User.select(:id, :name), renders <option value="1">Alice</option>
+      # where id=1 is the primary key and "Alice" is the name attribute
+      field(:author_id).select(User.select(:id, :name))
     end
 
     div do

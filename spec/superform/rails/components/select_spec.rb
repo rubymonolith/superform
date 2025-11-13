@@ -270,5 +270,29 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       end
     end
   end
+
+  describe 'with ActiveRecord::Relation' do
+    before do
+      User.create!(first_name: 'Alice', email: 'alice@example.com')
+      User.create!(first_name: 'Bob', email: 'bob@example.com')
+    end
+
+    after do
+      User.delete_all
+    end
+
+    let(:users_relation) { User.select(:id, :first_name) }
+    let(:component) do
+      described_class.new(field, attributes: attributes, options: [users_relation])
+    end
+
+    subject { render(component) }
+
+    it 'renders options from ActiveRecord relation' do
+      # OptionMapper extracts id as value and joins other attributes as label
+      expect(subject).to match(/<option value="\d+">Alice<\/option>/)
+      expect(subject).to match(/<option value="\d+">Bob<\/option>/)
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
