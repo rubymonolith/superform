@@ -333,7 +333,10 @@ class SignupForm < Components::Form
       end
     end
 
-    # Let's get crazy with Selects. They can accept values as simple as 2 element arrays.
+    # Selects accept options as positional arguments. Each option can be:
+    # - A 2-element array: [value, label] renders <option value="value">label</option>
+    # - A single value: "text" renders <option value="text">text</option>
+    # - nil: renders an empty <option></option>
     div do
       field(:contact).label { "Would you like us to spam you to death?" }
       field(:contact).select(
@@ -359,13 +362,16 @@ class SignupForm < Components::Form
       end
     end
 
-    # Select with include_blank option
+    # Select with include_blank: true adds a blank option at the start
     div do
       field(:country).label { "Select your country" }
       field(:country).select([[1, "USA"], [2, "Canada"], [3, "Mexico"]], include_blank: true)
     end
 
-    # Multiple select for choosing multiple options
+    # Multiple select with multiple: true
+    # - Adds the HTML 'multiple' attribute
+    # - Appends [] to the field name (role_ids becomes role_ids[])
+    # - Includes a hidden input to handle empty submissions
     div do
       field(:role_ids).label { "Select roles" }
       field(:role_ids).select(
@@ -374,14 +380,21 @@ class SignupForm < Components::Form
       )
     end
 
-    # Multiple select with include_blank
+    # Combine multiple: true with include_blank: true
     div do
-      field(:tag_ids).label { "Select tags" }
+      field(:tag_ids).label { "Select tags (optional)" }
       field(:tag_ids).select(
         [[1, "Ruby"], [2, "Rails"], [3, "Phlex"]],
         multiple: true,
         include_blank: true
       )
+    end
+
+    # Select options can also be ActiveRecord relations or enumerables
+    div do
+      field(:author_id).label { "Select author" }
+      # Assumes User has id and name attributes
+      field(:author_id).select(*User.select(:id, :name))
     end
 
     div do

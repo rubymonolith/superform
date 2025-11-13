@@ -4,19 +4,19 @@ module Superform
       class Select < Field
         def initialize(
           *,
-          collection: [],
+          options: [],
           multiple: false,
           include_blank: false,
           **,
           &
         )
           super(*, **, &)
-          @collection = collection
+          @options = options
           @multiple = multiple
           @include_blank = include_blank
         end
 
-        def view_template(&options)
+        def view_template(&block)
           # Hidden input ensures a value is sent even when all options are
           # deselected in a multiple select
           if @multiple
@@ -25,11 +25,11 @@ module Superform
           end
 
           if block_given?
-            select(**attributes, &options)
+            select(**attributes, &block)
           else
             select(**attributes) do
               blank_option if @include_blank
-              options(*@collection)
+              options(*@options)
             end
           end
         end

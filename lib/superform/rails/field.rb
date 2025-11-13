@@ -45,15 +45,16 @@ module Superform
         Components::Textarea.new(field, attributes:)
       end
 
-      def select(*collection, **attributes, &)
-        # Extract select-specific options from attributes if passed as keyword arguments
-        collection = attributes.delete(:collection) if collection.empty? && attributes.key?(:collection)
+      def select(*options, **attributes, &)
+        # Extract select-specific parameters from attributes if passed as keyword arguments
+        # Note: positional args are the preferred API - keyword form is for internal use
+        options = attributes.delete(:options) if options.empty? && attributes.key?(:options)
         multiple = attributes.delete(:multiple) || false
         include_blank = attributes.delete(:include_blank) || false
         Components::Select.new(
           field,
           attributes:,
-          collection:,
+          options:,
           multiple:,
           include_blank:,
           &

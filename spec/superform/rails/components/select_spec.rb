@@ -7,9 +7,9 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
   let(:field) do
     Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
   end
-  let(:collection) { [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']] }
+  let(:options) { [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']] }
   let(:component) do
-    described_class.new(field, attributes: attributes, collection: collection)
+    described_class.new(field, attributes: attributes, options: options)
   end
   let(:attributes) { {} }
 
@@ -50,7 +50,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         field,
         attributes: attributes,
-        collection: collection,
+        options: options,
         multiple: true
       )
     end
@@ -92,7 +92,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         field,
         attributes: attributes,
-        collection: collection,
+        options: options,
         include_blank: true
       )
     end
@@ -141,7 +141,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         role_ids_field,
         attributes: attributes,
-        collection: collection,
+        options: options,
         multiple: true
       )
     end
@@ -180,7 +180,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         field,
         attributes: attributes,
-        collection: collection,
+        options: options,
         multiple: true,
         include_blank: true
       )
@@ -212,16 +212,16 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       end
     end
 
-    context 'with collection keyword argument' do
+    context 'with options keyword argument' do
       subject do
         render(
           form_field.select(
-            collection: [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']]
+            options: [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']]
           )
         )
       end
 
-      it 'renders select with options from collection kwarg' do
+      it 'renders select with options from options kwarg' do
         expect(subject).to include('>Admin</option>')
         expect(subject).to include('>Editor</option>')
         expect(subject).to include('>Viewer</option>')
@@ -232,13 +232,13 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       subject do
         render(
           form_field.select(
-            collection: [[1, 'Admin'], [2, 'Editor']],
+            options: [[1, 'Admin'], [2, 'Editor']],
             multiple: true
           )
         )
       end
 
-      it 'renders multiple select with collection kwarg' do
+      it 'renders multiple select with options kwarg' do
         expect(subject).to include('multiple')
         expect(subject).to include('name="role_ids[]"')
         expect(subject).to include('>Admin</option>')
@@ -249,7 +249,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
 
   describe '#blank_option' do
     let(:component) do
-      described_class.new(field, attributes: attributes, collection: [])
+      described_class.new(field, attributes: attributes, options: [])
     end
 
     context 'when field value is nil' do
