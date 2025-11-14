@@ -19,7 +19,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
   end
   let(:attributes) { {} }
 
-  describe 'basic radio collection' do
+  describe 'radio group with options' do
     subject { render(component) }
 
     it 'renders multiple radio inputs' do

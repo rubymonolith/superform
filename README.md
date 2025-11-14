@@ -359,10 +359,10 @@ class SignupForm < Components::Form
       end
     end
 
-    # Radio buttons can be rendered individually or as a collection
+    # Radio buttons can be rendered individually or as a group
     div do
       Field(:plan).label { "Choose your plan" }
-      # Radio collection with options - renders multiple radio buttons
+      # Radio group with options - renders multiple radio buttons
       Field(:plan).radio(
         options: [
           ["free", "Free Plan"],     # <input type="radio" value="free">Free Plan
