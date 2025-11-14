@@ -359,6 +359,29 @@ class SignupForm < Components::Form
       end
     end
 
+    # Radio buttons can be rendered individually or as a collection
+    div do
+      Field(:plan).label { "Choose your plan" }
+      # Radio collection with options - renders multiple radio buttons
+      Field(:plan).radio(
+        options: [
+          ["free", "Free Plan"],     # <input type="radio" value="free">Free Plan
+          ["pro", "Pro Plan"],       # <input type="radio" value="pro">Pro Plan
+          ["enterprise", "Enterprise"] # <input type="radio" value="enterprise">Enterprise
+        ]
+      )
+    end
+
+    # Or render individual radio buttons with custom markup
+    div do
+      Field(:gender).label { "Gender" }
+      Field(:gender).radio do |r|
+        div { r.button("m") { "Male" } }
+        div { r.button("f") { "Female" } }
+        div { r.button("o") { "Other" } }
+      end
+    end
+
     div do
       Field(:agreement).label { "Check this box if you agree to give us your first born child" }
       Field(:agreement).checkbox(checked: true)

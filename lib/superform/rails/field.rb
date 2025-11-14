@@ -137,8 +137,21 @@ module Superform
         input(*, **, type: :file, &)
       end
 
-      def radio(value, *, **, &)
-        input(*, **, type: :radio, value: value, &)
+      def radio(*args, **attributes, &)
+        # If options keyword is provided, create a Radio component for collection
+        if attributes.key?(:options)
+          options = attributes.delete(:options)
+          Components::Radio.new(field, attributes:, options:, &)
+        # If first arg is an array or multiple args provided, treat as collection
+        elsif args.length > 1 || (args.length == 1 && args.first.is_a?(Array))
+          Components::Radio.new(field, attributes:, options: args, &)
+        # Single non-array arg is a radio button value (legacy API)
+        elsif args.length == 1
+          input(type: :radio, value: args.first, **attributes, &)
+        # No args at all - error
+        else
+          raise ArgumentError, "radio requires either a value or options"
+        end
       end
 
       # Rails compatibility aliases
