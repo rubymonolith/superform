@@ -45,6 +45,37 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
+  describe 'with selected value' do
+    let(:role_ids_value) { 2 }
+
+    subject { render(component) }
+
+    it 'marks the matching option as selected' do
+      expect(subject).to match(
+        /<option[^>]*selected[^>]*value="2"[^>]*>Editor<\/option>/
+      )
+    end
+
+    it 'does not mark other options as selected' do
+      expect(subject).not_to match(
+        /<option value="1"[^>]*selected/
+      )
+      expect(subject).not_to match(
+        /<option value="3"[^>]*selected/
+      )
+    end
+
+    it 'renders complete HTML with selected option' do
+      expect(subject).to eq(
+        '<select id="role_ids" name="role_ids">' \
+        '<option value="1">Admin</option>' \
+        '<option selected value="2">Editor</option>' \
+        '<option value="3">Viewer</option>' \
+        '</select>'
+      )
+    end
+  end
+
   describe 'with multiple: true' do
     let(:component) do
       described_class.new(
@@ -82,6 +113,46 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
         '<option value="1">Admin</option>' \
         '<option value="2">Editor</option>' \
         '<option value="3">Viewer</option>' \
+        '</select>'
+      )
+    end
+  end
+
+  describe 'with multiple: true and selected array values' do
+    let(:role_ids_value) { [1, 3] }
+    let(:component) do
+      described_class.new(
+        field,
+        attributes: attributes,
+        options: options,
+        multiple: true
+      )
+    end
+
+    subject { render(component) }
+
+    it 'marks all matching options as selected' do
+      expect(subject).to match(
+        /<option[^>]*selected[^>]*value="1"[^>]*>Admin<\/option>/
+      )
+      expect(subject).to match(
+        /<option[^>]*selected[^>]*value="3"[^>]*>Viewer<\/option>/
+      )
+    end
+
+    it 'does not mark non-matching options as selected' do
+      expect(subject).not_to match(
+        /<option value="2"[^>]*selected/
+      )
+    end
+
+    it 'renders complete HTML with multiple selected options' do
+      expect(subject).to eq(
+        '<input type="hidden" name="role_ids[]" value="">' \
+        '<select id="role_ids" name="role_ids[]" multiple>' \
+        '<option selected value="1">Admin</option>' \
+        '<option value="2">Editor</option>' \
+        '<option selected value="3">Viewer</option>' \
         '</select>'
       )
     end
@@ -292,6 +363,79 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       # OptionMapper extracts id as value and joins other attributes as label
       expect(subject).to match(/<option value="\d+">Alice<\/option>/)
       expect(subject).to match(/<option value="\d+">Bob<\/option>/)
+    end
+  end
+
+  describe 'backwards compatibility with collection parameter' do
+    context 'using deprecated collection keyword in component' do
+      let(:component) do
+        described_class.new(field, attributes: attributes, collection: options)
+      end
+
+      it 'shows deprecation warning' do
+        expect_any_instance_of(described_class).to receive(:warn).with(
+          "[DEPRECATION] Superform::Rails::Components::Select: " \
+          "`collection:` parameter is deprecated. " \
+          "Use `options:` instead."
+        )
+        component
+      end
+
+      it 'still renders select correctly' do
+        # Suppress deprecation warning for this test
+        allow_any_instance_of(described_class).to receive(:warn)
+        result = render(component)
+        expect(result).to include('>Admin</option>')
+        expect(result).to include('>Editor</option>')
+        expect(result).to include('>Viewer</option>')
+      end
+    end
+
+    context 'using deprecated collection keyword in field helper' do
+      let(:form_field) do
+        Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
+      end
+
+      it 'shows deprecation warning' do
+        expect(form_field).to receive(:warn).with(
+          "[DEPRECATION] Superform::Rails::Field#select: " \
+          "`collection:` parameter is deprecated. " \
+          "Use `options:` instead."
+        )
+        form_field.select(collection: [[1, 'Admin'], [2, 'Editor']])
+      end
+
+      it 'still renders select correctly' do
+        # Suppress deprecation warning for this test
+        allow(form_field).to receive(:warn)
+        result = render(
+          form_field.select(collection: [[1, 'Admin'], [2, 'Editor']])
+        )
+        expect(result).to include('>Admin</option>')
+        expect(result).to include('>Editor</option>')
+      end
+    end
+
+    context 'when both options and collection are provided' do
+      let(:component) do
+        described_class.new(
+          field,
+          attributes: attributes,
+          options: [[1, 'Admin']],
+          collection: [[2, 'Editor']]
+        )
+      end
+
+      it 'does not show deprecation warning' do
+        expect_any_instance_of(described_class).not_to receive(:warn)
+        component
+      end
+
+      it 'uses options parameter (takes precedence)' do
+        result = render(component)
+        expect(result).to include('>Admin</option>')
+        expect(result).not_to include('>Editor</option>')
+      end
     end
   end
 end

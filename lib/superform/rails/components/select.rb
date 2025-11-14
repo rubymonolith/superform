@@ -4,14 +4,24 @@ module Superform
       class Select < Field
         def initialize(
           *,
-          options: [],
+          options: nil,
+          collection: nil,
           multiple: false,
           include_blank: false,
           **,
           &
         )
           super(*, **, &)
-          @options = options
+
+          # Handle deprecated collection parameter
+          if collection && !options
+            warn "[DEPRECATION] Superform::Rails::Components::Select: " \
+                 "`collection:` parameter is deprecated. " \
+                 "Use `options:` instead."
+            options = collection
+          end
+
+          @options = options || []
           @multiple = multiple
           @include_blank = include_blank
         end
@@ -36,7 +46,9 @@ module Superform
 
         def options(*collection)
           map_options(collection).each do |key, value|
-            option(selected: field.value == key, value: key) { value }
+            # Handle both single values and arrays (for multiple selects)
+            selected = Array(field.value).include?(key)
+            option(selected: selected, value: key) { value }
           end
         end
 

@@ -48,6 +48,15 @@ module Superform
       def select(*options, **attributes, &)
         # Extract select-specific parameters from attributes if passed as keyword arguments
         # Note: positional args are the preferred API - keyword form is for internal use
+
+        # Handle deprecated collection parameter
+        if attributes.key?(:collection) && !attributes.key?(:options)
+          warn "[DEPRECATION] Superform::Rails::Field#select: " \
+               "`collection:` parameter is deprecated. " \
+               "Use `options:` instead."
+          attributes[:options] = attributes.delete(:collection)
+        end
+
         options = attributes.delete(:options) if options.empty? && attributes.key?(:options)
         multiple = attributes.delete(:multiple) || false
         include_blank = attributes.delete(:include_blank) || false
