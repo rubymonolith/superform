@@ -27,14 +27,16 @@ module Superform
         end
 
         def button(value, &block)
-          input(
-            **attributes,
-            type: :radio,
-            id: "#{dom.id}_#{value}",
-            value: value,
-            checked: checked?(value)
-          )
-          plain(yield) if block_given?
+          label do
+            input(
+              **attributes,
+              type: :radio,
+              id: "#{dom.id}_#{value}",
+              value: value.to_s,
+              checked: checked?(value)
+            )
+            plain(yield) if block_given?
+          end
         end
 
         protected

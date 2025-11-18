@@ -48,9 +48,9 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
 
     it 'renders complete HTML structure' do
       expect(subject).to eq(
-        '<input name="sushi" type="radio" id="sushi_shirako" value="shirako">Shirako' \
-        '<input name="sushi" type="radio" id="sushi_ankimo" value="ankimo">Ankimo' \
-        '<input name="sushi" type="radio" id="sushi_tsubugai" value="tsubugai">Tsubugai'
+        '<label><input name="sushi" type="radio" id="sushi_shirako" value="shirako">Shirako</label>' \
+        '<label><input name="sushi" type="radio" id="sushi_ankimo" value="ankimo">Ankimo</label>' \
+        '<label><input name="sushi" type="radio" id="sushi_tsubugai" value="tsubugai">Tsubugai</label>'
       )
     end
   end
@@ -77,9 +77,9 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
 
     it 'renders complete HTML structure with checked state' do
       expect(subject).to eq(
-        '<input name="sushi" type="radio" id="sushi_shirako" value="shirako">Shirako' \
-        '<input name="sushi" type="radio" id="sushi_ankimo" value="ankimo" checked>Ankimo' \
-        '<input name="sushi" type="radio" id="sushi_tsubugai" value="tsubugai">Tsubugai'
+        '<label><input name="sushi" type="radio" id="sushi_shirako" value="shirako">Shirako</label>' \
+        '<label><input name="sushi" type="radio" id="sushi_ankimo" value="ankimo" checked>Ankimo</label>' \
+        '<label><input name="sushi" type="radio" id="sushi_tsubugai" value="tsubugai">Tsubugai</label>'
       )
     end
   end
@@ -124,39 +124,35 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
       end
     end
 
-    context 'with options keyword argument' do
+    context 'with mixed format positional arguments' do
+      let(:object) { double('object', contact: nil) }
+      let(:form_field) do
+        Superform::Rails::Field.new(:contact, parent: nil, object: object)
+      end
+
       subject do
         render(
           form_field.radio(
-            options: [
-              ['shirako', 'Shirako'],
-              ['ankimo', 'Ankimo'],
-              ['tsubugai', 'Tsubugai']
-            ]
+            [true, 'Yes'],
+            [false, 'No'],
+            'Hell no'
           )
         )
       end
 
-      it 'renders radio buttons from options kwarg' do
-        expect(subject).to include('value="shirako"')
-        expect(subject).to include('value="ankimo"')
-        expect(subject).to include('value="tsubugai"')
-      end
-    end
-
-    context 'with single value (legacy API)' do
-      subject do
-        render(form_field.radio('shirako', id: 'custom_id'))
+      it 'renders radio buttons with array pairs using first as value' do
+        expect(subject).to include('value="true"')
+        expect(subject).to include('value="false"')
       end
 
-      it 'renders a single radio input' do
-        expect(subject).to include('type="radio"')
-        expect(subject).to include('value="shirako"')
-        expect(subject).to include('id="custom_id"')
+      it 'renders radio buttons with array pairs using second as label' do
+        expect(subject).to include('>Yes')
+        expect(subject).to include('>No')
       end
 
-      it 'renders only one radio button' do
-        expect(subject.scan(/<input/).count).to eq(1)
+      it 'renders radio button with single value for both value and label' do
+        expect(subject).to include('value="Hell no"')
+        expect(subject).to include('>Hell no')
       end
     end
   end
@@ -296,6 +292,27 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     it 'generates IDs from field name and record ID' do
       alice = User.find_by(first_name: 'Alice')
       expect(subject).to include("id=\"author_id_#{alice.id}\"")
+    end
+
+    context 'passed directly via field helper' do
+      let(:form_field) do
+        Superform::Rails::Field.new(:author_id, parent: nil, object: object)
+      end
+
+      subject do
+        # Pass relation directly without wrapping in array
+        render(form_field.radio(users_relation))
+      end
+
+      it 'renders radio buttons from ActiveRecord relation' do
+        expect(subject).to match(/<input[^>]*value="\d+"[^>]*>Alice/)
+        expect(subject).to match(/<input[^>]*value="\d+"[^>]*>Bob/)
+      end
+
+      it 'generates proper HTML structure with labels' do
+        expect(subject).to include('<label>')
+        expect(subject.scan(/<label>/).count).to eq(2)
+      end
     end
   end
 end

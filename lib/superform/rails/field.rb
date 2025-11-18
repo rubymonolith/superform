@@ -138,19 +138,17 @@ module Superform
       end
 
       def radio(*args, **attributes, &)
-        # If options keyword is provided, create a Radio component for collection
-        if attributes.key?(:options)
-          options = attributes.delete(:options)
-          Components::Radio.new(field, attributes:, options:, &)
-        # If first arg is an array or multiple args provided, treat as collection
-        elsif args.length > 1 || (args.length == 1 && args.first.is_a?(Array))
+        # If multiple args or first arg is an array, treat as collection
+        if args.length > 1 || (args.length == 1 && args.first.is_a?(Array))
           Components::Radio.new(field, attributes:, options: args, &)
-        # Single non-array arg is a radio button value (legacy API)
-        elsif args.length == 1
-          input(type: :radio, value: args.first, **attributes, &)
-        # No args at all - error
+        # If single arg is an ActiveRecord::Relation, treat as collection
+        elsif args.length == 1 && defined?(ActiveRecord::Relation) &&
+              args.first.is_a?(ActiveRecord::Relation)
+          Components::Radio.new(field, attributes:, options: args, &)
+        # No args or single non-collection arg - error
         else
-          raise ArgumentError, "radio requires either a value or options"
+          raise ArgumentError,
+                "radio requires multiple options (e.g., radio(['a', 'A'], ['b', 'B']))"
         end
       end
 

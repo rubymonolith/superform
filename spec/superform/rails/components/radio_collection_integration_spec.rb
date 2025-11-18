@@ -47,11 +47,9 @@ RSpec.describe "Radio in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:sushi).radio(
-            options: [
-              ["shirako", "Shirako"],
-              ["ankimo", "Ankimo"],
-              ["tsubugai", "Tsubugai"]
-            ]
+            ["shirako", "Shirako"],
+            ["ankimo", "Ankimo"],
+            ["tsubugai", "Tsubugai"]
           )
         end
       end
@@ -68,11 +66,9 @@ RSpec.describe "Radio in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:sushi).radio(
-            options: [
-              ["shirako", "Shirako"],
-              ["ankimo", "Ankimo"],
-              ["tsubugai", "Tsubugai"]
-            ]
+            ["shirako", "Shirako"],
+            ["ankimo", "Ankimo"],
+            ["tsubugai", "Tsubugai"]
           )
         end
       end
@@ -102,11 +98,9 @@ RSpec.describe "Radio in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:sushi).radio(
-            options: [
-              ["shirako", "Shirako"],
-              ["ankimo", "Ankimo"],
-              ["tsubugai", "Tsubugai"]
-            ]
+            ["shirako", "Shirako"],
+            ["ankimo", "Ankimo"],
+            ["tsubugai", "Tsubugai"]
           )
         end
       end

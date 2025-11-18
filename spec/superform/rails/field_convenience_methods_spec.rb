@@ -25,7 +25,10 @@ RSpec.describe Superform::Rails::Form::Field do
     it { expect(field.color.type).to eq("color") }
     it { expect(field.search.type).to eq("search") }
     it { expect(field.file.type).to eq("file") }
-    it { expect(field.radio("male").type).to eq("radio") }
+    it do
+      component = field.radio(['male', 'Male'], ['female', 'Female'])
+      expect(component).to be_a(Superform::Rails::Components::Radio)
+    end
   end
 
   describe "Rails compatibility aliases" do
@@ -55,9 +58,10 @@ RSpec.describe Superform::Rails::Form::Field do
       expect(component.type).to eq("search")
     end
 
-    it "handles radio button value parameter correctly" do
-      component = field.radio("female", class: "radio-input", data: { value: "f" })
-      expect(component.type).to eq("radio")
+    it "handles radio button collection with attributes correctly" do
+      component = field.radio(['male', 'Male'], ['female', 'Female'],
+                              class: "radio-input", data: { value: "f" })
+      expect(component).to be_a(Superform::Rails::Components::Radio)
     end
   end
 end
