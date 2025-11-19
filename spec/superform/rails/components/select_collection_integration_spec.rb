@@ -44,7 +44,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
       html = render(form) do |f|
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
-          f.render order_namespace.field(:item_id).select(options: item_options)
+          f.render order_namespace.field(:item_id).select(*item_options)
         end
       end
 
@@ -57,7 +57,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
       html = render(form) do |f|
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
-          f.render order_namespace.field(:item_id).select(options: item_options)
+          f.render order_namespace.field(:item_id).select(*item_options)
         end
       end
 
@@ -85,7 +85,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
       html = render(submitted_form) do |f|
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
-          f.render order_namespace.field(:item_id).select(options: item_options)
+          f.render order_namespace.field(:item_id).select(*item_options)
         end
       end
 
@@ -121,7 +121,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:tag_ids).select(
-            options: tag_options,
+            *tag_options,
             multiple: true
           )
         end
@@ -139,7 +139,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:tag_ids).select(
-            options: tag_options,
+            *tag_options,
             multiple: true
           )
         end
@@ -155,7 +155,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:tag_ids).select(
-            options: tag_options,
+            *tag_options,
             multiple: true
           )
         end
@@ -191,7 +191,7 @@ RSpec.describe "Select in Collection Integration", type: :view do
         orders_collection = f.collection(:orders)
         orders_collection.each do |order_namespace|
           f.render order_namespace.field(:tag_ids).select(
-            options: tag_options,
+            *tag_options,
             multiple: true
           )
         end

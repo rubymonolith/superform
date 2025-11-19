@@ -362,10 +362,10 @@ class SignupForm < Components::Form
       end
     end
 
-    # Select with include_blank: true adds a blank option at the start
+    # Pass nil as first argument to add a blank option at the start
     div do
       field(:country).label { "Select your country" }
-      field(:country).select([[1, "USA"], [2, "Canada"], [3, "Mexico"]], include_blank: true)
+      field(:country).select(nil, [1, "USA"], [2, "Canada"], [3, "Mexico"])
     end
 
     # Multiple select with multiple: true
@@ -380,13 +380,12 @@ class SignupForm < Components::Form
       )
     end
 
-    # Combine multiple: true with include_blank: true
+    # Combine multiple: true with nil for blank option
     div do
       field(:tag_ids).label { "Select tags (optional)" }
       field(:tag_ids).select(
-        [[1, "Ruby"], [2, "Rails"], [3, "Phlex"]],
-        multiple: true,
-        include_blank: true
+        nil, [1, "Ruby"], [2, "Rails"], [3, "Phlex"],
+        multiple: true
       )
     end
 

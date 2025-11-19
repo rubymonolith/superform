@@ -9,7 +9,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
   end
   let(:options) { [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']] }
   let(:component) do
-    described_class.new(field, attributes: attributes, options: options)
+    described_class.new(field, attributes: attributes, options:)
   end
   let(:attributes) { {} }
 
@@ -81,7 +81,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         field,
         attributes: attributes,
-        options: options,
+        options:,
         multiple: true
       )
     end
@@ -124,7 +124,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         field,
         attributes: attributes,
-        options: options,
+        options:,
         multiple: true
       )
     end
@@ -158,13 +158,13 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
-  describe 'with include_blank: true' do
+  describe 'with nil as first option (blank option)' do
+    let(:options_with_blank) { [nil, *options] }
     let(:component) do
       described_class.new(
         field,
         attributes: attributes,
-        options: options,
-        include_blank: true
+        options: options_with_blank
       )
     end
 
@@ -212,7 +212,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(
         role_ids_field,
         attributes: attributes,
-        options: options,
+        options:,
         multiple: true
       )
     end
@@ -246,14 +246,14 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
-  describe 'with both multiple and include_blank' do
+  describe 'with both multiple and nil first option (blank)' do
+    let(:options_with_blank) { [nil, *options] }
     let(:component) do
       described_class.new(
         field,
         attributes: attributes,
-        options: options,
-        multiple: true,
-        include_blank: true
+        options: options_with_blank,
+        multiple: true
       )
     end
 
@@ -283,16 +283,16 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       end
     end
 
-    context 'with options keyword argument' do
+    context 'with positional arguments' do
       subject do
         render(
           form_field.select(
-            options: [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']]
+            [1, 'Admin'], [2, 'Editor'], [3, 'Viewer']
           )
         )
       end
 
-      it 'renders select with options from options kwarg' do
+      it 'renders select with options from positional args' do
         expect(subject).to include('>Admin</option>')
         expect(subject).to include('>Editor</option>')
         expect(subject).to include('>Viewer</option>')
@@ -303,13 +303,13 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       subject do
         render(
           form_field.select(
-            options: [[1, 'Admin'], [2, 'Editor']],
+            [1, 'Admin'], [2, 'Editor'],
             multiple: true
           )
         )
       end
 
-      it 'renders multiple select with options kwarg' do
+      it 'renders multiple select with positional args' do
         expect(subject).to include('multiple')
         expect(subject).to include('name="role_ids[]"')
         expect(subject).to include('>Admin</option>')
@@ -363,79 +363,6 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       # OptionMapper extracts id as value and joins other attributes as label
       expect(subject).to match(/<option value="\d+">Alice<\/option>/)
       expect(subject).to match(/<option value="\d+">Bob<\/option>/)
-    end
-  end
-
-  describe 'backwards compatibility with collection parameter' do
-    context 'using deprecated collection keyword in component' do
-      let(:component) do
-        described_class.new(field, attributes: attributes, collection: options)
-      end
-
-      it 'shows deprecation warning' do
-        expect_any_instance_of(described_class).to receive(:warn).with(
-          "[DEPRECATION] Superform::Rails::Components::Select: " \
-          "`collection:` parameter is deprecated. " \
-          "Use `options:` instead."
-        )
-        component
-      end
-
-      it 'still renders select correctly' do
-        # Suppress deprecation warning for this test
-        allow_any_instance_of(described_class).to receive(:warn)
-        result = render(component)
-        expect(result).to include('>Admin</option>')
-        expect(result).to include('>Editor</option>')
-        expect(result).to include('>Viewer</option>')
-      end
-    end
-
-    context 'using deprecated collection keyword in field helper' do
-      let(:form_field) do
-        Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
-      end
-
-      it 'shows deprecation warning' do
-        expect(form_field).to receive(:warn).with(
-          "[DEPRECATION] Superform::Rails::Field#select: " \
-          "`collection:` parameter is deprecated. " \
-          "Use `options:` instead."
-        )
-        form_field.select(collection: [[1, 'Admin'], [2, 'Editor']])
-      end
-
-      it 'still renders select correctly' do
-        # Suppress deprecation warning for this test
-        allow(form_field).to receive(:warn)
-        result = render(
-          form_field.select(collection: [[1, 'Admin'], [2, 'Editor']])
-        )
-        expect(result).to include('>Admin</option>')
-        expect(result).to include('>Editor</option>')
-      end
-    end
-
-    context 'when both options and collection are provided' do
-      let(:component) do
-        described_class.new(
-          field,
-          attributes: attributes,
-          options: [[1, 'Admin']],
-          collection: [[2, 'Editor']]
-        )
-      end
-
-      it 'does not show deprecation warning' do
-        expect_any_instance_of(described_class).not_to receive(:warn)
-        component
-      end
-
-      it 'uses options parameter (takes precedence)' do
-        result = render(component)
-        expect(result).to include('>Admin</option>')
-        expect(result).not_to include('>Editor</option>')
-      end
     end
   end
 end

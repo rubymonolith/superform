@@ -4,26 +4,24 @@ module Superform
       class Select < Field
         def initialize(
           *,
-          options: nil,
+          options: [],
           collection: nil,
           multiple: false,
-          include_blank: false,
           **,
           &
         )
           super(*, **, &)
 
           # Handle deprecated collection parameter
-          if collection && !options
+          if collection && options.empty?
             warn "[DEPRECATION] Superform::Rails::Components::Select: " \
-                 "`collection:` parameter is deprecated. " \
-                 "Use `options:` instead."
+                 "`collection:` keyword is deprecated and will be removed. " \
+                 "Use positional arguments instead: field.select([1, 'A'], [2, 'B'])"
             options = collection
           end
 
-          @options = options || []
+          @options = options
           @multiple = multiple
-          @include_blank = include_blank
         end
 
         def view_template(&block)
@@ -38,8 +36,12 @@ module Superform
             select(**attributes, &block)
           else
             select(**attributes) do
-              blank_option if @include_blank
-              options(*@options)
+              # If first option is nil, render a blank option
+              include_blank = @options.first.nil?
+              filtered_options = include_blank ? @options[1..] : @options
+
+              blank_option if include_blank
+              options(*filtered_options)
             end
           end
         end
