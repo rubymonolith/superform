@@ -1,4 +1,4 @@
-RSpec.describe Superform::Rails::Components::Input do
+RSpec.describe Superform::Rails::Components::Input, type: :view do
   let(:field) do
     object = double("object", "foo=": nil)
     object = double("object", "foo": value)
@@ -64,5 +64,20 @@ RSpec.describe Superform::Rails::Components::Input do
       { type: "file" }
     end
     it { is_expected.to have_client_provided_value }
+  end
+
+  describe "block handling" do
+    it "does not accept blocks in view_template" do
+      # Input is a void element and should not render block content
+      html = render(component)
+      expect(html).to eq('<input id="foo" name="foo" type="text" value="a string">')
+    end
+
+    it "ignores block content if accidentally passed" do
+      # Even if someone tries to pass a block, it should be ignored
+      html = render(component) { "This should not appear" }
+      expect(html).to eq('<input id="foo" name="foo" type="text" value="a string">')
+      expect(html).not_to include("This should not appear")
+    end
   end
 end

@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Superform::Rails::Form::Field do
+RSpec.describe Superform::Rails::Form::Field, type: :view do
   let(:user) { User.new(email: "test@example.com", first_name: "John") }
   let(:form) { Superform::Rails::Form.new(user) }
   let(:field) { form.field(:email) }
@@ -58,6 +58,53 @@ RSpec.describe Superform::Rails::Form::Field do
     it "handles radio button value parameter correctly" do
       component = field.radio("female", class: "radio-input", data: { value: "f" })
       expect(component.type).to eq("radio")
+    end
+  end
+
+  describe "block handling" do
+    # Input elements are void elements and should not accept blocks.
+    # These tests verify that blocks are properly ignored.
+
+    it "does not render block content for text input" do
+      html = render(field.text { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="text"[^>]*>/)
+    end
+
+    it "does not render block content for email input" do
+      html = render(field.email { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="email"[^>]*>/)
+    end
+
+    it "does not render block content for password input" do
+      html = render(field.password { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="password"[^>]*>/)
+    end
+
+    it "does not render block content for hidden input" do
+      html = render(field.hidden { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="hidden"[^>]*>/)
+    end
+
+    it "does not render block content for number input" do
+      html = render(field.number { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="number"[^>]*>/)
+    end
+
+    it "does not render block content for date input" do
+      html = render(field.date { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="date"[^>]*>/)
+    end
+
+    it "does not render block content for file input" do
+      html = render(field.file { "Block content" })
+      expect(html).not_to include("Block content")
+      expect(html).to match(/<input[^>]*type="file"[^>]*>/)
     end
   end
 end
