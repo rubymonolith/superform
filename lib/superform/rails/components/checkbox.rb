@@ -71,7 +71,8 @@ module Superform
 
           def field_attributes
             if collection_mode?
-              { name: "#{dom.name}[]" }
+              # button method handles all attributes explicitly
+              {}
             else
               { id: dom.id, name: dom.name, checked: field.value }
             end

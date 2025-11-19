@@ -112,9 +112,9 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
 
     it 'renders complete HTML structure' do
       expect(subject).to eq(
-        '<label><input name="sushi[]" type="checkbox" id="sushi_shirako" value="shirako">Shirako</label>' \
-        '<label><input name="sushi[]" type="checkbox" id="sushi_ankimo" value="ankimo">Ankimo</label>' \
-        '<label><input name="sushi[]" type="checkbox" id="sushi_tsubugai" value="tsubugai">Tsubugai</label>'
+        '<label><input type="checkbox" id="sushi_shirako" name="sushi[]" value="shirako">Shirako</label>' \
+        '<label><input type="checkbox" id="sushi_ankimo" name="sushi[]" value="ankimo">Ankimo</label>' \
+        '<label><input type="checkbox" id="sushi_tsubugai" name="sushi[]" value="tsubugai">Tsubugai</label>'
       )
     end
 
@@ -138,9 +138,9 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
 
       it 'renders complete HTML structure with checked state' do
         expect(subject).to eq(
-          '<label><input name="sushi[]" type="checkbox" id="sushi_shirako" value="shirako">Shirako</label>' \
-          '<label><input name="sushi[]" type="checkbox" id="sushi_ankimo" value="ankimo" checked>Ankimo</label>' \
-          '<label><input name="sushi[]" type="checkbox" id="sushi_tsubugai" value="tsubugai" checked>Tsubugai</label>'
+          '<label><input type="checkbox" id="sushi_shirako" name="sushi[]" value="shirako">Shirako</label>' \
+          '<label><input type="checkbox" id="sushi_ankimo" name="sushi[]" value="ankimo" checked>Ankimo</label>' \
+          '<label><input type="checkbox" id="sushi_tsubugai" name="sushi[]" value="tsubugai" checked>Tsubugai</label>'
         )
       end
     end
