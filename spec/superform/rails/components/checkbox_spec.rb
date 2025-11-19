@@ -71,7 +71,7 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
       ]
     end
     let(:component) do
-      described_class.new(field, attributes: attributes, options: options)
+      described_class.new(field, *options, attributes: attributes)
     end
     let(:attributes) { {} }
 
@@ -260,8 +260,9 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
     let(:component) do
       described_class.new(
         field,
-        attributes: attributes,
-        options: [['shirako', 'Shirako'], ['ankimo', 'Ankimo']]
+        ['shirako', 'Shirako'],
+        ['ankimo', 'Ankimo'],
+        attributes: attributes
       )
     end
 
@@ -282,12 +283,10 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
     let(:component) do
       described_class.new(
         field,
-        attributes: {},
-        options: [
-          ['shirako', 'Shirako'],
-          ['ankimo', 'Ankimo'],
-          ['tsubugai', 'Tsubugai']
-        ]
+        ['shirako', 'Shirako'],
+        ['ankimo', 'Ankimo'],
+        ['tsubugai', 'Tsubugai'],
+        attributes: {}
       )
     end
 
@@ -305,6 +304,36 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
 
     it 'does not render options from constructor' do
       expect(subject).not_to include('value="tsubugai"')
+    end
+  end
+
+  describe 'with block but no constructor options' do
+    let(:object) { double('object', features: []) }
+    let(:field) do
+      Superform::Rails::Field.new(:features, parent: nil, object: object)
+    end
+    let(:component) do
+      described_class.new(field, attributes: {})
+    end
+
+    subject do
+      render(component) do |checkbox|
+        checkbox.option('dark_mode') { 'Dark Mode' }
+        checkbox.option('notifications') { 'Notifications' }
+      end
+    end
+
+    it 'renders checkboxes from block without constructor options' do
+      expect(subject).to include('value="dark_mode"')
+      expect(subject).to include('value="notifications"')
+    end
+
+    it 'wraps each checkbox in a label' do
+      expect(subject.scan(/<label>/).count).to eq(2)
+    end
+
+    it 'uses array notation for names' do
+      expect(subject.scan(/name="features\[\]"/).count).to eq(2)
     end
   end
 

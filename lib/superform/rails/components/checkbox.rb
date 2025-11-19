@@ -2,18 +2,13 @@ module Superform
   module Rails
     module Components
       class Checkbox < Field
-        def initialize(
-          *,
-          options: [],
-          **,
-          &
-        )
-          super(*, **, &)
-          @options = options
+        def initialize(field, *option_list, **, &)
+          super(field, **, &)
+          @options = option_list
         end
 
         def view_template(&block)
-          if collection_mode?
+          if collection_mode? || block_given?
             # Collection mode: render multiple checkboxes
             if block_given?
               yield self

@@ -36,7 +36,7 @@ module Superform
       def checkbox(*args, **attributes)
         # Treat as collection if args provided (including single ActiveRecord::Relation)
         # Otherwise treat as boolean checkbox (single true/false)
-        Components::Checkbox.new(field, attributes:, options: args)
+        Components::Checkbox.new(field, *args, attributes:)
       end
 
       def label(**attributes, &)
