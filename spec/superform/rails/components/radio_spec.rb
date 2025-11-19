@@ -172,8 +172,8 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
   describe 'with block for custom rendering' do
     subject do
       render(component) do |radio|
-        radio.button('shirako') { 'Shirako' }
-        radio.button('ankimo') { 'Ankimo' }
+        radio.option('shirako') { 'Shirako' }
+        radio.option('ankimo') { 'Ankimo' }
       end
     end
 
@@ -187,7 +187,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     end
   end
 
-  describe '#button method' do
+  describe '#option method' do
     let(:component) do
       described_class.new(field, attributes: {}, options: [])
     end
@@ -195,7 +195,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     context 'with simple value and label' do
       subject do
         render(component) do |radio|
-          radio.button('omakase') { 'Chef\'s Choice' }
+          radio.option('omakase') { 'Chef\'s Choice' }
         end
       end
 

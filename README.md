@@ -374,9 +374,9 @@ class SignupForm < Components::Form
     div do
       Field(:gender).label { "Gender" }
       Field(:gender).radio do |r|
-        div { r.button("m") { "Male" } }
-        div { r.button("f") { "Female" } }
-        div { r.button("o") { "Other" } }
+        div { r.option("m") { "Male" } }
+        div { r.option("f") { "Female" } }
+        div { r.option("o") { "Other" } }
       end
     end
 

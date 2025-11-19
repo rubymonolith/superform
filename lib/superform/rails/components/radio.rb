@@ -16,17 +16,17 @@ module Superform
           if block_given?
             yield self
           else
-            buttons(*@options)
+            options(*@options)
           end
         end
 
-        def buttons(*option_list)
+        def options(*option_list)
           map_options(option_list).each do |value, label|
-            button(value) { label }
+            option(value) { label }
           end
         end
 
-        def button(value, &block)
+        def option(value, &block)
           label do
             input(
               **attributes,
