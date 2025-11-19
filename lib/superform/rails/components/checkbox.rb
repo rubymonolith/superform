@@ -18,7 +18,7 @@ module Superform
             if block_given?
               yield self
             else
-              buttons(*@options)
+              options(*@options)
             end
           else
             # Boolean mode: single checkbox with hidden field
@@ -31,13 +31,13 @@ module Superform
         end
 
         # Collection mode methods
-        def buttons(*option_list)
+        def options(*option_list)
           map_options(option_list).each do |value, label|
-            button(value) { label }
+            option(value) { label }
           end
         end
 
-        def button(value, &block)
+        def option(value, &block)
           label do
             input(
               **attributes,
@@ -71,7 +71,7 @@ module Superform
 
           def field_attributes
             if collection_mode?
-              # button method handles all attributes explicitly
+              # option method handles all attributes explicitly
               {}
             else
               { id: dom.id, name: dom.name, checked: field.value }

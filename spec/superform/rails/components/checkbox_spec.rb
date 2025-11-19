@@ -293,8 +293,8 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
 
     subject do
       render(component) do |checkbox|
-        checkbox.button('shirako') { 'Shirako' }
-        checkbox.button('ankimo') { 'Ankimo' }
+        checkbox.option('shirako') { 'Shirako' }
+        checkbox.option('ankimo') { 'Ankimo' }
       end
     end
 

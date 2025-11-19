@@ -401,9 +401,9 @@ class SignupForm < Components::Form
     div do
       Field(:feature_ids).label { "Enable features" }
       Field(:feature_ids).checkbox do |c|
-        div { c.button(1) { "Dark Mode" } }
-        div { c.button(2) { "Notifications" } }
-        div { c.button(3) { "Auto-save" } }
+        div { c.option(1) { "Dark Mode" } }
+        div { c.option(2) { "Notifications" } }
+        div { c.option(3) { "Auto-save" } }
       end
     end
 
