@@ -15,7 +15,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     ]
   end
   let(:component) do
-    described_class.new(field, attributes: attributes, options: options)
+    described_class.new(field, *options, attributes: attributes)
   end
   let(:attributes) { {} }
 
@@ -187,9 +187,39 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     end
   end
 
+  describe 'with block but no constructor options' do
+    let(:object) { double('object', plan: nil) }
+    let(:field) do
+      Superform::Rails::Field.new(:plan, parent: nil, object: object)
+    end
+    let(:component) do
+      described_class.new(field, attributes: {})
+    end
+
+    subject do
+      render(component) do |radio|
+        radio.option('free') { 'Free Plan' }
+        radio.option('pro') { 'Pro Plan' }
+      end
+    end
+
+    it 'renders radio buttons from block without constructor options' do
+      expect(subject).to include('value="free"')
+      expect(subject).to include('value="pro"')
+    end
+
+    it 'wraps each radio button in a label' do
+      expect(subject.scan(/<label>/).count).to eq(2)
+    end
+
+    it 'uses the same name for all radio buttons' do
+      expect(subject.scan(/name="plan"/).count).to eq(2)
+    end
+  end
+
   describe '#option method' do
     let(:component) do
-      described_class.new(field, attributes: {}, options: [])
+      described_class.new(field, attributes: {})
     end
 
     context 'with simple value and label' do
@@ -229,8 +259,8 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     let(:component) do
       described_class.new(
         sushi_field,
-        attributes: attributes,
-        options: options
+        *options,
+        attributes: attributes
       )
     end
 
@@ -278,7 +308,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     end
     let(:users_relation) { User.select(:id, :first_name) }
     let(:component) do
-      described_class.new(field, attributes: attributes, options: [users_relation])
+      described_class.new(field, users_relation, attributes: attributes)
     end
 
     subject { render(component) }

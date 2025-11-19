@@ -139,14 +139,17 @@ module Superform
         input(*, **, type: :file, &)
       end
 
-      def radio(*args, **attributes, &)
+      def radio(*args, **attributes, &block)
         # If multiple args or first arg is an array, treat as collection
         if args.length > 1 || (args.length == 1 && args.first.is_a?(Array))
-          Components::Radio.new(field, attributes:, options: args, &)
+          Components::Radio.new(field, *args, attributes:, &block)
         # If single arg is an ActiveRecord::Relation, treat as collection
         elsif args.length == 1 && defined?(ActiveRecord::Relation) &&
               args.first.is_a?(ActiveRecord::Relation)
-          Components::Radio.new(field, attributes:, options: args, &)
+          Components::Radio.new(field, *args, attributes:, &block)
+        # No args but block given - allow custom rendering
+        elsif args.empty? && block
+          Components::Radio.new(field, attributes:, &block)
         # No args or single non-collection arg - error
         else
           raise ArgumentError,

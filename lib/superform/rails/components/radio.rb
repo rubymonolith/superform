@@ -2,14 +2,9 @@ module Superform
   module Rails
     module Components
       class Radio < Field
-        def initialize(
-          *,
-          options: [],
-          **,
-          &
-        )
-          super(*, **, &)
-          @options = options
+        def initialize(field, *option_list, **, &)
+          super(field, **, &)
+          @options = option_list
         end
 
         def view_template(&block)
