@@ -8,8 +8,8 @@ module Superform
         end
 
         def view_template(&block)
-          if collection_mode? || block_given?
-            # Collection mode: render multiple checkboxes
+          if array_mode? || block_given?
+            # Array mode: render multiple checkboxes
             if block_given?
               yield self
             else
@@ -25,7 +25,7 @@ module Superform
           end
         end
 
-        # Collection mode methods
+        # Array mode methods
         def options(*option_list)
           map_options(option_list).each do |value, label|
             option(value) { label }
@@ -40,14 +40,14 @@ module Superform
               id: "#{dom.id}_#{value}",
               name: "#{dom.name}[]",
               value: value.to_s,
-              checked: checked_in_collection?(value)
+              checked: checked_in_array?(value)
             )
             plain(yield) if block_given?
           end
         end
 
         protected
-          def collection_mode?
+          def array_mode?
             @options.any?
           end
 
@@ -55,8 +55,8 @@ module Superform
             OptionMapper.new(option_list)
           end
 
-          def checked_in_collection?(value)
-            # Checkbox groups are multi-select, so field.value should be an array
+          def checked_in_array?(value)
+            # Checkbox arrays are multi-select, so field.value should be an array
             field_value = field.value
             return false if field_value.nil?
 
@@ -65,7 +65,7 @@ module Superform
           end
 
           def field_attributes
-            if collection_mode?
+            if array_mode?
               # option method handles all attributes explicitly
               {}
             else

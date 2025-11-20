@@ -361,7 +361,7 @@ class SignupForm < Components::Form
 
     # Radio buttons - for single-select from multiple options
     div do
-      Field(:plan).label { "Choose your plan" }
+      Field(:plan).label(for: false) { "Choose your plan" }
       # Pass options as positional arguments
       Field(:plan).radio(
         ["free", "Free Plan"],      # <label><input type="radio" value="free">Free Plan</label>
@@ -372,7 +372,7 @@ class SignupForm < Components::Form
 
     # Or render individual radio buttons with custom markup
     div do
-      Field(:gender).label { "Gender" }
+      Field(:gender).label(for: false) { "Gender" }
       Field(:gender).radio do |r|
         div { r.option("m") { "Male" } }
         div { r.option("f") { "Female" } }
@@ -386,9 +386,9 @@ class SignupForm < Components::Form
       Field(:agreement).checkbox(checked: true)
     end
 
-    # Checkbox collection - for multi-select from multiple options
+    # Checkbox array - for multi-select from multiple options
     div do
-      Field(:role_ids).label { "Select your roles" }
+      Field(:role_ids).label(for: false) { "Select your roles" }
       # Pass options as positional arguments (similar to radio)
       Field(:role_ids).checkbox(
         [1, "Admin"],   # <label><input type="checkbox" value="1">Admin</label>
@@ -399,7 +399,7 @@ class SignupForm < Components::Form
 
     # Or render individual checkboxes with custom markup
     div do
-      Field(:feature_ids).label { "Enable features" }
+      Field(:feature_ids).label(for: false) { "Enable features" }
       Field(:feature_ids).checkbox do |c|
         div { c.option(1) { "Dark Mode" } }
         div { c.option(2) { "Notifications" } }
@@ -409,13 +409,13 @@ class SignupForm < Components::Form
 
     # Both radio and checkbox support ActiveRecord relations
     div do
-      Field(:category_id).label { "Select category" }
+      Field(:category_id).label(for: false) { "Select category" }
       # Automatically uses id as value and name as label
       Field(:category_id).radio(Category.select(:id, :name))
     end
 
     div do
-      Field(:tag_ids).label { "Select tags" }
+      Field(:tag_ids).label(for: false) { "Select tags" }
       # Automatically uses id as value and name as label
       Field(:tag_ids).checkbox(Tag.select(:id, :name))
     end

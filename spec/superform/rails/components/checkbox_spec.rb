@@ -57,7 +57,7 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
     end
   end
 
-  describe 'collection mode (multi-select)' do
+  describe 'array mode (multi-select)' do
     let(:object) { double('object', sushi: sushi_value) }
     let(:sushi_value) { [] }
     let(:field) do
@@ -81,7 +81,7 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
       expect(subject.scan(/<input[^>]*type="checkbox"/).count).to eq(3)
     end
 
-    it 'does not render hidden inputs in collection mode' do
+    it 'does not render hidden inputs in array mode' do
       expect(subject).not_to include('type="hidden"')
     end
 
@@ -170,7 +170,7 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
     end
     let(:object) { double('object', sushi: []) }
 
-    context 'with positional arguments (collection mode)' do
+    context 'with positional arguments (array mode)' do
       subject do
         render(
           form_field.checkbox(
