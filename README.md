@@ -6,7 +6,7 @@
 
 * **Works beautifully with ERB.** Start using Superform in your existing Rails app without changing a single ERB template. All the power, zero migration pain.
 
-* **Concise field helpers.** `field(:publish_at).date`, `field(:email).email`, `field(:price).number` — intuitive methods that generate the right input types with proper validation.
+* **Concise field helpers.** `Field(:publish_at).date`, `Field(:email).email`, `field(:price).number` — intuitive methods that generate the right input types with proper validation.
 
 * **RESTful controller helpers** Superform's `save` and `save!` methods work exactly like ActiveRecord, making controller code predictable and Rails-like.
 
