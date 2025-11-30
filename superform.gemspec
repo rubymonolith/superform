@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "A better way to customize and build forms for your Rails application"
   spec.homepage = "https://github.com/rubymonolith/superform"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 2.6.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
