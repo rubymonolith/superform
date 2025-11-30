@@ -28,7 +28,7 @@ module Superform
           # Hidden input ensures a value is sent even when all options are
           # deselected in a multiple select
           if @multiple
-            hidden_name = field.parent.is_a?(Superform::Field) ? dom.name : "#{dom.name}[]"
+            hidden_name = field.parent.is_a?(Superform::Field) ? dom.name : dom.array_name
             input(type: "hidden", name: hidden_name, value: "")
           end
 
@@ -75,7 +75,7 @@ module Superform
             if @multiple
               # Only append [] if the field doesn't already have a Field parent
               # (which would mean it's already in a collection and has [] notation)
-              name = field.parent.is_a?(Superform::Field) ? attrs[:name] : "#{attrs[:name]}[]"
+              name = field.parent.is_a?(Superform::Field) ? attrs[:name] : dom.array_name
               attrs.merge(multiple: true, name: name)
             else
               attrs
