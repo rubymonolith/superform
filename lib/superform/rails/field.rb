@@ -45,10 +45,7 @@ module Superform
         Components::Textarea.new(field, attributes:)
       end
 
-      def select(*options, **attributes, &)
-        # Extract select-specific parameters from attributes
-        multiple = attributes.delete(:multiple) || false
-
+      def select(*options, multiple: false, **attributes, &)
         Components::Select.new(
           field,
           attributes:,
