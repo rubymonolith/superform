@@ -63,10 +63,10 @@ You probably want to use the same form for creating and editing resources. In Su
 # app/views/posts/form.rb
 class Views::Posts::Form < Components::Form
   def view_template
-    field(:title).text
-    field(:body).textarea(rows: 10)
-    field(:publish_at).date
-    field(:featured).checkbox
+    Field(:title).text
+    Field(:body).textarea(rows: 10)
+    Field(:publish_at).date
+    Field(:featured).checkbox
     submit
   end
 end
@@ -118,16 +118,16 @@ Superform includes helpers for all HTML5 input types:
 ```ruby
 class UserForm < Components::Form
   def view_template
-    field(:email).email           # type="email"
-    field(:password).password     # type="password"
-    field(:website).url           # type="url"
-    field(:phone).tel             # type="tel"
-    field(:age).number(min: 18)   # type="number"
-    field(:birthday).date         # type="date"
-    field(:appointment).datetime  # type="datetime-local"
-    field(:favorite_color).color  # type="color"
-    field(:bio).textarea(rows: 5)
-    field(:terms).checkbox
+    Field(:email).email           # type="email"
+    Field(:password).password     # type="password"
+    Field(:website).url           # type="url"
+    Field(:phone).tel             # type="tel"
+    Field(:age).number(min: 18)   # type="number"
+    Field(:birthday).date         # type="date"
+    Field(:appointment).datetime  # type="datetime-local"
+    Field(:favorite_color).color  # type="color"
+    Field(:bio).textarea(rows: 5)
+    Field(:terms).checkbox
     submit
   end
 end
@@ -142,14 +142,14 @@ class Views::Posts::Form < Components::Form
   def view_template
     div(class: "form-section") do
       h2 { "Post Details" }
-      field(:title).text(class: "form-control")
-      field(:body).textarea(class: "form-control", rows: 10)
+      Field(:title).text(class: "form-control")
+      Field(:body).textarea(class: "form-control", rows: 10)
     end
 
     div(class: "form-section") do
       h2 { "Publishing" }
-      field(:publish_at).date(class: "form-control")
-      field(:featured).checkbox(class: "form-check-input")
+      Field(:publish_at).date(class: "form-control")
+      Field(:featured).checkbox(class: "form-check-input")
     end
 
     div(class: "form-actions") do
@@ -204,8 +204,8 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 # ./app/views/users/form.rb
 class Users::Form < Components::Form
   def view_template(&)
-    labeled field(:name).input
-    labeled field(:email).input(type: :email)
+    labeled Field(:name).input
+    labeled Field(:email).input(type: :email)
 
     submit "Sign up"
   end
@@ -232,19 +232,19 @@ class AccountForm < Superform::Rails::Form
     # Account#owner returns a single object
     namespace :owner do |owner|
       # Renders input with the name `account[owner][name]`
-      owner.field(:name).text
+      owner.Field(:name).text
       # Renders input with the name `account[owner][email]`
-      owner.field(:email).email
+      owner.Field(:email).email
     end
 
     # Account#members returns a collection of objects
     collection(:members).each do |member|
       # Renders input with the name `account[members][0][name]`,
       # `account[members][1][name]`, ...
-      member.field(:name).input
+      member.Field(:name).input
       # Renders input with the name `account[members][0][email]`,
       # `account[members][1][email]`, ...
-      member.field(:email).input(type: :email)
+      member.Field(:email).input(type: :email)
 
       # Member#permissions returns an array of values like
       # ["read", "write", "delete"].
@@ -278,7 +278,7 @@ By default Superform namespaces a form based on the ActiveModel model name param
 ```ruby
 class UserForm < Superform::Rails::Form
   def view_template
-    render field(:email).input
+    render Field(:email).input
   end
 end
 
@@ -294,7 +294,7 @@ To customize the form namespace, like an ActiveRecord model nested within a modu
 ```ruby
 class UserForm < Superform::Rails::Form
   def view_template
-    render field(:email).input
+    render Field(:email).input
   end
 
   def key
@@ -320,10 +320,10 @@ In practice, many of the calls below you'd put inside of a method. This cuts dow
 class SignupForm < Components::Form
   def view_template
     # The most basic type of input, which will be autofocused.
-    field(:name).input.focus
+    Field(:name).input.focus
 
     # Input field with a lot more options on it.
-    field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
+    Field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
 
     # You can put fields in a block if that's your thing.
     field(:reason) do |f|
@@ -338,8 +338,8 @@ class SignupForm < Components::Form
     # - A single value: "text" renders <option value="text">text</option>
     # - nil: renders an empty <option></option>
     div do
-      field(:contact).label { "Would you like us to spam you to death?" }
-      field(:contact).select(
+      Field(:contact).label { "Would you like us to spam you to death?" }
+      Field(:contact).select(
         [true, "Yes"],  # <option value="true">Yes</option>
         [false, "No"],  # <option value="false">No</option>
         "Hell no",      # <option value="Hell no">Hell no</option>
@@ -348,8 +348,8 @@ class SignupForm < Components::Form
     end
 
     div do
-      field(:source).label { "How did you hear about us?" }
-      field(:source).select do |s|
+      Field(:source).label { "How did you hear about us?" }
+      Field(:source).select do |s|
         # Renders a blank option.
         s.blank_option
         # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
@@ -364,8 +364,8 @@ class SignupForm < Components::Form
 
     # Pass nil as first argument to add a blank option at the start
     div do
-      field(:country).label { "Select your country" }
-      field(:country).select(nil, [1, "USA"], [2, "Canada"], [3, "Mexico"])
+      Field(:country).label { "Select your country" }
+      Field(:country).select(nil, [1, "USA"], [2, "Canada"], [3, "Mexico"])
     end
 
     # Multiple select with multiple: true
@@ -373,8 +373,8 @@ class SignupForm < Components::Form
     # - Appends [] to the field name (role_ids becomes role_ids[])
     # - Includes a hidden input to handle empty submissions
     div do
-      field(:role_ids).label { "Select roles" }
-      field(:role_ids).select(
+      Field(:role_ids).label { "Select roles" }
+      Field(:role_ids).select(
         [[1, "Admin"], [2, "Editor"], [3, "Viewer"]],
         multiple: true
       )
@@ -382,8 +382,8 @@ class SignupForm < Components::Form
 
     # Combine multiple: true with nil for blank option
     div do
-      field(:tag_ids).label { "Select tags (optional)" }
-      field(:tag_ids).select(
+      Field(:tag_ids).label { "Select tags (optional)" }
+      Field(:tag_ids).select(
         nil, [1, "Ruby"], [2, "Rails"], [3, "Phlex"],
         multiple: true
       )
@@ -393,15 +393,15 @@ class SignupForm < Components::Form
     # The relation is passed as a single argument (not splatted)
     # OptionMapper extracts the primary key and joins other attributes for the label
     div do
-      field(:author_id).label { "Select author" }
+      Field(:author_id).label { "Select author" }
       # For User.select(:id, :name), renders <option value="1">Alice</option>
       # where id=1 is the primary key and "Alice" is the name attribute
-      field(:author_id).select(User.select(:id, :name))
+      Field(:author_id).select(User.select(:id, :name))
     end
 
     div do
-      field(:agreement).label { "Check this box if you agree to give us your first born child" }
-      field(:agreement).checkbox(checked: true)
+      Field(:agreement).label { "Check this box if you agree to give us your first born child" }
+      Field(:agreement).checkbox(checked: true)
     end
 
     render button { "Submit" }
@@ -416,9 +416,9 @@ If you want to add file upload fields to your form you will need to initialize y
 class User::ImageForm < Components::Form
   def view_template
     # render label
-    field(:image).label { "Choose file" }
+    Field(:image).label { "Choose file" }
     # render file input with accept attribute for png and jpeg images
-    field(:image).input(type: "file", accept: "image/png, image/jpeg")
+    Field(:image).input(type: "file", accept: "image/png, image/jpeg")
   end
 end
 
@@ -454,8 +454,8 @@ Then, just like you did in your Erb, you create the form:
 ```ruby
 class Admin::Users::Form < AdminForm
   def view_template(&)
-    labeled field(:name).tooltip_input
-    labeled field(:email).tooltip_input(type: :email)
+    labeled Field(:name).tooltip_input
+    labeled Field(:email).tooltip_input(type: :email)
 
     submit "Save"
   end
