@@ -47,10 +47,10 @@ module Superform
         end
 
         def options(*collection)
+          # Handle both single values and arrays (for multiple selects)
+          selected_values = Array(field.value)
           map_options(collection).each do |key, value|
-            # Handle both single values and arrays (for multiple selects)
-            selected = Array(field.value).include?(key)
-            option(selected: selected, value: key) { value }
+            option(selected: selected_values.include?(key), value: key) { value }
           end
         end
 
