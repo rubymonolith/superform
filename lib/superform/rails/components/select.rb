@@ -36,12 +36,7 @@ module Superform
             select(**attributes, &block)
           else
             select(**attributes) do
-              # If first option is nil, render a blank option
-              include_blank = @options.first.nil?
-              filtered_options = include_blank ? @options[1..] : @options
-
-              blank_option if include_blank
-              options(*filtered_options)
+              options(*@options)
             end
           end
         end
@@ -50,7 +45,11 @@ module Superform
           # Handle both single values and arrays (for multiple selects)
           selected_values = Array(field.value)
           map_options(collection).each do |key, value|
-            option(selected: selected_values.include?(key), value: key) { value }
+            if key.nil?
+              blank_option
+            else
+              option(selected: selected_values.include?(key), value: key) { value }
+            end
           end
         end
 
