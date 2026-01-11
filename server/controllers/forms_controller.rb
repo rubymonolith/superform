@@ -13,9 +13,9 @@ class FormsController < ActionController::Base
   end
 
   class ShowPage < Phlex::HTML
-    def initialize(form_class:)
+    def initialize(form_class:, action:)
       @form_class = form_class
-      @form = form_class.new(Example.new, action: "#")
+      @form = form_class.new(Example.new, action: action)
     end
 
     def view_template
@@ -47,6 +47,27 @@ class FormsController < ActionController::Base
     end
   end
 
+  class SubmitPage < Phlex::HTML
+    def initialize(form_class:, params:, form_path:)
+      @form_class = form_class
+      @params = params
+      @form_path = form_path
+    end
+
+    def view_template
+      render Layout.new(title: "#{@form_class.name_text} - Submitted") do
+        p { a(href: @form_path) { "Back to form" } }
+
+        h2 { "#{@form_class.name_text} - Submitted" }
+
+        h3 { "Params" }
+        pre do
+          code { JSON.pretty_generate(@params.to_unsafe_h) }
+        end
+      end
+    end
+  end
+
   def index
     render IndexPage.new, layout: false
   end
@@ -54,6 +75,12 @@ class FormsController < ActionController::Base
   def show
     index = params[:id].to_i
     form_class = form_classes[index]
-    render ShowPage.new(form_class: form_class), layout: false
+    render ShowPage.new(form_class: form_class, action: request.path), layout: false
+  end
+
+  def create
+    index = params[:id].to_i
+    form_class = form_classes[index]
+    render SubmitPage.new(form_class: form_class, params: params, form_path: request.path), layout: false
   end
 end

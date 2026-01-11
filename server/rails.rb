@@ -44,6 +44,7 @@ SuperformApp.initialize!
 SuperformApp.routes.draw do
   root to: "forms#index"
   get "/forms/:id" => "forms#show", as: :form
+  post "/forms/:id" => "forms#create"
 end
 
 def self.start(port: 3000)
