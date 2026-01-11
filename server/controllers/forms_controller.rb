@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class FormsController < ActionController::Base
+  before_action { Rails.autoloaders.main.reload }
   class IndexPage < Phlex::HTML
     def view_template
       render Layout.new do
