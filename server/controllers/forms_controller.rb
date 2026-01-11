@@ -5,6 +5,10 @@ class FormsController < ActionController::Base
   class IndexPage < Phlex::HTML
     def view_template
       render Layout.new do
+        render Breadcrumb.new do |b|
+          b.crumb { "Examples" }
+        end
+
         form_classes.each_with_index do |form_class, index|
           render FormCard.new(form_class: form_class, index: index)
         end
@@ -19,10 +23,12 @@ class FormsController < ActionController::Base
     end
 
     def view_template
-      render Layout.new(title: "#{@form_class.name_text} - Superform Examples") do
-        p { a(href: "/") { "Back to all forms" } }
+      render Layout.new(title: "#{@form_class.name_text} - Superform") do
+        render Breadcrumb.new do |b|
+          b.crumb { a(href: "/") { "Examples" } }
+          b.crumb { @form_class.name_text }
+        end
 
-        h2 { @form_class.name_text }
         p { @form_class.description.html_safe }
         render @form
 
@@ -56,9 +62,11 @@ class FormsController < ActionController::Base
 
     def view_template
       render Layout.new(title: "#{@form_class.name_text} - Submitted") do
-        p { a(href: @form_path) { "Back to form" } }
-
-        h2 { "#{@form_class.name_text} - Submitted" }
+        render Breadcrumb.new do |b|
+          b.crumb { a(href: "/") { "Examples" } }
+          b.crumb { a(href: @form_path) { @form_class.name_text } }
+          b.crumb { "Submitted" }
+        end
 
         h3 { "Params" }
         pre do
