@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Boot the Superform examples server
+# Run with: bin/superform
+
+require_relative "../server/rails"
+start
