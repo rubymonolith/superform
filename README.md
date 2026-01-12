@@ -6,7 +6,7 @@
 
 * **Works beautifully with ERB.** Start using Superform in your existing Rails app without changing a single ERB template. All the power, zero migration pain.
 
-* **Concise field helpers.** `field(:publish_at).date`, `field(:email).email`, `field(:price).number` — intuitive methods that generate the right input types with proper validation.
+* **Concise field helpers.** `Field(:publish_at).date`, `Field(:email).email`, `field(:price).number` — intuitive methods that generate the right input types with proper validation.
 
 * **RESTful controller helpers** Superform's `save` and `save!` methods work exactly like ActiveRecord, making controller code predictable and Rails-like.
 
@@ -204,8 +204,8 @@ That looks like a LOT of code, and it is, but look at how easy it is to create f
 # ./app/views/users/form.rb
 class Users::Form < Components::Form
   def view_template(&)
-    labeled field(:name).input
-    labeled field(:email).input(type: :email)
+    labeled Field(:name).input
+    labeled Field(:email).input(type: :email)
 
     submit "Sign up"
   end
@@ -252,7 +252,7 @@ class AccountForm < Superform::Rails::Form
         # Renders input with the name `account[members][0][permissions][]`,
         # `account[members][1][permissions][]`, ...
         render permission.label do
-          plain permisson.value.humanize
+          plain permission.value.humanize
           render permission.checkbox
         end
       end
@@ -278,7 +278,7 @@ By default Superform namespaces a form based on the ActiveModel model name param
 ```ruby
 class UserForm < Superform::Rails::Form
   def view_template
-    render field(:email).input
+    render Field(:email).input
   end
 end
 
@@ -294,7 +294,7 @@ To customize the form namespace, like an ActiveRecord model nested within a modu
 ```ruby
 class UserForm < Superform::Rails::Form
   def view_template
-    render field(:email).input
+    render Field(:email).input
   end
 
   def key
@@ -333,7 +333,10 @@ class SignupForm < Components::Form
       end
     end
 
-    # Let's get crazy with Selects. They can accept values as simple as 2 element arrays.
+    # Selects accept options as positional arguments. Each option can be:
+    # - A 2-element array: [value, label] renders <option value="value">label</option>
+    # - A single value: "text" renders <option value="text">text</option>
+    # - nil: renders an empty <option></option>
     div do
       Field(:contact).label { "Would you like us to spam you to death?" }
       Field(:contact).select(
@@ -357,6 +360,43 @@ class SignupForm < Components::Form
           end
         end
       end
+    end
+
+    # Pass nil as first argument to add a blank option at the start
+    div do
+      Field(:country).label { "Select your country" }
+      Field(:country).select(nil, [1, "USA"], [2, "Canada"], [3, "Mexico"])
+    end
+
+    # Multiple select with multiple: true
+    # - Adds the HTML 'multiple' attribute
+    # - Appends [] to the field name (role_ids becomes role_ids[])
+    # - Includes a hidden input to handle empty submissions
+    div do
+      Field(:role_ids).label { "Select roles" }
+      Field(:role_ids).select(
+        [[1, "Admin"], [2, "Editor"], [3, "Viewer"]],
+        multiple: true
+      )
+    end
+
+    # Combine multiple: true with nil for blank option
+    div do
+      Field(:tag_ids).label { "Select tags (optional)" }
+      Field(:tag_ids).select(
+        nil, [1, "Ruby"], [2, "Rails"], [3, "Phlex"],
+        multiple: true
+      )
+    end
+
+    # Select options can also be ActiveRecord relations
+    # The relation is passed as a single argument (not splatted)
+    # OptionMapper extracts the primary key and joins other attributes for the label
+    div do
+      Field(:author_id).label { "Select author" }
+      # For User.select(:id, :name), renders <option value="1">Alice</option>
+      # where id=1 is the primary key and "Alice" is the name attribute
+      Field(:author_id).select(User.select(:id, :name))
     end
 
     div do
@@ -414,8 +454,8 @@ Then, just like you did in your Erb, you create the form:
 ```ruby
 class Admin::Users::Form < AdminForm
   def view_template(&)
-    labeled field(:name).tooltip_input
-    labeled field(:email).tooltip_input(type: :email)
+    labeled Field(:name).tooltip_input
+    labeled Field(:email).tooltip_input(type: :email)
 
     submit "Save"
   end

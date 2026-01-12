@@ -29,6 +29,12 @@ module Superform
       names.map { |name| "[#{name}]" }.unshift(root).join
     end
 
+    # Returns the name with `[]` appended for array/multiple value fields.
+    # Used by multiple selects, checkbox groups, etc.
+    def array_name
+      "#{name}[]"
+    end
+
     # Emit the id, name, and value in an HTML tag-ish that doesnt have an element.
     def inspect
       "<id=#{id.inspect} name=#{name.inspect} value=#{value.inspect}/>"
