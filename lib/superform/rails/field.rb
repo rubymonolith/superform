@@ -33,8 +33,10 @@ module Superform
         Components::Input.new(field, attributes:)
       end
 
-      def checkbox(**attributes)
-        Components::Checkbox.new(field, attributes:)
+      def checkbox(*args, **attributes)
+        # Treat as collection if args provided (including single ActiveRecord::Relation)
+        # Otherwise treat as boolean checkbox (single true/false)
+        Components::Checkbox.new(field, *args, attributes:)
       end
 
       def label(**attributes, &)
@@ -137,8 +139,22 @@ module Superform
         input(*, **, type: :file, &)
       end
 
-      def radio(value, *, **, &)
-        input(*, **, type: :radio, value: value, &)
+      def radio(*args, **attributes, &block)
+        # If multiple args or first arg is an array, treat as collection
+        if args.length > 1 || (args.length == 1 && args.first.is_a?(Array))
+          Components::Radio.new(field, *args, attributes:, &block)
+        # If single arg is an ActiveRecord::Relation, treat as collection
+        elsif args.length == 1 && defined?(ActiveRecord::Relation) &&
+              args.first.is_a?(ActiveRecord::Relation)
+          Components::Radio.new(field, *args, attributes:, &block)
+        # No args but block given - allow custom rendering
+        elsif args.empty? && block
+          Components::Radio.new(field, attributes:, &block)
+        # No args or single non-collection arg - error
+        else
+          raise ArgumentError,
+                "radio requires multiple options (e.g., radio(['a', 'A'], ['b', 'B']))"
+        end
       end
 
       # Rails compatibility aliases

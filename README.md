@@ -359,9 +359,65 @@ class SignupForm < Components::Form
       end
     end
 
+    # Radio buttons - for single-select from multiple options
+    div do
+      Field(:plan).label(for: false) { "Choose your plan" }
+      # Pass options as positional arguments
+      Field(:plan).radio(
+        ["free", "Free Plan"],      # <label><input type="radio" value="free">Free Plan</label>
+        ["pro", "Pro Plan"],        # <label><input type="radio" value="pro">Pro Plan</label>
+        ["enterprise", "Enterprise"] # <label><input type="radio" value="enterprise">Enterprise</label>
+      )
+    end
+
+    # Or render individual radio buttons with custom markup
+    div do
+      Field(:gender).label(for: false) { "Gender" }
+      Field(:gender).radio do |r|
+        div { r.option("m") { "Male" } }
+        div { r.option("f") { "Female" } }
+        div { r.option("o") { "Other" } }
+      end
+    end
+
+    # Boolean checkbox - single true/false toggle
     div do
       Field(:agreement).label { "Check this box if you agree to give us your first born child" }
       Field(:agreement).checkbox(checked: true)
+    end
+
+    # Checkbox array - for multi-select from multiple options
+    div do
+      Field(:role_ids).label(for: false) { "Select your roles" }
+      # Pass options as positional arguments (similar to radio)
+      Field(:role_ids).checkbox(
+        [1, "Admin"],   # <label><input type="checkbox" value="1">Admin</label>
+        [2, "Editor"],  # <label><input type="checkbox" value="2">Editor</label>
+        [3, "Viewer"]   # <label><input type="checkbox" value="3">Viewer</label>
+      )
+    end
+
+    # Or render individual checkboxes with custom markup
+    div do
+      Field(:feature_ids).label(for: false) { "Enable features" }
+      Field(:feature_ids).checkbox do |c|
+        div { c.option(1) { "Dark Mode" } }
+        div { c.option(2) { "Notifications" } }
+        div { c.option(3) { "Auto-save" } }
+      end
+    end
+
+    # Both radio and checkbox support ActiveRecord relations
+    div do
+      Field(:category_id).label(for: false) { "Select category" }
+      # Automatically uses id as value and name as label
+      Field(:category_id).radio(Category.select(:id, :name))
+    end
+
+    div do
+      Field(:tag_ids).label(for: false) { "Select tags" }
+      # Automatically uses id as value and name as label
+      Field(:tag_ids).checkbox(Tag.select(:id, :name))
     end
 
     render button { "Submit" }
