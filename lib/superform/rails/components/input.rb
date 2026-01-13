@@ -2,7 +2,7 @@ module Superform
   module Rails
     module Components
       class Input < Field
-        def view_template(&)
+        def view_template
           input(**attributes)
         end
 

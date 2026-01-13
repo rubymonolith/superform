@@ -72,73 +72,73 @@ module Superform
       #   field(:birthday).date
       #   field(:secret).hidden(value: "token123")
       #   field(:gender).radio("male", id: "user_gender_male")
-      def text(*, **, &)
-        input(*, **, type: :text, &)
+      def text(*, **)
+        input(*, **, type: :text)
       end
 
-      def hidden(*, **, &)
-        input(*, **, type: :hidden, &)
+      def hidden(*, **)
+        input(*, **, type: :hidden)
       end
 
-      def password(*, **, &)
-        input(*, **, type: :password, &)
+      def password(*, **)
+        input(*, **, type: :password)
       end
 
-      def email(*, **, &)
-        input(*, **, type: :email, &)
+      def email(*, **)
+        input(*, **, type: :email)
       end
 
-      def url(*, **, &)
-        input(*, **, type: :url, &)
+      def url(*, **)
+        input(*, **, type: :url)
       end
 
-      def tel(*, **, &)
-        input(*, **, type: :tel, &)
+      def tel(*, **)
+        input(*, **, type: :tel)
       end
       alias_method :phone, :tel
 
-      def number(*, **, &)
-        input(*, **, type: :number, &)
+      def number(*, **)
+        input(*, **, type: :number)
       end
 
-      def range(*, **, &)
-        input(*, **, type: :range, &)
+      def range(*, **)
+        input(*, **, type: :range)
       end
 
-      def date(*, **, &)
-        input(*, **, type: :date, &)
+      def date(*, **)
+        input(*, **, type: :date)
       end
 
-      def time(*, **, &)
-        input(*, **, type: :time, &)
+      def time(*, **)
+        input(*, **, type: :time)
       end
 
-      def datetime(*, **, &)
-        input(*, **, type: :"datetime-local", &)
+      def datetime(*, **)
+        input(*, **, type: :"datetime-local")
       end
 
-      def month(*, **, &)
-        input(*, **, type: :month, &)
+      def month(*, **)
+        input(*, **, type: :month)
       end
 
-      def week(*, **, &)
-        input(*, **, type: :week, &)
+      def week(*, **)
+        input(*, **, type: :week)
       end
 
-      def color(*, **, &)
-        input(*, **, type: :color, &)
+      def color(*, **)
+        input(*, **, type: :color)
       end
 
-      def search(*, **, &)
-        input(*, **, type: :search, &)
+      def search(*, **)
+        input(*, **, type: :search)
       end
 
-      def file(*, **, &)
-        input(*, **, type: :file, &)
+      def file(*, **)
+        input(*, **, type: :file)
       end
 
-      def radio(value, *, **, &)
-        input(*, **, type: :radio, value: value, &)
+      def radio(value, *, **)
+        input(*, **, type: :radio, value: value)
       end
 
       # Rails compatibility aliases
