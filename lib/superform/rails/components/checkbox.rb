@@ -42,7 +42,10 @@ module Superform
               value: value.to_s,
               checked: checked_in_array?(value)
             )
-            plain(yield) if block_given?
+            if block_given?
+              content = yield
+              content.html_safe? ? raw(content) : plain(content)
+            end
           end
         end
 
