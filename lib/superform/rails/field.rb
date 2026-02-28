@@ -45,8 +45,14 @@ module Superform
         Components::Textarea.new(field, attributes:)
       end
 
-      def select(*collection, **attributes, &)
-        Components::Select.new(field, attributes:, collection:, &)
+      def select(*options, multiple: false, **attributes, &)
+        Components::Select.new(
+          field,
+          attributes:,
+          options:,
+          multiple:,
+          &
+        )
       end
 
       def errors

@@ -2,22 +2,54 @@ module Superform
   module Rails
     module Components
       class Select < Field
-        def initialize(*, collection: [], **, &)
+        def initialize(
+          *,
+          options: [],
+          collection: nil,
+          multiple: false,
+          **,
+          &
+        )
           super(*, **, &)
-          @collection = collection
+
+          # Handle deprecated collection parameter
+          if collection && options.empty?
+            warn "[DEPRECATION] Superform::Rails::Components::Select: " \
+                 "`collection:` keyword is deprecated and will be removed. " \
+                 "Use positional arguments instead: field.select([1, 'A'], [2, 'B'])"
+            options = collection
+          end
+
+          @options = options
+          @multiple = multiple
         end
 
-        def view_template(&options)
+        def view_template(&block)
+          # Hidden input ensures a value is sent even when all options are
+          # deselected in a multiple select
+          if @multiple
+            hidden_name = field.parent.is_a?(Superform::Field) ? dom.name : dom.array_name
+            input(type: "hidden", name: hidden_name, value: "")
+          end
+
           if block_given?
-            select(**attributes, &options)
+            select(**attributes, &block)
           else
-            select(**attributes) { options(*@collection) }
+            select(**attributes) do
+              options(*@options)
+            end
           end
         end
 
         def options(*collection)
+          # Handle both single values and arrays (for multiple selects)
+          selected_values = Array(field.value)
           map_options(collection).each do |key, value|
-            option(selected: field.value == key, value: key) { value }
+            if key.nil?
+              blank_option
+            else
+              option(selected: selected_values.include?(key), value: key) { value }
+            end
           end
         end
 
@@ -36,6 +68,18 @@ module Superform
         protected
           def map_options(collection)
             OptionMapper.new(collection)
+          end
+
+          def field_attributes
+            attrs = super
+            if @multiple
+              # Only append [] if the field doesn't already have a Field parent
+              # (which would mean it's already in a collection and has [] notation)
+              name = field.parent.is_a?(Superform::Field) ? attrs[:name] : dom.array_name
+              attrs.merge(multiple: true, name: name)
+            else
+              attrs
+            end
           end
       end
     end
