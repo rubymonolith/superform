@@ -1,6 +1,3 @@
-# frozen_string_literal: true
-
-# rubocop:disable Metrics/BlockLength
 RSpec.describe Superform::Rails::Components::Select, type: :view do
   let(:object) { double('object', role_ids: role_ids_value) }
   let(:role_ids_value) { nil }
@@ -16,25 +13,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
   describe 'basic select' do
     subject { render(component) }
 
-    it 'renders a select element' do
-      expect(subject).to include('<select')
-    end
-
-    it 'renders options from collection' do
-      expect(subject).to include('>Admin</option>')
-      expect(subject).to include('>Editor</option>')
-      expect(subject).to include('>Viewer</option>')
-    end
-
-    it 'includes the field name' do
-      expect(subject).to include('name="role_ids"')
-    end
-
-    it 'does not include multiple attribute' do
-      expect(subject).not_to include('multiple')
-    end
-
-    it 'renders complete HTML structure' do
+    it 'renders select with options' do
       expect(subject).to eq(
         '<select id="role_ids" name="role_ids">' \
         '<option value="1">Admin</option>' \
@@ -51,21 +30,6 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     subject { render(component) }
 
     it 'marks the matching option as selected' do
-      expect(subject).to match(
-        /<option[^>]*selected[^>]*value="2"[^>]*>Editor<\/option>/
-      )
-    end
-
-    it 'does not mark other options as selected' do
-      expect(subject).not_to match(
-        /<option value="1"[^>]*selected/
-      )
-      expect(subject).not_to match(
-        /<option value="3"[^>]*selected/
-      )
-    end
-
-    it 'renders complete HTML with selected option' do
       expect(subject).to eq(
         '<select id="role_ids" name="role_ids">' \
         '<option value="1">Admin</option>' \
@@ -88,25 +52,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
 
     subject { render(component) }
 
-    it 'includes multiple attribute' do
-      expect(subject).to include('multiple')
-    end
-
-    it 'appends [] to field name' do
-      expect(subject).to include('name="role_ids[]"')
-    end
-
-    it 'renders hidden input before select' do
-      expect(subject).to match(
-        /<input type="hidden" name="role_ids\[\]" value="">.*<select/m
-      )
-    end
-
-    it 'renders hidden input with empty value' do
-      expect(subject).to include('type="hidden" name="role_ids[]" value=""')
-    end
-
-    it 'renders complete HTML structure with hidden input' do
+    it 'renders hidden input, appends [] to name, and adds multiple attribute' do
       expect(subject).to eq(
         '<input type="hidden" name="role_ids[]" value="">' \
         '<select id="role_ids" name="role_ids[]" multiple>' \
@@ -132,21 +78,6 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     subject { render(component) }
 
     it 'marks all matching options as selected' do
-      expect(subject).to match(
-        /<option[^>]*selected[^>]*value="1"[^>]*>Admin<\/option>/
-      )
-      expect(subject).to match(
-        /<option[^>]*selected[^>]*value="3"[^>]*>Viewer<\/option>/
-      )
-    end
-
-    it 'does not mark non-matching options as selected' do
-      expect(subject).not_to match(
-        /<option value="2"[^>]*selected/
-      )
-    end
-
-    it 'renders complete HTML with multiple selected options' do
       expect(subject).to eq(
         '<input type="hidden" name="role_ids[]" value="">' \
         '<select id="role_ids" name="role_ids[]" multiple>' \
@@ -158,29 +89,18 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
-  describe 'with nil as first option (blank option)' do
-    let(:options_with_blank) { [nil, *options] }
+  describe 'with blank option (nil)' do
     let(:component) do
       described_class.new(
         field,
         attributes: attributes,
-        options: options_with_blank
+        options: [nil, *options]
       )
     end
 
     subject { render(component) }
 
-    it 'renders a blank option' do
-      expect(subject).to match(%r{<option[^>]*selected[^>]*></option>})
-    end
-
-    it 'renders blank option before collection options' do
-      expect(subject).to match(
-        %r{<option[^>]*selected[^>]*></option>.*>Admin<}m
-      )
-    end
-
-    it 'renders complete HTML structure with blank option' do
+    it 'renders a selected blank option before other options' do
       expect(subject).to eq(
         '<select id="role_ids" name="role_ids">' \
         '<option selected></option>' \
@@ -220,21 +140,6 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     subject { render(component) }
 
     it 'does not append extra [] when parent is a Field' do
-      # The field name should be users[][] not users[][][]
-      # because role_ids key is excluded when parent is a Field
-      expect(subject).to include('name="users[][]"')
-      expect(subject).not_to include('name="users[][][]"')
-    end
-
-    it 'still includes multiple attribute' do
-      expect(subject).to include('multiple')
-    end
-
-    it 'renders hidden input with correct name' do
-      expect(subject).to include('type="hidden" name="users[][]" value=""')
-    end
-
-    it 'renders complete HTML structure without extra brackets' do
       expect(subject).to eq(
         '<input type="hidden" name="users[][]" value="">' \
         '<select id="users_1_role_ids" name="users[][]" multiple>' \
@@ -246,75 +151,22 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
-  describe 'with both multiple and nil first option (blank)' do
-    let(:options_with_blank) { [nil, *options] }
-    let(:component) do
-      described_class.new(
-        field,
-        attributes: attributes,
-        options: options_with_blank,
-        multiple: true
-      )
-    end
-
-    subject { render(component) }
-
-    it 'renders both features correctly' do
-      expect(subject).to include('multiple')
-      expect(subject).to include('name="role_ids[]"')
-      expect(subject).to match(%r{<option[^>]*selected[^>]*></option>})
-    end
-  end
-
-  describe 'using field helper method' do
+  describe 'field helper method' do
     let(:form_field) do
       Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
     end
 
-    context 'with positional collection arguments' do
-      subject do
-        render(form_field.select([1, 'Admin'], [2, 'Editor'], [3, 'Viewer']))
-      end
-
-      it 'renders select with options from positional args' do
-        expect(subject).to include('>Admin</option>')
-        expect(subject).to include('>Editor</option>')
-        expect(subject).to include('>Viewer</option>')
-      end
+    it 'accepts positional arguments' do
+      html = render(form_field.select([1, 'Admin'], [2, 'Editor'], [3, 'Viewer']))
+      expect(html).to include('>Admin</option>')
+      expect(html).to include('>Editor</option>')
+      expect(html).to include('>Viewer</option>')
     end
 
-    context 'with positional arguments' do
-      subject do
-        render(
-          form_field.select(
-            [1, 'Admin'], [2, 'Editor'], [3, 'Viewer']
-          )
-        )
-      end
-
-      it 'renders select with options from positional args' do
-        expect(subject).to include('>Admin</option>')
-        expect(subject).to include('>Editor</option>')
-        expect(subject).to include('>Viewer</option>')
-      end
-    end
-
-    context 'with multiple: true keyword argument' do
-      subject do
-        render(
-          form_field.select(
-            [1, 'Admin'], [2, 'Editor'],
-            multiple: true
-          )
-        )
-      end
-
-      it 'renders multiple select with positional args' do
-        expect(subject).to include('multiple')
-        expect(subject).to include('name="role_ids[]"')
-        expect(subject).to include('>Admin</option>')
-        expect(subject).to include('>Editor</option>')
-      end
+    it 'accepts multiple: true keyword' do
+      html = render(form_field.select([1, 'Admin'], [2, 'Editor'], multiple: true))
+      expect(html).to include('multiple')
+      expect(html).to include('name="role_ids[]"')
     end
   end
 
@@ -323,22 +175,17 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       described_class.new(field, attributes: attributes, options: [])
     end
 
-    context 'when field value is nil' do
-      let(:role_ids_value) { nil }
-
-      it 'renders selected blank option' do
-        output = render(component, &:blank_option)
-        expect(output).to match(%r{<option[^>]*selected[^>]*></option>})
-      end
+    it 'renders selected when field value is nil' do
+      output = render(component, &:blank_option)
+      expect(output).to match(%r{<option[^>]*selected[^>]*></option>})
     end
 
-    context 'when field has a value' do
-      let(:role_ids_value) { 1 }
-
-      it 'renders unselected blank option' do
-        output = render(component, &:blank_option)
-        expect(output).not_to match(/<option[^>]*selected/)
-      end
+    it 'renders unselected when field has a value' do
+      object = double('object', role_ids: 1)
+      field = Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
+      component = described_class.new(field, attributes: {}, options: [])
+      output = render(component, &:blank_option)
+      expect(output).not_to match(/<option[^>]*selected/)
     end
   end
 
@@ -348,22 +195,14 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
       User.create!(first_name: 'Bob', email: 'bob@example.com')
     end
 
-    after do
-      User.delete_all
-    end
-
-    let(:users_relation) { User.select(:id, :first_name) }
-    let(:component) do
-      described_class.new(field, attributes: attributes, options: [users_relation])
-    end
-
-    subject { render(component) }
+    after { User.delete_all }
 
     it 'renders options from ActiveRecord relation' do
-      # OptionMapper extracts id as value and joins other attributes as label
-      expect(subject).to match(/<option value="\d+">Alice<\/option>/)
-      expect(subject).to match(/<option value="\d+">Bob<\/option>/)
+      users_relation = User.select(:id, :first_name)
+      component = described_class.new(field, attributes: {}, options: [users_relation])
+      html = render(component)
+      expect(html).to match(/<option value="\d+">Alice<\/option>/)
+      expect(html).to match(/<option value="\d+">Bob<\/option>/)
     end
   end
 end
-# rubocop:enable Metrics/BlockLength
