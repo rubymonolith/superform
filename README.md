@@ -417,15 +417,15 @@ class SignupForm < Components::Form
       end
     end
 
-    # Radio groups: pass [value, label] options and iterate. Superform
-    # handles the name, value, and checked state automatically.
+    # Radio groups: iterate your options and call radio(value) on the field.
+    # Superform handles the name, value, and checked state automatically.
     fieldset do
       legend { "Plan" }
-      Field(:plan_id).radio(*Plan.pluck(:id, :name)).each do |plan|
+      Plan.all.each do |plan|
         label do
-          plan.radio
+          Field(:plan_id).radio(plan.id)
           whitespace
-          plain plan.label
+          plain plan.name
         end
       end
     end

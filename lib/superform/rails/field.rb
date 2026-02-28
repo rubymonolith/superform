@@ -143,15 +143,8 @@ module Superform
         input(*, **, type: :file)
       end
 
-      def radio(*args, **attributes)
-        if args.length == 1 && !args.first.is_a?(Array)
-          # Single scalar value: Field(:gender).radio("male")
-          Components::Radio.new(field, value: args.first, attributes: attributes)
-        else
-          # Collection of options: Field(:status).radio("active", "inactive", "pending")
-          # or Field(:status).radio(["active", "Active"], ["inactive", "Inactive"])
-          RadioCollection.new(field: field, options: args)
-        end
+      def radio(value, **attributes)
+        Components::Radio.new(field, value: value, attributes: attributes)
       end
 
       # Rails compatibility aliases
