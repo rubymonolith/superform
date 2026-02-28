@@ -404,6 +404,19 @@ class SignupForm < Components::Form
       Field(:agreement).checkbox(checked: true)
     end
 
+    # Checkbox and radio groups are just loops. This keeps you in control
+    # of the HTML structure — labels wrapping inputs, labels alongside
+    # inputs, fieldsets, etc.
+    fieldset do
+      legend { "Select your roles" }
+      Role.pluck(:id, :name).each do |id, name|
+        label do
+          Field(:role_ids).checkbox(name: "user[role_ids][]", value: id)
+          plain " #{name}"
+        end
+      end
+    end
+
     render button { "Submit" }
   end
 end
