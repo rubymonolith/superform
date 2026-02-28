@@ -417,6 +417,19 @@ class SignupForm < Components::Form
       end
     end
 
+    # Radio groups: pass options to radio and iterate. Superform handles
+    # the name, value, and checked state automatically.
+    fieldset do
+      legend { "Status" }
+      Field(:status).radio(User.statuses).each do |status|
+        label do
+          status.radio
+          whitespace
+          plain status.value.humanize
+        end
+      end
+    end
+
     render button { "Submit" }
   end
 end
