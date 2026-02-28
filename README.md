@@ -404,14 +404,15 @@ class SignupForm < Components::Form
       Field(:agreement).checkbox(checked: true)
     end
 
-    # Checkbox and radio groups use collections. The collection handles
-    # naming (including []) and data binding. You control the HTML structure.
+    # Checkbox groups: loop over all possible options. Superform handles
+    # the name (with []), value, and checked state. You control the HTML.
     fieldset do
-      legend { "Select your roles" }
-      Field(:role_ids).collection.each do |role|
+      legend { "Roles" }
+      Role.all.each do |role|
         label do
-          role.checkbox
-          plain " #{role.value}"
+          Field(:role_ids).checkbox(value: role.id)
+          whitespace
+          plain role.name
         end
       end
     end

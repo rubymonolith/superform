@@ -3,15 +3,37 @@ module Superform
     module Components
       class Checkbox < Field
         def view_template(&)
-          # Rails has a hidden and checkbox input to deal with sending back a value
-          # to the server regardless of if the input is checked or not.
-          input(name: dom.name, type: :hidden, value: "0")
-          # The hard coded keys need to be in here so the user can't overrite them.
-          input(type: :checkbox, value: "1", **attributes)
+          if boolean?
+            # Rails convention: hidden input ensures a value is sent even when unchecked
+            input(name: dom.name, type: :hidden, value: "0")
+            input(type: :checkbox, value: "1", **attributes)
+          elsif collection?
+            input(type: :checkbox, value: dom.value, **attributes)
+          else
+            input(type: :checkbox, **attributes)
+          end
         end
 
         def field_attributes
-          { id: dom.id, name: dom.name, checked: field.value }
+          if boolean?
+            { id: dom.id, name: dom.name, checked: field.value }
+          elsif collection?
+            { id: dom.id, name: dom.name, checked: true }
+          else
+            { id: dom.id, name: dom.array_name, checked: Array(field.value).include?(@attributes[:value]) }
+          end
+        end
+
+        private
+
+        # Inside a FieldCollection — the field is a child of another Field
+        def collection?
+          field.parent.is_a?(Superform::Field)
+        end
+
+        # Scalar field with no explicit value — classic on/off toggle
+        def boolean?
+          !collection? && !field.value.is_a?(Array)
         end
       end
     end
