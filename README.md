@@ -412,7 +412,7 @@ class SignupForm < Components::Form
     fieldset do
       legend { "Roles" }
       Role.all.each do |role|
-        label(for: "#{field(:role_ids).dom.id}_#{role.id}") do
+        label(for: field(:role_ids).dom.id(role.id)) do
           Field(:role_ids).checkbox(value: role.id)
           whitespace
           plain role.name
@@ -426,7 +426,7 @@ class SignupForm < Components::Form
     fieldset do
       legend { "Plan" }
       Plan.all.each do |plan|
-        label(for: "#{field(:plan_id).dom.id}_#{plan.id}") do
+        label(for: field(:plan_id).dom.id(plan.id)) do
           Field(:plan_id).radio(plan.id)
           whitespace
           plain plan.name
