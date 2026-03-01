@@ -407,11 +407,12 @@ class SignupForm < Components::Form
     end
 
     # Checkbox groups: loop over all possible options. Superform handles
-    # the name (with []), value, and checked state. You control the HTML.
+    # the name (with []), value, checked state, and unique ids. Each
+    # checkbox gets an id like "role_ids_1", "role_ids_2", etc.
     fieldset do
       legend { "Roles" }
       Role.all.each do |role|
-        label do
+        label(for: "#{field(:role_ids).dom.id}_#{role.id}") do
           Field(:role_ids).checkbox(value: role.id)
           whitespace
           plain role.name
@@ -420,11 +421,12 @@ class SignupForm < Components::Form
     end
 
     # Radio groups: iterate your options and call radio(value) on the field.
-    # Superform handles the name, value, and checked state automatically.
+    # Superform handles the name, value, checked state, and unique ids automatically.
+    # Each radio gets an id like "plan_id_1", "plan_id_2", etc.
     fieldset do
       legend { "Plan" }
       Plan.all.each do |plan|
-        label do
+        label(for: "#{field(:plan_id).dom.id}_#{plan.id}") do
           Field(:plan_id).radio(plan.id)
           whitespace
           plain plan.name

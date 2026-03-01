@@ -1,5 +1,16 @@
 ## [Unreleased]
 
+### Added
+
+- **Radio component** with `field(:gender).radio("male")` API. Automatically handles name, value, and checked state. Each radio gets a unique DOM id based on its value (e.g. `user_gender_male`).
+- **Checkbox collection support** — three modes:
+  - **Boolean** (on/off toggle): `Field(:featured).checkbox` renders with hidden "0" input
+  - **All-options** (pick from known set): `Field(:role_ids).checkbox(value: role.id)` with `[]` name and unique ids per value
+  - **Field collection** (from existing array): `field(:role_ids).collection { |r| r.checkbox }` for values already on the model
+- **Unique DOM ids** for radio and checkbox groups via `DOM#id(*suffixes)`. Prevents duplicate ids in valid HTML and allows labels to target individual inputs.
+- **Select improvements**: blank options (`nil`) at any position, `multiple: true` support with hidden input for empty submissions, ActiveRecord relations as options.
+- **Preview server** — run `bin/preview` to view example forms at localhost:3000 with hot-reloading.
+
 ### Changed
 
 - **Deprecation**: Components now accept HTML attributes as keyword arguments directly instead of wrapping them in `attributes:`. The old `attributes:` keyword still works but emits a deprecation warning and will be removed in a future version.
@@ -31,6 +42,8 @@
     end
   end
   ```
+
+- Required Ruby version bumped to 2.7.0.
 
 ## [0.6.1] - 2025-08-28
 
