@@ -75,12 +75,26 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
       expect(html).not_to match(/<input[^>]*checked[^>]*value="2"/)
     end
 
+    it 'renders unique ids per value' do
+      all_roles = [[1, "Admin"], [2, "Editor"], [3, "Viewer"]]
+      html = ""
+      all_roles.each do |id, _name|
+        html += render(described_class.new(field, value: id))
+      end
+
+      expect(html).to include('id="role_ids_1"')
+      expect(html).to include('id="role_ids_2"')
+      expect(html).to include('id="role_ids_3"')
+    end
+
     it 'works through the field helper' do
       html = render(field.checkbox(value: 1))
+      expect(html).to include('id="role_ids_1"')
       expect(html).to include('name="role_ids[]"')
       expect(html).to include('checked')
 
       html = render(field.checkbox(value: 2))
+      expect(html).to include('id="role_ids_2"')
       expect(html).to include('name="role_ids[]"')
       expect(html).not_to include('checked')
     end

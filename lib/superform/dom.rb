@@ -16,8 +16,8 @@ module Superform
     # Walks from the current node to the parent node, grabs the names, and seperates
     # them with a `_` for a DOM ID. One limitation of this approach is if multiple forms
     # exist on the same page, the ID may be duplicate.
-    def id
-      lineage.map(&:key).join("_")
+    def id(*suffixes)
+      (lineage.map(&:key) + suffixes).join("_")
     end
 
     # The `name` attribute of a node, which is influenced by Rails (not sure where Rails got

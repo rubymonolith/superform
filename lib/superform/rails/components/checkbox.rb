@@ -20,7 +20,7 @@ module Superform
           elsif collection?
             { id: dom.id, name: dom.name, checked: true }
           else
-            { id: dom.id, name: dom.array_name, checked: Array(field.value).include?(@attributes[:value]) }
+            { id: dom.id(@attributes[:value]), name: dom.array_name, checked: Array(field.value).include?(@attributes[:value]) }
           end
         end
 

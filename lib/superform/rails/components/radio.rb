@@ -12,7 +12,7 @@ module Superform
         end
 
         def field_attributes
-          { id: dom.id, name: dom.name, value: @value, checked: field.value == @value }
+          { id: dom.id(@value), name: dom.name, value: @value, checked: field.value == @value }
         end
       end
     end

@@ -7,6 +7,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
   it 'renders a checked radio when value matches' do
     html = render(field.radio("male"))
     expect(html).to include('type="radio"')
+    expect(html).to include('id="gender_male"')
     expect(html).to include('name="gender"')
     expect(html).to include('value="male"')
     expect(html).to include('checked')
@@ -14,6 +15,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
 
   it 'renders an unchecked radio when value does not match' do
     html = render(field.radio("female"))
+    expect(html).to include('id="gender_female"')
     expect(html).to include('value="female"')
     expect(html).not_to include('checked')
   end
@@ -23,7 +25,7 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     expect(html).to include('class="radio-input"')
   end
 
-  it 'renders a group with correct checked state' do
+  it 'renders a group with unique ids' do
     html = ""
     ["male", "female", "other"].each do |value|
       html += render(field.radio(value))
@@ -32,6 +34,9 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     expect(html.scan(/type="radio"/).count).to eq(3)
     expect(html.scan(/name="gender"/).count).to eq(3)
     expect(html.scan(/checked/).count).to eq(1)
+    expect(html).to include('id="gender_male"')
+    expect(html).to include('id="gender_female"')
+    expect(html).to include('id="gender_other"')
     expect(html).to match(/<input[^>]*value="male"[^>]*checked/)
   end
 end
