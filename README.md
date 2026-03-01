@@ -165,6 +165,8 @@ This gives you complete control over markup, styling, and component composition 
 
 Superforms are built out of [Phlex components](https://www.phlex.fun/html/components/). The method names correspond with the HTML tag, its arguments are attributes, and the blocks are the contents of the tag.
 
+When building custom components, follow this convention: **positional or named keyword arguments** are for component configuration (non-HTML concerns like `value:`, `options:`, `multiple:`), and **`**kwargs`** are for HTML attributes that pass through to the rendered element. This keeps the boundary between component logic and HTML clean.
+
 ```ruby
 # ./app/components/form.rb
 class Components::Form < Superform::Rails::Form
