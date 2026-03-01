@@ -32,6 +32,20 @@ ActiveRecord::Schema.define(version: 1) do
     t.string :email
     t.timestamps
   end
+
+  create_table :products, force: true do |t|
+    t.string :name
+    t.text :description
+    t.integer :quantity
+    t.decimal :price
+    t.timestamps
+  end
+
+  create_table :conditional_users, force: true do |t|
+    t.string :username
+    t.string :email
+    t.timestamps
+  end
 end
 
 # User ActiveRecord model for testing
@@ -39,6 +53,24 @@ class User < ActiveRecord::Base
   validates :first_name, presence: true
   validates :email, presence: true,
     format: { with: URI::MailTo::EMAIL_REGEXP }
+end
+
+# Product model for testing length and numericality validations
+class Product < ActiveRecord::Base
+  validates :name, presence: true, length: { minimum: 2, maximum: 100 }
+  validates :description, length: { in: 10..500 }
+  validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 1000 }
+  validates :price, numericality: { greater_than_or_equal_to: 0 }
+end
+
+# ConditionalUser model for testing conditional validators are skipped
+class ConditionalUser < ActiveRecord::Base
+  validates :username, presence: true, if: :some_condition?
+  validates :email, presence: true, on: :create
+
+  def some_condition?
+    true
+  end
 end
 
 # Minimal controller for URL generation
