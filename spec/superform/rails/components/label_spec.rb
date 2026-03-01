@@ -6,7 +6,7 @@ RSpec.describe Superform::Rails::Components::Label do
   let(:user) { User.new(first_name: "John") }
   let(:form) { Superform::Rails::Form.new(user) }
   let(:field) { form.field(:first_name) }
-  let(:label) { described_class.new(field, attributes: { class: "form-label" }) }
+  let(:label) { described_class.new(field, class: "form-label") }
 
   subject { label.call }
 

@@ -5,7 +5,7 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
     let(:field) do
       Superform::Rails::Field.new(:featured, parent: nil, object: object)
     end
-    let(:component) { described_class.new(field, attributes: {}) }
+    let(:component) { described_class.new(field) }
 
     subject { render(component) }
 
@@ -63,7 +63,7 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
       all_roles = [[1, "Admin"], [2, "Editor"], [3, "Viewer"]]
       html = ""
       all_roles.each do |id, _name|
-        html += render(described_class.new(field, attributes: { value: id }))
+        html += render(described_class.new(field, value: id))
       end
 
       expect(html).to include('name="role_ids[]"')

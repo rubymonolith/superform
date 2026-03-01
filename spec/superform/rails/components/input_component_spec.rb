@@ -11,7 +11,7 @@ RSpec.describe Superform::Rails::Components::Input do
     {}
   end
   let(:component) do
-    described_class.new(field, attributes: attributes)
+    described_class.new(field, **attributes)
   end
   subject { component }
 

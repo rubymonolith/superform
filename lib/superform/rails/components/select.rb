@@ -3,14 +3,14 @@ module Superform
     module Components
       class Select < Field
         def initialize(
-          *,
+          field,
           options: [],
           collection: nil,
           multiple: false,
-          **,
+          **attributes,
           &
         )
-          super(*, **, &)
+          super(field, **attributes, &)
 
           # Handle deprecated collection parameter
           if collection && options.empty?

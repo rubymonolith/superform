@@ -2,8 +2,8 @@ module Superform
   module Rails
     module Components
       class Radio < Field
-        def initialize(field, value:, attributes: {})
-          super(field, attributes: attributes)
+        def initialize(field, value:, **attributes)
+          super(field, **attributes)
           @value = value
         end
 

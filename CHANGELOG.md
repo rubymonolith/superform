@@ -1,5 +1,37 @@
 ## [Unreleased]
 
+### Changed
+
+- **Deprecation**: Components now accept HTML attributes as keyword arguments directly instead of wrapping them in `attributes:`. The old `attributes:` keyword still works but emits a deprecation warning and will be removed in a future version.
+
+  ```ruby
+  # Before
+  MyInput.new(field, attributes: { class: "form-input" })
+
+  # After
+  MyInput.new(field, class: "form-input")
+  ```
+
+  If you have custom components that override `initialize`, update them to use `**attributes`:
+
+  ```ruby
+  # Before
+  class MyRadio < Superform::Rails::Components::Field
+    def initialize(field, value:, attributes: {})
+      super(field, attributes: attributes)
+      @value = value
+    end
+  end
+
+  # After
+  class MyRadio < Superform::Rails::Components::Field
+    def initialize(field, value:, **attributes)
+      super(field, **attributes)
+      @value = value
+    end
+  end
+  ```
+
 ## [0.6.1] - 2025-08-28
 
 ### Breaking Changes
@@ -106,7 +138,7 @@ Update component class names in your custom form classes:
 
    class Field < Superform::Rails::Form::Field
      def input(**attributes)
-       MyInput.new(self, attributes: attributes)
+       MyInput.new(self, **attributes)
      end
    end
    ```

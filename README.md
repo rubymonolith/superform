@@ -179,7 +179,7 @@ class Components::Form < Superform::Rails::Form
   # Redefining the base Field class lets us override every field component.
   class Field < Superform::Rails::Form::Field
     def input(**attributes)
-      MyInput.new(self, attributes: attributes)
+      MyInput.new(self, **attributes)
     end
   end
 
@@ -469,7 +469,7 @@ class AdminForm < Components::Form
 
   class Field < Field
     def tooltip_input(**attributes)
-      AdminInput.new(self, attributes: attributes)
+      AdminInput.new(self, **attributes)
     end
   end
 end

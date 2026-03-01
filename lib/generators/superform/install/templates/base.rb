@@ -15,7 +15,7 @@ module Components
       #
       # # Return your own component if you're doing more complicated things.
       # def autocomplete(**attributes)
-      #   Components::Autocomplete.new(field, attributes:)
+      #   Components::Autocomplete.new(field, **attributes)
       # end
     end
 

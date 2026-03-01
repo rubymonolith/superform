@@ -12,8 +12,8 @@ module Superform
     #   end
     #
     #   class Field < Field
-    #     def label(**, &)
-    #       MyLabel.new(self, **, &)
+    #     def label(**attributes, &)
+    #       MyLabel.new(self, **attributes, &)
     #     end
     #
     #     def input(class: nil, **)
@@ -26,31 +26,31 @@ module Superform
     # Now all calls to `label` will have the `text-bold` class applied to it.
     class Field < Superform::Field
       def button(**attributes)
-        Components::Button.new(field, attributes:)
+        Components::Button.new(field, **attributes)
       end
 
       def input(**attributes)
-        Components::Input.new(field, attributes:)
+        Components::Input.new(field, **attributes)
       end
 
       def checkbox(**attributes)
-        Components::Checkbox.new(field, attributes:)
+        Components::Checkbox.new(field, **attributes)
       end
 
       def label(**attributes, &)
-        Components::Label.new(field, attributes:, &)
+        Components::Label.new(field, **attributes, &)
       end
 
       def textarea(**attributes)
-        Components::Textarea.new(field, attributes:)
+        Components::Textarea.new(field, **attributes)
       end
 
       def select(*options, multiple: false, **attributes, &)
         Components::Select.new(
           field,
-          attributes:,
           options:,
           multiple:,
+          **attributes,
           &
         )
       end
@@ -144,7 +144,7 @@ module Superform
       end
 
       def radio(value, **attributes)
-        Components::Radio.new(field, value: value, attributes: attributes)
+        Components::Radio.new(field, value:, **attributes)
       end
 
       # Rails compatibility aliases

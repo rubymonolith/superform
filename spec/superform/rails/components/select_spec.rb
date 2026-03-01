@@ -6,7 +6,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
   end
   let(:options) { [[1, 'Admin'], [2, 'Editor'], [3, 'Viewer']] }
   let(:component) do
-    described_class.new(field, attributes: attributes, options:)
+    described_class.new(field, options:, **attributes)
   end
   let(:attributes) { {} }
 
@@ -44,7 +44,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     let(:component) do
       described_class.new(
         field,
-        attributes: attributes,
+        **attributes,
         options:,
         multiple: true
       )
@@ -69,7 +69,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     let(:component) do
       described_class.new(
         field,
-        attributes: attributes,
+        **attributes,
         options:,
         multiple: true
       )
@@ -93,7 +93,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     let(:component) do
       described_class.new(
         field,
-        attributes: attributes,
+        **attributes,
         options: [nil, *options]
       )
     end
@@ -131,7 +131,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     let(:component) do
       described_class.new(
         role_ids_field,
-        attributes: attributes,
+        **attributes,
         options:,
         multiple: true
       )
@@ -172,7 +172,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
 
   describe '#blank_option' do
     let(:component) do
-      described_class.new(field, attributes: attributes, options: [])
+      described_class.new(field, options: [], **attributes)
     end
 
     it 'renders selected when field value is nil' do
@@ -183,7 +183,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     it 'renders unselected when field has a value' do
       object = double('object', role_ids: 1)
       field = Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
-      component = described_class.new(field, attributes: {}, options: [])
+      component = described_class.new(field, options: [])
       output = render(component, &:blank_option)
       expect(output).not_to match(/<option[^>]*selected/)
     end
@@ -199,7 +199,7 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
 
     it 'renders options from ActiveRecord relation' do
       users_relation = User.select(:id, :first_name)
-      component = described_class.new(field, attributes: {}, options: [users_relation])
+      component = described_class.new(field, options: [users_relation])
       html = render(component)
       expect(html).to match(/<option value="\d+">Alice<\/option>/)
       expect(html).to match(/<option value="\d+">Bob<\/option>/)
