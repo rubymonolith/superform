@@ -148,10 +148,12 @@ module Superform
       end
 
       def radios(*options)
+        options = enum_options if options.empty?
         Choices.new(field: self, options:)
       end
 
       def checkboxes(*options)
+        options = enum_options if options.empty?
         Choices.new(field: self, options:)
       end
 
@@ -161,6 +163,17 @@ module Superform
 
       def title
         key.to_s.titleize
+      end
+
+      private
+
+      def enum_options
+        return [] unless object
+        enums = object.class.try(:defined_enums)
+        return [] unless enums
+        enum = enums[key.to_s]
+        return [] unless enum
+        enum.keys.map { |k| [k, k.humanize] }
       end
     end
   end

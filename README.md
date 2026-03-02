@@ -384,22 +384,22 @@ class JobPostingForm < Components::Form
       Field(:remote_friendly).checkbox
     end
 
-    # Radio groups. Accepts all the same option formats as select:
-    # arrays, single values, hashes, or ActiveRecord relations.
+    # Radio group auto-detected from a Rails enum.
+    # Given: enum :employment_type, full_time: 0, part_time: 1, contract: 2
     fieldset do
       legend { "Employment type" }
-      field(:employment_type).radios(
-        "full_time" => "Full-time",
-        "part_time" => "Part-time",
-        "contract" => "Contract"
-      ).each do |choice|
+      field(:employment_type).radios.each do |choice|
         render choice.label {
           render choice.radio
           whitespace
-          plain choice.text
+          plain choice.text   # "Full time", "Part time", "Contract"
         }
       end
     end
+
+    # You can also pass explicit options to override enum detection.
+    # Accepts arrays, single values, hashes, or ActiveRecord relations.
+    # field(:employment_type).radios("full_time" => "Full-time", ...)
 
     # Checkbox groups. Same option formats, same Choice API.
     # Handles name[], checked state, and unique ids automatically.

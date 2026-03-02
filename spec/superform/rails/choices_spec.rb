@@ -114,6 +114,82 @@ RSpec.describe Superform::Rails::Choices, type: :view do
     end
   end
 
+  describe "enum auto-detection" do
+    let(:enum_class) do
+      Class.new do
+        def self.defined_enums
+          { "status" => { "draft" => 0, "published" => 1, "archived" => 2 } }
+        end
+
+        def self.try(method)
+          send(method) if respond_to?(method)
+        end
+      end
+    end
+    let(:object) { enum_class.new.tap { |o| o.define_singleton_method(:status) { "published" } } }
+    let(:field) { Superform::Rails::Field.new(:status, parent: nil, object: object) }
+
+    it "auto-detects enum options when no args given" do
+      choices = field.radios
+      values = choices.map { |c| [c.value, c.text] }
+      expect(values).to eq([["draft", "Draft"], ["published", "Published"], ["archived", "Archived"]])
+    end
+
+    it "checks the radio matching the current value" do
+      html = ""
+      field.radios.each do |choice|
+        html += render(choice.radio)
+      end
+
+      expect(html).to match(/<input[^>]*value="published"[^>]*checked/)
+      expect(html).not_to match(/<input[^>]*value="draft"[^>]*checked/)
+    end
+
+    it "uses explicit options when provided (skips enum)" do
+      choices = field.radios("active", "inactive")
+      values = choices.map { |c| [c.value, c.text] }
+      expect(values).to eq([["active", "active"], ["inactive", "inactive"]])
+    end
+
+    it "returns empty choices when field is not an enum" do
+      non_enum_field = Superform::Rails::Field.new(:name, parent: nil, object: object)
+      object.define_singleton_method(:name) { "test" }
+      choices = non_enum_field.radios
+      expect(choices.count).to eq(0)
+    end
+
+    it "returns empty choices when object is nil" do
+      nil_field = Superform::Rails::Field.new(:status, parent: nil, object: nil)
+      choices = nil_field.radios
+      expect(choices.count).to eq(0)
+    end
+
+    it "works with checkboxes too" do
+      choices = field.checkboxes
+      values = choices.map { |c| [c.value, c.text] }
+      expect(values).to eq([["draft", "Draft"], ["published", "Published"], ["archived", "Archived"]])
+    end
+  end
+
+  describe "default label text" do
+    let(:object) { double("object", plan_id: 1) }
+    let(:field) do
+      Superform::Rails::Field.new(:plan_id, parent: nil, object: object)
+    end
+
+    it "renders choice.text when label is called without a block" do
+      html = ""
+      field.radios([1, "Basic"], [2, "Pro"]).each do |choice|
+        html += render(choice.label)
+      end
+
+      expect(html).to include("Basic")
+      expect(html).to include("Pro")
+      expect(html).to include('for="plan_id_0"')
+      expect(html).to include('for="plan_id_1"')
+    end
+  end
+
   describe "is Enumerable" do
     let(:object) { double("object", status: "active") }
     let(:field) do

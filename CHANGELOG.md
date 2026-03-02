@@ -4,7 +4,9 @@
 
 - **Radio and checkbox groups** via `field(:plan).radios(...)` and `field(:roles).checkboxes(...)`.
   Accepts the same option formats as `select`. Each iteration yields a `Choice` with
-  `.radio`, `.checkbox`, `.label`, `.value`, `.text`.
+  `.radio`, `.checkbox`, `.label`, `.value`, `.text`. Auto-detects Rails enums when called
+  with no arguments — options are generated from `Model.defined_enums` with humanized labels.
+  `choice.label` without a block defaults to rendering `choice.text`.
 - **Hash options** for `select`, `radios`, and `checkboxes` — e.g. `radios(1 => "Basic", 2 => "Pro")`.
 - **Radio component** with `field(:gender).radio("male")` API. Automatically handles name, value, and checked state. Each radio gets a unique DOM id based on its value (e.g. `user_gender_male`).
 - **Checkbox collection support** — three modes:

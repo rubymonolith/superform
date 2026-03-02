@@ -32,8 +32,10 @@ module Superform
           @field.checkbox(value: @value, index: @index, **attributes)
         end
 
-        def label(**attributes, &)
-          Components::Label.new(@field, for: DOM.join(@field.dom.id, @index), **attributes, &)
+        def label(**attributes, &block)
+          label_text = @text
+          block ||= proc { label_text }
+          Components::Label.new(@field, for: DOM.join(@field.dom.id, @index), **attributes, &block)
         end
       end
     end
