@@ -338,6 +338,7 @@ class SignupForm < Components::Form
     # Selects accept options as positional arguments. Each option can be:
     # - A 2-element array: [value, label] renders <option value="value">label</option>
     # - A single value: "text" renders <option value="text">text</option>
+    # - A hash: {1 => "Admin", 2 => "Editor"} maps ids to labels
     # - nil: renders an empty <option></option>
     div do
       Field(:contact).label { "Would you like us to spam you to death?" }
@@ -406,33 +407,39 @@ class SignupForm < Components::Form
       Field(:agreement).checkbox(checked: true)
     end
 
-    # Checkbox groups: loop over all possible options. Superform handles
-    # the name (with []), value, checked state, and unique ids. Each
-    # checkbox gets an id like "role_ids_1", "role_ids_2", etc.
+    # Radio groups: use radios(...) with the same option formats as select.
+    # Each iteration yields a Choice with .radio, .label, .value, .text.
+    # Ids are index-based: "plan_id_0", "plan_id_1", etc.
     fieldset do
-      legend { "Roles" }
-      Role.all.each do |role|
-        label(for: field(:role_ids).dom.id(role.id)) do
-          Field(:role_ids).checkbox(value: role.id)
+      legend { "Plan" }
+      field(:plan_id).radios([1, "Basic"], [2, "Pro"], [3, "Enterprise"]).each do |choice|
+        render choice.label {
+          render choice.radio
           whitespace
-          plain role.name
-        end
+          plain choice.text
+        }
       end
     end
 
-    # Radio groups: iterate your options and call radio(value) on the field.
-    # Superform handles the name, value, checked state, and unique ids automatically.
-    # Each radio gets an id like "plan_id_1", "plan_id_2", etc.
+    # Checkbox groups: use checkboxes(...) with the same option formats.
+    # Handles name[] and checked state automatically.
     fieldset do
-      legend { "Plan" }
-      Plan.all.each do |plan|
-        label(for: field(:plan_id).dom.id(plan.id)) do
-          Field(:plan_id).radio(plan.id)
+      legend { "Roles" }
+      field(:role_ids).checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"]).each do |choice|
+        render choice.label {
+          render choice.checkbox
           whitespace
-          plain plan.name
-        end
+          plain choice.text
+        }
       end
     end
+
+    # Options also accept hashes: radios(1 => "Basic", 2 => "Pro")
+    # or ActiveRecord relations: radios(Plan.select(:id, :name))
+
+    # Low-level API: field(:gender).radio("male") and
+    # field(:role_ids).checkbox(value: 1) are still available
+    # for full control over iteration and ids.
 
     render button { "Submit" }
   end

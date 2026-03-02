@@ -39,4 +39,10 @@ RSpec.describe Superform::Rails::Components::Radio, type: :view do
     expect(html).to include('id="gender_other"')
     expect(html).to match(/<input[^>]*value="male"[^>]*checked/)
   end
+
+  it 'supports explicit index: for id generation' do
+    html = render(field.radio("male", index: 0))
+    expect(html).to include('id="gender_0"')
+    expect(html).to include('value="male"')
+  end
 end

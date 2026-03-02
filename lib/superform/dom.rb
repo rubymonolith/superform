@@ -3,6 +3,12 @@ module Superform
   # norms that were established by Rails. These can be used outsidef or Rails in
   # other Ruby web frameworks since it has now dependencies on Rails.
   class DOM
+    DELIMITER = "_"
+
+    def self.join(*segments)
+      segments.join(DELIMITER)
+    end
+
     def initialize(field:)
       @field = field
     end
@@ -16,8 +22,8 @@ module Superform
     # Walks from the current node to the parent node, grabs the names, and seperates
     # them with a `_` for a DOM ID. One limitation of this approach is if multiple forms
     # exist on the same page, the ID may be duplicate.
-    def id(*suffixes)
-      (lineage.map(&:key) + suffixes).join("_")
+    def id
+      self.class.join(*lineage.map(&:key))
     end
 
     # The `name` attribute of a node, which is influenced by Rails (not sure where Rails got

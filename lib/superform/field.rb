@@ -95,7 +95,7 @@ module Superform
 
     def self.copy_field_methods_to_kit(field_class, kit_class)
       base_methods = (Object.instance_methods + Node.instance_methods +
-                     [:dom, :value, :serialize, :assign, :collection, :field, :kit]).to_set
+                     [:dom, :value, :serialize, :assign, :collection, :field, :kit, :radios, :checkboxes]).to_set
 
       field_class.instance_methods(false).each do |method_name|
         next if method_name.to_s.end_with?('=')
@@ -113,7 +113,7 @@ module Superform
       return if method_name.to_s.end_with?('=')
 
       base_methods = (Object.instance_methods + Node.instance_methods +
-                     [:dom, :value, :serialize, :assign, :collection, :field, :kit]).to_set
+                     [:dom, :value, :serialize, :assign, :collection, :field, :kit, :radios, :checkboxes]).to_set
       return if base_methods.include?(method_name)
       return if kit_class.method_defined?(method_name)
 

@@ -2,6 +2,11 @@ module Superform
   module Rails
     module Components
       class Checkbox < Field
+        def initialize(field, index: nil, **attributes)
+          super(field, **attributes)
+          @index = index
+        end
+
         def view_template(&)
           if boolean?
             # Rails convention: hidden input ensures a value is sent even when unchecked
@@ -20,7 +25,7 @@ module Superform
           elsif collection?
             { id: dom.id, name: dom.name, checked: true }
           else
-            { id: dom.id(@attributes[:value]), name: dom.array_name, checked: Array(field.value).include?(@attributes[:value]) }
+            { id: DOM.join(dom.id, @index || @attributes[:value]), name: dom.array_name, checked: Array(field.value).include?(@attributes[:value]) }
           end
         end
 

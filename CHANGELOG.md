@@ -2,6 +2,10 @@
 
 ### Added
 
+- **Radio and checkbox groups** via `field(:plan).radios(...)` and `field(:roles).checkboxes(...)`.
+  Accepts the same option formats as `select`. Each iteration yields a `Choice` with
+  `.radio`, `.checkbox`, `.label`, `.value`, `.text`.
+- **Hash options** for `select`, `radios`, and `checkboxes` — e.g. `radios(1 => "Basic", 2 => "Pro")`.
 - **Radio component** with `field(:gender).radio("male")` API. Automatically handles name, value, and checked state. Each radio gets a unique DOM id based on its value (e.g. `user_gender_male`).
 - **Checkbox collection support** — three modes:
   - **Boolean** (on/off toggle): `Field(:featured).checkbox` renders with hidden "0" input

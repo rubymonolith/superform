@@ -2,9 +2,10 @@ module Superform
   module Rails
     module Components
       class Radio < Field
-        def initialize(field, value:, **attributes)
+        def initialize(field, value:, index: value, **attributes)
           super(field, **attributes)
           @value = value
+          @index = index
         end
 
         def view_template(&)
@@ -12,7 +13,7 @@ module Superform
         end
 
         def field_attributes
-          { id: dom.id(@value), name: dom.name, value: @value, checked: field.value == @value }
+          { id: DOM.join(dom.id, @index), name: dom.name, value: @value, checked: field.value == @value }
         end
       end
     end

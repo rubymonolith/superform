@@ -189,6 +189,24 @@ RSpec.describe Superform::Rails::Components::Select, type: :view do
     end
   end
 
+  describe 'with hash options' do
+    let(:component) do
+      described_class.new(field, options: [{ 1 => 'Admin', 2 => 'Editor', 3 => 'Viewer' }])
+    end
+
+    subject { render(component) }
+
+    it 'renders select with options from hash' do
+      expect(subject).to eq(
+        '<select id="role_ids" name="role_ids">' \
+        '<option value="1">Admin</option>' \
+        '<option value="2">Editor</option>' \
+        '<option value="3">Viewer</option>' \
+        '</select>'
+      )
+    end
+  end
+
   describe 'with ActiveRecord::Relation' do
     before do
       User.create!(first_name: 'Alice', email: 'alice@example.com')

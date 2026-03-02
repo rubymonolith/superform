@@ -98,5 +98,11 @@ RSpec.describe Superform::Rails::Components::Checkbox, type: :view do
       expect(html).to include('name="role_ids[]"')
       expect(html).not_to include('checked')
     end
+
+    it 'supports explicit index: for id generation' do
+      html = render(field.checkbox(value: 1, index: 0))
+      expect(html).to include('id="role_ids_0"')
+      expect(html).to include('value="1"')
+    end
   end
 end

@@ -73,10 +73,15 @@ RSpec.describe Superform::DOM do
       expect(field.dom.id).to eq("grandparent_bars_baz")
     end
 
-    it "appends suffixes to the id" do
-      field = build_lineage(parent: Superform::Namespace, child: Superform::Field)
-      expect(field.dom.id("male")).to eq("parent_child_male")
-      expect(field.dom.id(1)).to eq("parent_child_1")
+  end
+
+  describe ".join" do
+    it "joins segments with the delimiter" do
+      expect(Superform::DOM.join("parent", "child", "male")).to eq("parent_child_male")
+    end
+
+    it "converts non-string segments" do
+      expect(Superform::DOM.join("parent", 1)).to eq("parent_1")
     end
   end
 end

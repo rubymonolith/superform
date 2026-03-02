@@ -13,6 +13,8 @@ module Superform
           case object
             in ActiveRecord::Relation => relation
               active_record_relation_options_enumerable(relation).each(&options)
+            in Hash => hash
+              hash.each { |id, value| options.call id, value }
             in id, value
               options.call id, value
             in value

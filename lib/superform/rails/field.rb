@@ -33,8 +33,8 @@ module Superform
         Components::Input.new(field, **attributes)
       end
 
-      def checkbox(**attributes)
-        Components::Checkbox.new(field, **attributes)
+      def checkbox(index: nil, **attributes)
+        Components::Checkbox.new(field, index:, **attributes)
       end
 
       def label(**attributes, &)
@@ -143,8 +143,16 @@ module Superform
         input(*, **, type: :file)
       end
 
-      def radio(value, **attributes)
-        Components::Radio.new(field, value:, **attributes)
+      def radio(value, index: value, **attributes)
+        Components::Radio.new(field, value:, index:, **attributes)
+      end
+
+      def radios(*options)
+        Choices.new(field: self, options:)
+      end
+
+      def checkboxes(*options)
+        Choices.new(field: self, options:)
       end
 
       # Rails compatibility aliases
