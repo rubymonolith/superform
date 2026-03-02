@@ -466,6 +466,10 @@ class JobPostingForm < Components::Form
       end
     end
 
+    # Datalist — free-text input with autocomplete suggestions.
+    # No JavaScript required. The browser handles filtering natively.
+    Field(:time_zone).datalist(*ActiveSupport::TimeZone.all.map(&:name))
+
     # File upload (remember to set enctype on the form).
     div do
       Field(:job_description_pdf).label { "Upload job description" }

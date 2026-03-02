@@ -55,6 +55,10 @@ module Superform
         )
       end
 
+      def datalist(*options, **attributes, &block)
+        Components::Datalist.new(field, options:, **attributes, &block)
+      end
+
       def errors
         object.errors[key]
       end

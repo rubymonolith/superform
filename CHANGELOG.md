@@ -19,6 +19,10 @@
 - **Choices module** (`Superform::Rails::Choices`) — `Choices::Choice` holds per-option state,
   `Choices::Mapper` (renamed from `OptionMapper`) maps option args to `(value, text)` pairs.
 - **Unique DOM ids** for radio and checkbox groups via `DOM#id(*suffixes)`. Prevents duplicate ids in valid HTML and allows labels to target individual inputs.
+- **Datalist component** with `Field(:time_zone).datalist(*ActiveSupport::TimeZone.all.map(&:name))`.
+  Renders a native `<input>` + `<datalist>` for free-text input with autocomplete suggestions —
+  no JavaScript required. Accepts the same option formats as `select`. Block form available
+  for custom options.
 - **Select improvements**: blank options (`nil`) at any position, `multiple: true` support with hidden input for empty submissions, ActiveRecord relations as options.
 - **Preview server** — run `bin/preview` to view example forms at localhost:3000 with hot-reloading.
 
