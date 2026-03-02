@@ -222,6 +222,40 @@ Then render it from Erb.
 
 Much better!
 
+### Customizing radios and checkboxes
+
+`radios` and `checkboxes` render sensible defaults out of the box, but you can subclass them to match your design system. Override `view_template` to change the default markup — the block form still works for one-off customizations.
+
+```ruby
+class Components::Form < Superform::Rails::Form
+  class MyRadios < Superform::Rails::Components::Radios
+    def view_template(&block)
+      choices.each do |choice|
+        if block
+          yield choice
+        else
+          div(class: "radio-option") do
+            render choice.build_radio(class: "radio-input")
+            label(for: DOM.join(dom.id, choice.index), class: "radio-label") do
+              plain choice.text
+            end
+          end
+        end
+      end
+    end
+  end
+
+  class Field < Field
+    def radios(*options, **attributes, &block)
+      options = enum_options if options.empty?
+      MyRadios.new(field, options:, **attributes, &block)
+    end
+  end
+end
+```
+
+Now every `Field(:status).radios` in your app gets the custom markup. Individual forms can still pass a block for one-off layouts.
+
 ## Namespaces & Collections
 
 Superform uses a different syntax for namespacing and collections than Rails, which can be a bit confusing since the same terminology is used but the application is slightly different.
@@ -370,7 +404,7 @@ class JobPostingForm < Components::Form
     end
 
     # ActiveRecord relations work as select options too.
-    # OptionMapper uses the primary key as value and joins remaining
+    # Choice::Mapper uses the primary key as value and joins remaining
     # attributes for the label.
     div do
       Field(:hiring_manager_id).label { "Hiring manager" }
@@ -386,11 +420,15 @@ class JobPostingForm < Components::Form
 
     # Radio group auto-detected from a Rails enum.
     # Given: enum :employment_type, full_time: 0, part_time: 1, contract: 2
+    # One-liner — renders <label><input type="radio"> Text</label> per choice.
+    Field(:employment_type).radios
+
+    # Block form — full control over each choice's markup.
     fieldset do
       legend { "Employment type" }
-      field(:employment_type).radios.each do |choice|
-        render choice.label {
-          render choice.radio
+      Field(:employment_type).radios do |choice|
+        choice.label {
+          choice.input
           whitespace
           plain choice.text   # "Full time", "Part time", "Contract"
         }
@@ -399,20 +437,29 @@ class JobPostingForm < Components::Form
 
     # You can also pass explicit options to override enum detection.
     # Accepts arrays, single values, hashes, or ActiveRecord relations.
-    # field(:employment_type).radios("full_time" => "Full-time", ...)
+    # Field(:employment_type).radios("full_time" => "Full-time", ...)
 
     # Checkbox groups. Same option formats, same Choice API.
     # Handles name[], checked state, and unique ids automatically.
+    # One-liner:
+    Field(:benefit_ids).checkboxes(
+      [1, "Health insurance"],
+      [2, "Dental & vision"],
+      [3, "401(k)"],
+      [4, "Stock options"]
+    )
+
+    # Block form:
     fieldset do
       legend { "Benefits" }
-      field(:benefit_ids).checkboxes(
+      Field(:benefit_ids).checkboxes(
         [1, "Health insurance"],
         [2, "Dental & vision"],
         [3, "401(k)"],
         [4, "Stock options"]
-      ).each do |choice|
-        render choice.label {
-          render choice.checkbox
+      ) do |choice|
+        choice.label {
+          choice.input
           whitespace
           plain choice.text
         }
@@ -544,12 +591,15 @@ Here's a checkbox group in Rails vs Superform. In Rails you need to manually wir
 ```
 
 ```ruby
-# Superform
+# Superform — one-liner
+Field(:benefit_ids).checkboxes(Benefit.select(:id, :name))
+
+# Or with custom markup
 fieldset do
   legend { "Benefits" }
-  field(:benefit_ids).checkboxes(Benefit.select(:id, :name)).each do |choice|
-    render choice.label {
-      render choice.checkbox
+  Field(:benefit_ids).checkboxes(Benefit.select(:id, :name)) do |choice|
+    choice.label {
+      choice.input
       whitespace
       plain choice.text
     }

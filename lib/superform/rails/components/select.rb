@@ -67,7 +67,7 @@ module Superform
 
         protected
           def map_options(collection)
-            OptionMapper.new(collection)
+            Choices::Mapper.new(collection)
           end
 
           def field_attributes

@@ -147,14 +147,14 @@ module Superform
         Components::Radio.new(field, value:, index:, **attributes)
       end
 
-      def radios(*options)
+      def radios(*options, **attributes, &block)
         options = enum_options if options.empty?
-        Choices.new(field: self, options:)
+        Components::Radios.new(field, options:, **attributes, &block)
       end
 
-      def checkboxes(*options)
+      def checkboxes(*options, **attributes, &block)
         options = enum_options if options.empty?
-        Choices.new(field: self, options:)
+        Components::Checkboxes.new(field, options:, **attributes, &block)
       end
 
       # Rails compatibility aliases

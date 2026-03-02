@@ -1,70 +1,95 @@
-RSpec.describe Superform::Rails::Choices, type: :view do
+RSpec.describe "Radios and Checkboxes components", type: :view do
   describe "radios" do
     let(:object) { double("object", plan_id: 2) }
     let(:field) do
       Superform::Rails::Field.new(:plan_id, parent: nil, object: object)
     end
 
-    it "iterates over options yielding Choice objects" do
-      choices = field.radios([1, "Basic"], [2, "Pro"], [3, "Enterprise"])
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([[1, "Basic"], [2, "Pro"], [3, "Enterprise"]])
+    it "returns a Components::Radios instance" do
+      result = field.radios([1, "Basic"], [2, "Pro"])
+      expect(result).to be_a(Superform::Rails::Components::Radios)
     end
 
-    it "renders radios with index-based ids" do
-      html = ""
-      field.radios([1, "Basic"], [2, "Pro"]).each do |choice|
-        html += render(choice.radio)
-      end
+    it "renders radios with labels by default (no block)" do
+      html = render(field.radios([1, "Basic"], [2, "Pro"]))
 
+      expect(html).to include('type="radio"')
       expect(html).to include('id="plan_id_0"')
       expect(html).to include('id="plan_id_1"')
       expect(html).to include('name="plan_id"')
       expect(html).to include('value="1"')
       expect(html).to include('value="2"')
+      expect(html).to include("Basic")
+      expect(html).to include("Pro")
+      expect(html).to include("<label")
     end
 
     it "checks the radio matching the field value" do
-      html = ""
-      field.radios([1, "Basic"], [2, "Pro"]).each do |choice|
-        html += render(choice.radio)
-      end
+      html = render(field.radios([1, "Basic"], [2, "Pro"]))
 
       # plan_id is 2, so Pro (value=2) is checked
       expect(html).to match(/<input[^>]*value="2"[^>]*checked/)
       expect(html).not_to match(/<input[^>]*value="1"[^>]*checked/)
     end
 
-    it "renders labels with matching for attributes" do
-      html = ""
-      field.radios([1, "Basic"], [2, "Pro"]).each do |choice|
-        html += render(choice.label { choice.text })
-        html += render(choice.radio)
+    it "renders with a block for custom markup" do
+      component = field.radios([1, "Basic"], [2, "Pro"]) do |choice|
+        choice.label do
+          choice.input
+        end
       end
+      html = render(component)
 
+      expect(html).to include('<label')
       expect(html).to include('for="plan_id_0"')
       expect(html).to include('for="plan_id_1"')
+      expect(html).to include('type="radio"')
+    end
+
+    it "renders choice methods directly without render call in block" do
+      component = field.radios([1, "Basic"]) do |choice|
+        choice.input
+      end
+      html = render(component)
+
+      expect(html).to include('type="radio"')
+      expect(html).to include('value="1"')
     end
 
     it "accepts single-value options" do
-      choices = field.radios("basic", "pro")
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([["basic", "basic"], ["pro", "pro"]])
+      html = render(field.radios("basic", "pro"))
+
+      expect(html).to include('value="basic"')
+      expect(html).to include('value="pro"')
+      expect(html).to include("basic")
+      expect(html).to include("pro")
     end
 
-    it "passes through HTML attributes to radios" do
-      html = ""
-      field.radios([1, "Basic"]).each do |choice|
-        html += render(choice.radio(class: "radio-btn"))
-      end
+    it "renders a single radio from a single-value option" do
+      html = render(field.radios("basic"))
+
+      expect(html).to include('type="radio"')
+      expect(html).to include('value="basic"')
+      expect(html).to include("basic")
+      expect(html).to include("<label")
+      expect(html.scan('type="radio"').length).to eq(1)
+    end
+
+    it "passes through HTML attributes to radios in block mode" do
+      html = render(field.radios([1, "Basic"]) { |choice|
+        choice.input(class: "radio-btn")
+      })
 
       expect(html).to include('class="radio-btn"')
     end
 
     it "accepts a hash of id => label" do
-      choices = field.radios({ 1 => "Basic", 2 => "Pro" })
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([[1, "Basic"], [2, "Pro"]])
+      html = render(field.radios({ 1 => "Basic", 2 => "Pro" }))
+
+      expect(html).to include('value="1"')
+      expect(html).to include('value="2"')
+      expect(html).to include("Basic")
+      expect(html).to include("Pro")
     end
   end
 
@@ -74,43 +99,44 @@ RSpec.describe Superform::Rails::Choices, type: :view do
       Superform::Rails::Field.new(:role_ids, parent: nil, object: object)
     end
 
-    it "iterates over options yielding Choice objects" do
-      choices = field.checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"])
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([[1, "Admin"], [2, "Editor"], [3, "Viewer"]])
+    it "returns a Components::Checkboxes instance" do
+      result = field.checkboxes([1, "Admin"], [2, "Editor"])
+      expect(result).to be_a(Superform::Rails::Components::Checkboxes)
     end
 
-    it "renders checkboxes with index-based ids" do
-      html = ""
-      field.checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"]).each do |choice|
-        html += render(choice.checkbox)
-      end
+    it "renders checkboxes with labels by default (no block)" do
+      html = render(field.checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"]))
 
+      expect(html).to include('type="checkbox"')
       expect(html).to include('id="role_ids_0"')
       expect(html).to include('id="role_ids_1"')
       expect(html).to include('id="role_ids_2"')
       expect(html).to include('name="role_ids[]"')
+      expect(html).to include("Admin")
+      expect(html).to include("Editor")
+      expect(html).to include("Viewer")
     end
 
     it "checks checkboxes matching the field value" do
-      html = ""
-      field.checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"]).each do |choice|
-        html += render(choice.checkbox)
-      end
+      html = render(field.checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"]))
 
       expect(html).to match(/<input[^>]*checked[^>]*value="1"/)
       expect(html).not_to match(/<input[^>]*checked[^>]*value="2"/)
       expect(html).to match(/<input[^>]*checked[^>]*value="3"/)
     end
 
-    it "renders labels with matching for attributes" do
-      html = ""
-      field.checkboxes([1, "Admin"], [2, "Editor"]).each do |choice|
-        html += render(choice.label { choice.text })
+    it "renders with a block for custom markup" do
+      component = field.checkboxes([1, "Admin"], [2, "Editor"]) do |choice|
+        choice.label do
+          choice.input
+        end
       end
+      html = render(component)
 
+      expect(html).to include('<label')
       expect(html).to include('for="role_ids_0"')
       expect(html).to include('for="role_ids_1"')
+      expect(html).to include('type="checkbox"')
     end
   end
 
@@ -130,44 +156,53 @@ RSpec.describe Superform::Rails::Choices, type: :view do
     let(:field) { Superform::Rails::Field.new(:status, parent: nil, object: object) }
 
     it "auto-detects enum options when no args given" do
-      choices = field.radios
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([["draft", "Draft"], ["published", "Published"], ["archived", "Archived"]])
+      html = render(field.radios)
+
+      expect(html).to include('value="draft"')
+      expect(html).to include('value="published"')
+      expect(html).to include('value="archived"')
+      expect(html).to include("Draft")
+      expect(html).to include("Published")
+      expect(html).to include("Archived")
     end
 
     it "checks the radio matching the current value" do
-      html = ""
-      field.radios.each do |choice|
-        html += render(choice.radio)
-      end
+      html = render(field.radios)
 
       expect(html).to match(/<input[^>]*value="published"[^>]*checked/)
       expect(html).not_to match(/<input[^>]*value="draft"[^>]*checked/)
     end
 
     it "uses explicit options when provided (skips enum)" do
-      choices = field.radios("active", "inactive")
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([["active", "active"], ["inactive", "inactive"]])
+      html = render(field.radios("active", "inactive"))
+
+      expect(html).to include('value="active"')
+      expect(html).to include('value="inactive"')
+      expect(html).not_to include('value="draft"')
     end
 
-    it "returns empty choices when field is not an enum" do
+    it "renders empty when field is not an enum" do
       non_enum_field = Superform::Rails::Field.new(:name, parent: nil, object: object)
       object.define_singleton_method(:name) { "test" }
-      choices = non_enum_field.radios
-      expect(choices.count).to eq(0)
+      html = render(non_enum_field.radios)
+      expect(html).to eq("")
     end
 
-    it "returns empty choices when object is nil" do
+    it "renders empty when object is nil" do
       nil_field = Superform::Rails::Field.new(:status, parent: nil, object: nil)
-      choices = nil_field.radios
-      expect(choices.count).to eq(0)
+      html = render(nil_field.radios)
+      expect(html).to eq("")
     end
 
     it "works with checkboxes too" do
-      choices = field.checkboxes
-      values = choices.map { |c| [c.value, c.text] }
-      expect(values).to eq([["draft", "Draft"], ["published", "Published"], ["archived", "Archived"]])
+      html = render(field.checkboxes)
+
+      expect(html).to include('value="draft"')
+      expect(html).to include('value="published"')
+      expect(html).to include('value="archived"')
+      expect(html).to include("Draft")
+      expect(html).to include("Published")
+      expect(html).to include("Archived")
     end
   end
 
@@ -177,32 +212,25 @@ RSpec.describe Superform::Rails::Choices, type: :view do
       Superform::Rails::Field.new(:plan_id, parent: nil, object: object)
     end
 
-    it "renders choice.text when label is called without a block" do
-      html = ""
-      field.radios([1, "Basic"], [2, "Pro"]).each do |choice|
-        html += render(choice.label)
-      end
+    it "renders default labels with choice text in no-block mode" do
+      html = render(field.radios([1, "Basic"], [2, "Pro"]))
 
       expect(html).to include("Basic")
       expect(html).to include("Pro")
       expect(html).to include('for="plan_id_0"')
       expect(html).to include('for="plan_id_1"')
     end
-  end
 
-  describe "is Enumerable" do
-    let(:object) { double("object", status: "active") }
-    let(:field) do
-      Superform::Rails::Field.new(:status, parent: nil, object: object)
-    end
+    it "renders choice.text when label is called without a block in block mode" do
+      component = field.radios([1, "Basic"], [2, "Pro"]) do |choice|
+        choice.label
+      end
+      html = render(component)
 
-    it "supports Enumerable methods like map" do
-      texts = field.radios("active", "inactive").map(&:text)
-      expect(texts).to eq(["active", "inactive"])
-    end
-
-    it "supports count" do
-      expect(field.radios("a", "b", "c").count).to eq(3)
+      expect(html).to include("Basic")
+      expect(html).to include("Pro")
+      expect(html).to include('for="plan_id_0"')
+      expect(html).to include('for="plan_id_1"')
     end
   end
 end
