@@ -313,106 +313,86 @@ render UserForm.new(Admin::User.new)
 
 ## Form field guide
 
-Superform tries to strike a balance between "being as close to HTML forms as possible" and not requiring a lot of boilerplate to create forms. This example is contrived, but it shows all the different ways you can render a form.
-
-In practice, many of the calls below you'd put inside of a method. This cuts down on the number of `render` calls in your HTML code and further reduces boilerplate.
+This example builds a realistic job posting form that demonstrates every field type Superform supports. In practice you'd extract helpers to cut down on `render` calls, but this keeps things explicit so you can see exactly what's happening.
 
 ```ruby
-# Everything below is intentionally verbose!
-class SignupForm < Components::Form
+class JobPostingForm < Components::Form
   def view_template
-    # The most basic type of input, which will be autofocused.
-    Field(:name).input.focus
+    # Text input, autofocused.
+    Field(:title).input.focus
 
-    # Input field with a lot more options on it.
-    Field(:email).input(type: :email, placeholder: "We will sell this to third parties", required: true)
+    # HTML5 input helpers pass attributes straight through.
+    Field(:contact_email).email(placeholder: "hiring@company.com", required: true)
 
-    # You can put fields in a block if that's your thing.
-    field(:reason) do |f|
+    # Block form for custom layout around a field.
+    field(:description) do |f|
       div do
-        render f.label { "Why should we care about you?" }
-        render f.textarea(row: 3, col: 80)
+        render f.label { "Describe the role" }
+        render f.textarea(rows: 6, cols: 80)
       end
     end
 
-    # Selects accept options as positional arguments. Each option can be:
-    # - A 2-element array: [value, label] renders <option value="value">label</option>
-    # - A single value: "text" renders <option value="text">text</option>
-    # - A hash: {1 => "Admin", 2 => "Editor"} maps ids to labels
-    # - nil: renders an empty <option></option>
+    # Select options can be [value, label] pairs, single values, hashes, or nil
+    # for a blank option. Pass nil first to prepend a blank <option></option>.
     div do
-      Field(:contact).label { "Would you like us to spam you to death?" }
-      Field(:contact).select(
-        [true, "Yes"],  # <option value="true">Yes</option>
-        [false, "No"],  # <option value="false">No</option>
-        "Hell no",      # <option value="Hell no">Hell no</option>
-        nil             # <option></option>
+      Field(:experience_level).label
+      Field(:experience_level).select(
+        nil,
+        ["junior", "Junior"],
+        ["mid", "Mid-level"],
+        ["senior", "Senior"],
+        ["lead", "Lead"]
       )
     end
 
+    # Block form gives full control — optgroups, blank options, etc.
     div do
-      Field(:source).label { "How did you hear about us?" }
-      Field(:source).select do |s|
-        # Renders a blank option.
-        s.blank_option
-        # Pretend WebSources is an ActiveRecord scope with a "Social" category that has "Facebook, X, etc"
-        # and a "Search" category with "AltaVista, Yahoo, etc."
-        WebSources.select(:id, :name).group_by(:category) do |category, sources|
-          s.optgroup(label: category) do
-            s.options(sources)
+      Field(:category_id).label { "Category" }
+      Field(:category_id).select do |s|
+        s.blank_option { "Select a category..." }
+        Category.grouped_by_department.each do |department, categories|
+          s.optgroup(label: department) do
+            s.options(categories)
           end
         end
       end
     end
 
-    # Pass nil as first argument to add a blank option at the start
+    # Multiple select for has_many-through or array columns.
+    # Adds the HTML multiple attribute, appends [] to the field name,
+    # and includes a hidden input to handle empty submissions.
     div do
-      Field(:country).label { "Select your country" }
-      Field(:country).select(nil, [1, "USA"], [2, "Canada"], [3, "Mexico"])
-    end
-
-    # Multiple select with multiple: true
-    # - Adds the HTML 'multiple' attribute
-    # - Appends [] to the field name (role_ids becomes role_ids[])
-    # - Includes a hidden input to handle empty submissions
-    div do
-      Field(:role_ids).label { "Select roles" }
-      Field(:role_ids).select(
-        [[1, "Admin"], [2, "Editor"], [3, "Viewer"]],
+      Field(:skill_ids).label { "Required skills" }
+      Field(:skill_ids).select(
+        Skill.select(:id, :name),
         multiple: true
       )
     end
 
-    # Combine multiple: true with nil for blank option
+    # ActiveRecord relations work as select options too.
+    # OptionMapper uses the primary key as value and joins remaining
+    # attributes for the label.
     div do
-      Field(:tag_ids).label { "Select tags (optional)" }
-      Field(:tag_ids).select(
-        nil, [1, "Ruby"], [2, "Rails"], [3, "Phlex"],
-        multiple: true
-      )
+      Field(:hiring_manager_id).label { "Hiring manager" }
+      Field(:hiring_manager_id).select(User.select(:id, :first_name, :last_name))
     end
 
-    # Select options can also be ActiveRecord relations
-    # The relation is passed as a single argument (not splatted)
-    # OptionMapper extracts the primary key and joins other attributes for the label
+    # Boolean checkbox — renders a hidden "0" input so unchecked state
+    # is submitted, just like Rails.
     div do
-      Field(:author_id).label { "Select author" }
-      # For User.select(:id, :name), renders <option value="1">Alice</option>
-      # where id=1 is the primary key and "Alice" is the name attribute
-      Field(:author_id).select(User.select(:id, :name))
+      Field(:remote_friendly).label { "This position is remote-friendly" }
+      Field(:remote_friendly).checkbox
     end
 
-    div do
-      Field(:agreement).label { "Check this box if you agree to give us your first born child" }
-      Field(:agreement).checkbox(checked: true)
-    end
-
-    # Radio groups: use radios(...) with the same option formats as select.
-    # Each iteration yields a Choice with .radio, .label, .value, .text.
-    # Ids are index-based: "plan_id_0", "plan_id_1", etc.
+    # Radio groups. Accepts all the same option formats as select:
+    # arrays, single values, hashes, or ActiveRecord relations.
     fieldset do
-      legend { "Plan" }
-      field(:plan_id).radios([1, "Basic"], [2, "Pro"], [3, "Enterprise"]).each do |choice|
+      legend { "Employment type" }
+      field(:employment_type).radios(
+        "full_time" => "Full-time",
+        "part_time" => "Part-time",
+        "contract" => "Contract"
+      ).each do |choice|
         render choice.label {
           render choice.radio
           whitespace
@@ -421,11 +401,16 @@ class SignupForm < Components::Form
       end
     end
 
-    # Checkbox groups: use checkboxes(...) with the same option formats.
-    # Handles name[] and checked state automatically.
+    # Checkbox groups. Same option formats, same Choice API.
+    # Handles name[], checked state, and unique ids automatically.
     fieldset do
-      legend { "Roles" }
-      field(:role_ids).checkboxes([1, "Admin"], [2, "Editor"], [3, "Viewer"]).each do |choice|
+      legend { "Benefits" }
+      field(:benefit_ids).checkboxes(
+        [1, "Health insurance"],
+        [2, "Dental & vision"],
+        [3, "401(k)"],
+        [4, "Stock options"]
+      ).each do |choice|
         render choice.label {
           render choice.checkbox
           whitespace
@@ -434,35 +419,18 @@ class SignupForm < Components::Form
       end
     end
 
-    # Options also accept hashes: radios(1 => "Basic", 2 => "Pro")
-    # or ActiveRecord relations: radios(Plan.select(:id, :name))
+    # File upload (remember to set enctype on the form).
+    div do
+      Field(:job_description_pdf).label { "Upload job description" }
+      Field(:job_description_pdf).file(accept: ".pdf,.doc,.docx")
+    end
 
-    # Low-level API: field(:gender).radio("male") and
-    # field(:role_ids).checkbox(value: 1) are still available
-    # for full control over iteration and ids.
-
-    render button { "Submit" }
+    render button { "Post Job" }
   end
 end
 ```
 
-### Upload fields
-If you want to add file upload fields to your form you will need to initialize your form with the `enctype` attribute set to `multipart/form-data` as shown in the following example code:
-
-```ruby
-class User::ImageForm < Components::Form
-  def view_template
-    # render label
-    Field(:image).label { "Choose file" }
-    # render file input with accept attribute for png and jpeg images
-    Field(:image).input(type: "file", accept: "image/png, image/jpeg")
-  end
-end
-
-# IMPORTANT
-# When rendering the form remember to init the User::ImageForm like that
-render User::ImageForm.new(@usermodel, enctype: "multipart/form-data")
-```
+Render it with `<%= render JobPostingForm.new(@job_posting) %>`. For file uploads, pass `enctype: "multipart/form-data"` to the form constructor.
 
 
 ## Extending Superforms
@@ -556,6 +524,40 @@ Rails ships with a lot of great options to make forms. Many of these inspired Su
 ### Rails form helpers
 
 Rails form helpers have lasted for almost 20 years and are super solid, but things get tricky when your application starts to take on different styles of forms. To manage it all you have to cobble together helper methods, partials, and templates. Additionally, the structure of the form then has to be expressed to the controller as strong params, forcing you to repeat yourself.
+
+Here's a checkbox group in Rails vs Superform. In Rails you need to manually wire up the field name with `[]`, track checked state against the model, generate unique ids, and point each label's `for` attribute at the right input:
+
+```erb
+<%# Rails: checkbox group for a has_many :benefits association %>
+<fieldset>
+  <legend>Benefits</legend>
+  <% Benefit.all.each do |benefit| %>
+    <%= form.check_box :benefit_ids,
+          { multiple: true,
+            checked: form.object.benefit_ids.include?(benefit.id),
+            id: "job_posting_benefit_ids_#{benefit.id}" },
+          benefit.id, nil %>
+    <%= form.label :benefit_ids, benefit.name,
+          for: "job_posting_benefit_ids_#{benefit.id}" %>
+  <% end %>
+<% end %>
+```
+
+```ruby
+# Superform
+fieldset do
+  legend { "Benefits" }
+  field(:benefit_ids).checkboxes(Benefit.select(:id, :name)).each do |choice|
+    render choice.label {
+      render choice.checkbox
+      whitespace
+      plain choice.text
+    }
+  end
+end
+```
+
+Superform handles the field name (`benefit_ids[]`), checked state, unique ids, and label targeting automatically. The same pattern works for radio groups with `radios(...)`.
 
 With Superform, you build the entire form with Ruby code, so you avoid the Erb gymnastics and helper method soup that it takes in Rails to scale up forms in an organization.
 
