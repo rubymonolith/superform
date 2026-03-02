@@ -6,7 +6,7 @@
 
 * **Works beautifully with ERB.** Start using Superform in your existing Rails app without changing a single ERB template. All the power, zero migration pain.
 
-* **Concise field helpers.** `Field(:publish_at).date`, `Field(:email).email`, `field(:price).number` — intuitive methods that generate the right input types with proper validation.
+* **Concise field helpers.** `Field(:publish_at).date`, `Field(:email).email`, `Field(:price).number` — intuitive methods that generate the right input types with proper validation.
 
 * **RESTful controller helpers** Superform's `save` and `save!` methods work exactly like ActiveRecord, making controller code predictable and Rails-like.
 
@@ -235,7 +235,7 @@ class Components::Form < Superform::Rails::Form
           yield choice
         else
           div(class: "radio-option") do
-            render choice.build_radio(class: "radio-input")
+            render choice.build_input(class: "radio-input")
             label(for: DOM.join(dom.id, choice.index), class: "radio-label") do
               plain choice.text
             end
@@ -404,7 +404,7 @@ class JobPostingForm < Components::Form
     end
 
     # ActiveRecord relations work as select options too.
-    # Choice::Mapper uses the primary key as value and joins remaining
+    # Choices::Mapper uses the primary key as value and joins remaining
     # attributes for the label.
     div do
       Field(:hiring_manager_id).label { "Hiring manager" }
