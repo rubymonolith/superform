@@ -25,6 +25,8 @@ module Superform
     #
     # Now all calls to `label` will have the `text-bold` class applied to it.
     class Field < Superform::Field
+      prepend HTML5::Validations
+
       def button(**attributes)
         Components::Button.new(field, **attributes)
       end

@@ -64,8 +64,14 @@ module Superform
         end
       end
 
+      def novalidate
+        false
+      end
+
       def form_tag(&)
-        form action: form_action, method: form_method, **@attributes, &
+        attrs = @attributes
+        attrs = attrs.merge(novalidate: true) if novalidate
+        form action: form_action, method: form_method, **attrs, &
       end
 
       def view_template(&block)
